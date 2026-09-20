@@ -131,8 +131,11 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
           </div>
 
           <div>
-            <label className="mb-1 block text-caption text-on-surface-muted">Preço unitário (R$)</label>
+            <label htmlFor="item-unit-price" className="mb-1 block text-caption text-on-surface-muted">
+              Preço unitário (R$)
+            </label>
             <input
+              id="item-unit-price"
               type="number"
               inputMode="decimal"
               min="0"

@@ -6,23 +6,21 @@ test.describe('Home — Lista de compras', () => {
     await expect(page.locator('h1')).toContainText('Minhas Listas');
   });
 
-  test('exibe estado vazio com CTA', async ({ page }) => {
+  test('exibe FAB de nova lista', async ({ page }) => {
     await page.goto('/');
-    const cta = page.getByText('Criar primeira lista');
-    // Either FAB or empty state CTA is visible
-    const fab = page.getByLabel('Nova lista');
+    const fab = page.getByRole('button', { name: 'Nova lista' });
     await expect(fab).toBeVisible();
   });
 
   test('abre sheet de nova lista ao clicar no FAB', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Nova lista').click();
+    await page.getByRole('button', { name: 'Nova lista' }).click();
     await expect(page.getByRole('dialog', { name: 'Nova lista' })).toBeVisible();
   });
 
   test('cria lista e navega para tela de detalhes', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Nova lista').click();
+    await page.getByRole('button', { name: 'Nova lista' }).click();
     await page.getByPlaceholder('Ex: Carrefour 14/09').fill('Atacadão Teste');
     await page.getByRole('button', { name: 'Criar lista' }).click();
 
@@ -32,7 +30,7 @@ test.describe('Home — Lista de compras', () => {
 
   test('tela de lista mostra total zerado', async ({ page }) => {
     await page.goto('/');
-    await page.getByLabel('Nova lista').click();
+    await page.getByRole('button', { name: 'Nova lista' }).click();
     await page.getByPlaceholder('Ex: Carrefour 14/09').fill('Lista E2E');
     await page.getByRole('button', { name: 'Criar lista' }).click();
 
@@ -42,15 +40,13 @@ test.describe('Home — Lista de compras', () => {
 
 test.describe('Tela de lista — adicionar item', () => {
   test('adiciona item e atualiza total', async ({ page }) => {
-    // Create a list first
     await page.goto('/');
-    await page.getByLabel('Nova lista').click();
+    await page.getByRole('button', { name: 'Nova lista' }).click();
     await page.getByPlaceholder('Ex: Carrefour 14/09').fill('Lista Item Test');
     await page.getByRole('button', { name: 'Criar lista' }).click();
     await expect(page).toHaveURL(/\/lista/);
 
-    // Add an item
-    await page.getByLabel('Adicionar item').click();
+    await page.getByRole('button', { name: 'Adicionar item' }).click();
     await expect(page.getByRole('dialog', { name: 'Adicionar item' })).toBeVisible();
 
     const nameInput = page.getByPlaceholder('Ex: Arroz Camil 5kg');
