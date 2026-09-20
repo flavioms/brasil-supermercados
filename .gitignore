@@ -1,0 +1,24 @@
+# Next.js
+.next/
+out/
+
+# Dependências
+node_modules/
+
+# Testes
+coverage/
+playwright-report/
+test-results/
+
+# Workbox (gerado pelo next-pwa)
+public/sw.js
+public/workbox-*.js
+
+# Ambiente
+.env
+.env.*
+!.env.example
+
+# Sistema
+.DS_Store
+*.local
