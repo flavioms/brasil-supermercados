@@ -12,12 +12,13 @@ describe('ListItemController', () => {
   describe('addItem', () => {
     it('adds item and recomputes totals', async () => {
       const listId = await ShoppingListController.createList('Test');
+      // For weight/volume: unitPrice = total package price (R$15 for a 2kg bag)
       const itemId = await ListItemController.addItem({
         listId,
         name: 'Arroz',
         quantity: 2,
         unit: 'kg',
-        unitPrice: 7.5,
+        unitPrice: 15,
       });
 
       const item = await db.listItems.get(itemId);
@@ -26,6 +27,15 @@ describe('ListItemController', () => {
 
       const list = await db.shoppingLists.get(listId);
       expect(list?.totalCost).toBe(15);
+    });
+
+    it('adds count item with per-unit price', async () => {
+      const listId = await ShoppingListController.createList('Test');
+      const itemId = await ListItemController.addItem({
+        listId, name: 'Iogurte', quantity: 3, unit: 'un', unitPrice: 4,
+      });
+      const item = await db.listItems.get(itemId);
+      expect(item?.lineTotal).toBe(12); // 3 × R$4
     });
 
     it('sets pricePerRefUnit for kg items', async () => {

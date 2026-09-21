@@ -3,7 +3,7 @@ import { createListItem } from '@/models/ListItem';
 import type { ItemUnit } from '@/models/ListItem';
 import { ShoppingListController } from './ShoppingListController';
 import { validateItemFields } from '@/utils/validation';
-import { calcPricePerRefUnit } from '@/utils/units';
+import { calcPricePerRefUnit, WEIGHT_VOLUME_UNITS } from '@/utils/units';
 
 export interface AddItemInput {
   listId: string;
@@ -35,6 +35,10 @@ export const ListItemController = {
 
     const position = lastItem ? lastItem.position + 1000 : 1000;
     const pricePerRefUnit = calcPricePerRefUnit(input.unitPrice, input.quantity, input.unit);
+    // For weight/volume packages, unitPrice = total package price (shown on shelf label)
+    const lineTotal = WEIGHT_VOLUME_UNITS.includes(input.unit)
+      ? input.unitPrice
+      : input.quantity * input.unitPrice;
 
     const item = createListItem({
       listId: input.listId,
@@ -47,6 +51,7 @@ export const ListItemController = {
     });
 
     item.pricePerRefUnit = pricePerRefUnit;
+    item.lineTotal = lineTotal;
 
     await db.listItems.add(item);
     await ShoppingListController.recomputeTotals(input.listId);
@@ -78,7 +83,9 @@ export const ListItemController = {
       }
     }
 
-    const lineTotal = updated.quantity * updated.unitPrice;
+    const lineTotal = WEIGHT_VOLUME_UNITS.includes(updated.unit)
+      ? updated.unitPrice
+      : updated.quantity * updated.unitPrice;
     const pricePerRefUnit = calcPricePerRefUnit(updated.unitPrice, updated.quantity, updated.unit);
 
     await db.listItems.update(itemId, {

@@ -110,7 +110,7 @@ export default function HomePage() {
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="Ex: Carrefour 14/09"
+                placeholder="Ex: Atacadão, Carrefour…"
                 autoFocus
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />

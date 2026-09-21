@@ -1,5 +1,6 @@
 import { db } from '@/models/db';
 import type { ItemUnit } from '@/models/ListItem';
+import catalogData from '@/data/produtos-br.json';
 
 export interface Suggestion {
   name: string;
@@ -18,7 +19,10 @@ interface SuggestionWithTimestamp extends Suggestion {
 }
 
 let localIndex: Suggestion[] | null = null;
-let catalogCache: Suggestion[] | null = null;
+
+const catalogCache: Suggestion[] = (catalogData as CatalogEntry[])
+  .filter((entry): entry is CatalogEntry => typeof entry.name === 'string')
+  .map((entry) => ({ name: entry.name, unit: (entry.unit as ItemUnit) ?? 'un' }));
 
 export const AutocompleteController = {
   async buildLocalIndex(): Promise<void> {
@@ -34,18 +38,6 @@ export const AutocompleteController = {
     }
 
     localIndex = Array.from(seen.values()).map(({ _createdAt: _ts, ...s }) => s);
-  },
-
-  async loadBundledCatalog(): Promise<void> {
-    if (catalogCache) return;
-
-    const data = (await import('@/data/produtos-br.json')) as { default: CatalogEntry[] };
-    catalogCache = data.default
-      .filter((entry): entry is CatalogEntry => typeof entry.name === 'string')
-      .map((entry) => ({
-        name: entry.name,
-        unit: (entry.unit as ItemUnit) ?? 'un',
-      }));
   },
 
   async getSuggestions(query: string, limit = 5): Promise<Suggestion[]> {
@@ -75,9 +67,7 @@ export const AutocompleteController = {
       return fromHistory.slice(0, limit);
     }
 
-    // 2. Bundled catalog
-    await AutocompleteController.loadBundledCatalog();
-
+    // 2. Bundled catalog (loaded synchronously at module init)
     const historyNames = new Set(fromHistory.map((s) => s.name.toLowerCase()));
 
     const fromCatalog = (catalogCache ?? [])

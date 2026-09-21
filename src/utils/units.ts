@@ -5,6 +5,9 @@ export interface UnitConversion {
   factor: number; // multiply quantity by this to get reference unit quantity
 }
 
+// For these units, "unitPrice" stored in DB = total package price (what's on the shelf label)
+export const WEIGHT_VOLUME_UNITS: ItemUnit[] = ['kg', 'g', 'L', 'ml'];
+
 export const UNIT_CONVERSION_TABLE: Partial<Record<ItemUnit, UnitConversion>> = {
   kg: { refUnit: 'kg', factor: 1 },
   g: { refUnit: 'kg', factor: 0.001 },

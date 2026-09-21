@@ -1,21 +1,63 @@
 'use client';
 
 import { SwipeContainer } from '@/components/molecules/SwipeContainer';
-import { PriceBadge } from '@/components/atoms/PriceBadge';
 import { ListItemController } from '@/controllers/ListItemController';
-import { getRefUnit } from '@/utils/units';
+import { getRefUnit, WEIGHT_VOLUME_UNITS } from '@/utils/units';
 import { formatBRL } from '@/utils/currency';
 import { hapticFeedback } from '@/utils/haptics';
 import type { ListItem } from '@/models/ListItem';
 
 interface ItemRowProps {
   item: ListItem;
+  allItems: ListItem[];
   onEditRequest: (itemId: string) => void;
 }
 
-export function ItemRow({ item, onEditRequest }: ItemRowProps) {
-  const refUnit = getRefUnit(item.unit);
+function PriceComparisonBadge({ item, allItems }: { item: ListItem; allItems: ListItem[] }) {
+  if (item.pricePerRefUnit === null) return null;
 
+  const refUnit = getRefUnit(item.unit);
+  if (!refUnit) return null;
+
+  // Filter comparable items (same refUnit, different id)
+  const comparable = allItems.filter((other) => {
+    if (other.id === item.id) return false;
+    return getRefUnit(other.unit) === refUnit && other.pricePerRefUnit !== null;
+  });
+
+  if (comparable.length === 0) {
+    // Solo: just show the normalized price
+    return (
+      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-caption text-on-surface-muted">
+        {formatBRL(item.pricePerRefUnit)}/{refUnit}
+      </span>
+    );
+  }
+
+  const cheapestPrice = Math.min(
+    item.pricePerRefUnit,
+    ...comparable.map((o) => o.pricePerRefUnit as number)
+  );
+
+  const isBest = item.pricePerRefUnit <= cheapestPrice + 0.001;
+
+  if (isBest) {
+    return (
+      <span className="flex items-center gap-0.5 rounded bg-primary/10 px-1.5 py-0.5 text-caption font-medium text-primary">
+        ★ {formatBRL(item.pricePerRefUnit)}/{refUnit}
+      </span>
+    );
+  }
+
+  return (
+    <span className="flex flex-col items-end rounded bg-warning/10 px-1.5 py-0.5 text-warning">
+      <span className="text-caption font-medium">{formatBRL(item.pricePerRefUnit)}/{refUnit}</span>
+      <span className="text-[10px] uppercase tracking-wide">mais caro</span>
+    </span>
+  );
+}
+
+export function ItemRow({ item, allItems, onEditRequest }: ItemRowProps) {
   const handleToggle = async () => {
     hapticFeedback([10]);
     await ListItemController.toggleCheck(item.id);
@@ -33,10 +75,8 @@ export function ItemRow({ item, onEditRequest }: ItemRowProps) {
       rightLabel={item.isChecked ? 'Desmarcar' : 'Marcar'}
       leftLabel="Excluir"
     >
-      <div
-        className={`flex items-center gap-3 px-4 py-3 ${item.isChecked ? 'opacity-60' : ''}`}
-      >
-        {/* Checkbox visual */}
+      <div className={`flex items-center gap-3 px-4 py-3 ${item.isChecked ? 'opacity-60' : ''}`}>
+        {/* Checkbox */}
         <button
           onClick={handleToggle}
           aria-label={item.isChecked ? 'Desmarcar item' : 'Marcar item como no carrinho'}
@@ -44,9 +84,7 @@ export function ItemRow({ item, onEditRequest }: ItemRowProps) {
         >
           <div
             className={`h-5 w-5 rounded-full border-2 transition-colors ${
-              item.isChecked
-                ? 'border-primary bg-primary'
-                : 'border-gray-400 bg-white'
+              item.isChecked ? 'border-primary bg-primary' : 'border-gray-400 bg-white'
             }`}
           >
             {item.isChecked && (
@@ -61,23 +99,25 @@ export function ItemRow({ item, onEditRequest }: ItemRowProps) {
           </div>
         </button>
 
-        {/* Item info */}
+        {/* Info */}
         <button
           onClick={() => onEditRequest(item.id)}
           className="min-h-[var(--spacing-touch)] flex-1 text-left"
         >
           <div
-            className={`text-body font-medium ${item.isChecked ? 'line-through text-on-surface-muted' : 'text-on-surface'}`}
+            className={`text-body font-medium ${
+              item.isChecked ? 'line-through text-on-surface-muted' : 'text-on-surface'
+            }`}
           >
             {item.name}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
             <span className="text-caption text-on-surface-muted">
-              {item.quantity} {item.unit} × {formatBRL(item.unitPrice)}
+              {WEIGHT_VOLUME_UNITS.includes(item.unit)
+                ? `${item.quantity} ${item.unit} por ${formatBRL(item.lineTotal)}`
+                : `${item.quantity} ${item.unit} × ${formatBRL(item.unitPrice)}`}
             </span>
-            {item.pricePerRefUnit !== null && refUnit !== null && (
-              <PriceBadge pricePerRefUnit={item.pricePerRefUnit} refUnit={refUnit} />
-            )}
+            <PriceComparisonBadge item={item} allItems={allItems} />
           </div>
         </button>
 

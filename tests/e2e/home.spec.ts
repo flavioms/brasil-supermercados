@@ -21,7 +21,7 @@ test.describe('Home — Lista de compras', () => {
   test('cria lista e navega para tela de detalhes', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Nova lista' }).click();
-    await page.getByPlaceholder('Ex: Carrefour 14/09').fill('Atacadão Teste');
+    await page.getByPlaceholder('Ex: Atacadão, Carrefour…').fill('Atacadão Teste');
     await page.getByRole('button', { name: 'Criar lista' }).click();
 
     await expect(page).toHaveURL(/\/lista/);
@@ -31,7 +31,7 @@ test.describe('Home — Lista de compras', () => {
   test('tela de lista mostra total zerado', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Nova lista' }).click();
-    await page.getByPlaceholder('Ex: Carrefour 14/09').fill('Lista E2E');
+    await page.getByPlaceholder('Ex: Atacadão, Carrefour…').fill('Lista E2E');
     await page.getByRole('button', { name: 'Criar lista' }).click();
 
     await expect(page.getByTestId('total-cost')).toContainText('R$');
@@ -42,7 +42,7 @@ test.describe('Tela de lista — adicionar item', () => {
   test('adiciona item e atualiza total', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Nova lista' }).click();
-    await page.getByPlaceholder('Ex: Carrefour 14/09').fill('Lista Item Test');
+    await page.getByPlaceholder('Ex: Atacadão, Carrefour…').fill('Lista Item Test');
     await page.getByRole('button', { name: 'Criar lista' }).click();
     await expect(page).toHaveURL(/\/lista/);
 

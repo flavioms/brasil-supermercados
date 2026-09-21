@@ -6,11 +6,13 @@ import { AutocompleteInput } from '@/components/molecules/AutocompleteInput';
 import { ListItemController } from '@/controllers/ListItemController';
 import { PriceComparisonController } from '@/controllers/PriceComparisonController';
 import { formatBRL } from '@/utils/currency';
+import { WEIGHT_VOLUME_UNITS } from '@/utils/units';
 import { db } from '@/models/db';
 import type { ItemUnit } from '@/models/ListItem';
 import type { Suggestion } from '@/controllers/AutocompleteController';
 
 const UNITS: ItemUnit[] = ['un', 'kg', 'g', 'L', 'ml', 'cx', 'pct'];
+const INTEGER_UNITS: ItemUnit[] = ['un', 'cx', 'pct'];
 
 interface ItemFormSheetProps {
   isOpen: boolean;
@@ -50,7 +52,9 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
 
   const qty = parseFloat(quantity) || 0;
   const price = parseFloat(unitPrice) || 0;
-  const lineTotal = qty * price;
+  const isWeightVolume = WEIGHT_VOLUME_UNITS.includes(unit);
+  // For weight/volume: price IS the total (e.g. R$30 for a 2kg package)
+  const lineTotal = isWeightVolume ? price : qty * price;
   const pricePerUnit = PriceComparisonController.calcPricePerUnit(price, qty, unit);
 
   const handleSuggestionSelect = (s: Suggestion) => {
@@ -105,11 +109,21 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
               <label className="mb-1 block text-caption text-on-surface-muted">Quantidade</label>
               <input
                 type="number"
-                inputMode="decimal"
-                min="0.001"
-                step="0.001"
+                inputMode={INTEGER_UNITS.includes(unit) ? 'numeric' : 'decimal'}
+                min={INTEGER_UNITS.includes(unit) ? '1' : '0.01'}
+                step={INTEGER_UNITS.includes(unit) ? '1' : '0.01'}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
+                onBlur={(e) => {
+                  const num = parseFloat(e.target.value);
+                  if (isNaN(num) || num <= 0) {
+                    setQuantity(INTEGER_UNITS.includes(unit) ? '1' : '0.01');
+                  } else if (INTEGER_UNITS.includes(unit)) {
+                    setQuantity(String(Math.round(num)));
+                  } else {
+                    setQuantity(String(Math.round(num * 100) / 100));
+                  }
+                }}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -118,7 +132,14 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
               <label className="mb-1 block text-caption text-on-surface-muted">Unidade</label>
               <select
                 value={unit}
-                onChange={(e) => setUnit(e.target.value as ItemUnit)}
+                onChange={(e) => {
+                  const newUnit = e.target.value as ItemUnit;
+                  setUnit(newUnit);
+                  if (INTEGER_UNITS.includes(newUnit)) {
+                    const num = parseFloat(quantity);
+                    setQuantity(String(Math.max(1, isNaN(num) ? 1 : Math.round(num))));
+                  }
+                }}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               >
                 {UNITS.map((u) => (
@@ -132,7 +153,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
 
           <div>
             <label htmlFor="item-unit-price" className="mb-1 block text-caption text-on-surface-muted">
-              Preço unitário (R$)
+              {isWeightVolume ? 'Preço da embalagem (R$)' : 'Preço unitário (R$)'}
             </label>
             <input
               id="item-unit-price"
