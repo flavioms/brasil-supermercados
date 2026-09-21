@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
+import Image from 'next/image';
 import { useShoppingList } from '@/hooks/useShoppingList';
 import { useListItems } from '@/hooks/useListItems';
 import { useListTotal } from '@/hooks/useListTotal';
@@ -21,7 +22,7 @@ function ListDetailContent() {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editItemId, setEditItemId] = useState<string | undefined>(undefined);
-  const [checkedExpanded, setCheckedExpanded] = useState(false);
+  const [checkedExpanded, setCheckedExpanded] = useState(true);
   const [showSwipeHint, setShowSwipeHint] = useState(() => {
     try {
       return !localStorage.getItem('swipe-hint-seen');
@@ -123,71 +124,99 @@ function ListDetailContent() {
       {/* Items */}
       <div className="flex-1">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="mb-4 text-6xl">📝</div>
-            <p className="text-title text-on-surface mb-2 font-medium">Lista vazia</p>
-            <p className="text-body text-on-surface-muted">Toque no + para adicionar itens</p>
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <div className="mb-5 text-6xl">🛒</div>
+            <p className="text-title text-on-surface mb-1 font-bold">Liste o que precisa comprar</p>
+            <p className="text-body text-on-surface-muted mb-5">
+              Toque no <strong>+</strong> para adicionar cada item.
+            </p>
+            <div className="mb-5 flex items-center gap-2">
+              <div className="h-px w-12 bg-gray-200" />
+              <span className="text-caption text-on-surface-muted/60">na loja</span>
+              <div className="h-px w-12 bg-gray-200" />
+            </div>
+            <p className="text-body text-on-surface-muted">
+              Marque cada item ao colocá-lo no carrinho físico. O total atualiza na hora.
+            </p>
           </div>
         ) : (
           <div>
             {showSwipeHint && uncheckedItems.length > 0 && (
-              <div className="bg-primary/5 flex items-center gap-2 px-3 py-2">
+              <div className="bg-primary/5 flex items-center gap-2 px-3 py-2.5 sm:hidden">
                 {/* Excluir (swipe left) */}
-                <div className="text-danger flex items-center gap-1">
-                  <svg
-                    className="h-3.5 w-3.5 flex-shrink-0"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-[11px] font-medium">Excluir</span>
+                <div
+                  className="text-danger flex w-20 items-center gap-1.5"
+                  style={{ animation: 'swipe-glow-left 4s ease-in-out infinite' }}
+                >
+                  <Image
+                    src="/arrow-left.png"
+                    alt=""
+                    aria-hidden="true"
+                    width={18}
+                    height={18}
+                    style={{
+                      filter:
+                        'brightness(0) saturate(100%) invert(18%) sepia(97%) saturate(800%) hue-rotate(350deg) brightness(85%)',
+                    }}
+                  />
+                  <span className="text-caption font-semibold">Excluir</span>
                 </div>
 
-                {/* Dashed arrow with hand */}
-                <div className="text-on-surface-muted flex flex-1 items-center justify-center gap-0.5">
-                  <span className="text-[11px]">←</span>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} className="bg-on-surface-muted/40 h-px w-1.5" />
-                  ))}
-                  <svg
-                    className="text-on-surface-muted/60 h-3.5 w-3.5"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M9 11.5V6a1.5 1.5 0 013 0v3.5a1.5 1.5 0 013 0v1a1.5 1.5 0 013 0v4a6 6 0 01-6 6H9a6 6 0 01-6-6v-1a1.5 1.5 0 013 0V11.5a1.5 1.5 0 013 0z" />
-                  </svg>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} className="bg-on-surface-muted/40 h-px w-1.5" />
-                  ))}
-                  <span className="text-[11px]">→</span>
+                {/* Animated hand icon — alternates between swipe-left and swipe-right */}
+                <div
+                  className="relative flex flex-1 items-center justify-center"
+                  style={{ animation: 'swipe-demo 4s ease-in-out infinite' }}
+                >
+                  <Image
+                    src="/swipe-hint.png"
+                    alt="Deslize para interagir"
+                    width={28}
+                    height={28}
+                    style={{
+                      filter:
+                        'brightness(0) saturate(100%) invert(40%) sepia(5%) saturate(300%) hue-rotate(200deg) brightness(95%)',
+                      animation: 'swipe-icon-left 4s ease-in-out infinite',
+                    }}
+                  />
+                  <Image
+                    src="/swipe-right.png"
+                    alt=""
+                    aria-hidden="true"
+                    width={28}
+                    height={28}
+                    className="absolute"
+                    style={{
+                      filter:
+                        'brightness(0) saturate(100%) invert(40%) sepia(5%) saturate(300%) hue-rotate(200deg) brightness(95%)',
+                      animation: 'swipe-icon-right 4s ease-in-out infinite',
+                    }}
+                  />
                 </div>
 
-                {/* Marcar (swipe right) */}
-                <div className="text-primary flex items-center gap-1">
-                  <span className="text-[11px] font-medium">Marcar</span>
-                  <svg
-                    className="h-3.5 w-3.5 flex-shrink-0"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                {/* No carrinho (swipe right) */}
+                <div
+                  className="text-primary flex w-20 items-center justify-end gap-1.5"
+                  style={{ animation: 'swipe-glow-right 4s ease-in-out infinite' }}
+                >
+                  <span className="text-caption font-semibold">No carrinho</span>
+                  <Image
+                    src="/arrow-right.png"
+                    alt=""
+                    aria-hidden="true"
+                    width={18}
+                    height={18}
+                    style={{
+                      filter:
+                        'brightness(0) saturate(100%) invert(28%) sepia(58%) saturate(800%) hue-rotate(100deg) brightness(70%)',
+                    }}
+                  />
                 </div>
 
                 {/* Dismiss */}
                 <button
                   onClick={dismissSwipeHint}
                   aria-label="Dispensar dica"
-                  className="text-on-surface-muted/60 ml-1 flex h-6 w-6 flex-shrink-0 items-center justify-center"
+                  className="text-on-surface-muted/60 ml-2 flex h-6 w-6 flex-shrink-0 items-center justify-center"
                 >
                   <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                     <path
@@ -201,12 +230,7 @@ function ListDetailContent() {
             )}
             <div className="divide-y divide-gray-100">
               {uncheckedItems.map((item) => (
-                <ItemRow
-                  key={item.id}
-                  item={item}
-                  allItems={items}
-                  onEditRequest={handleEditRequest}
-                />
+                <ItemRow key={item.id} item={item} onEditRequest={handleEditRequest} />
               ))}
             </div>
 
@@ -235,12 +259,7 @@ function ListDetailContent() {
                 {checkedExpanded && (
                   <div className="divide-y divide-gray-100">
                     {checkedItems.map((item) => (
-                      <ItemRow
-                        key={item.id}
-                        item={item}
-                        allItems={items}
-                        onEditRequest={handleEditRequest}
-                      />
+                      <ItemRow key={item.id} item={item} onEditRequest={handleEditRequest} />
                     ))}
                   </div>
                 )}

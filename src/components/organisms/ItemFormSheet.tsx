@@ -6,9 +6,9 @@ import { AutocompleteInput } from '@/components/molecules/AutocompleteInput';
 import { ListItemController } from '@/controllers/ListItemController';
 import { PriceComparisonController } from '@/controllers/PriceComparisonController';
 import { formatBRL } from '@/utils/currency';
-import { WEIGHT_VOLUME_UNITS } from '@/utils/units';
+import { getRefUnit, WEIGHT_VOLUME_UNITS } from '@/utils/units';
 import { db } from '@/models/db';
-import type { ItemUnit } from '@/models/ListItem';
+import type { ItemUnit, ListItem } from '@/models/ListItem';
 import type { Suggestion } from '@/controllers/AutocompleteController';
 
 const UNITS: ItemUnit[] = ['un', 'kg', 'g', 'L', 'ml', 'cx', 'pct'];
@@ -29,6 +29,16 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
   const [unit, setUnit] = useState<ItemUnit>('un');
   const [unitPrice, setUnitPrice] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [listPeers, setListPeers] = useState<ListItem[]>([]);
+
+  useEffect(() => {
+    if (!isOpen || !listId) return;
+    db.listItems
+      .where('listId')
+      .equals(listId)
+      .toArray()
+      .then((items) => setListPeers(items));
+  }, [isOpen, listId]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -183,6 +193,55 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
                   {formatBRL(pricePerUnit.value)}/{pricePerUnit.refUnit}
                 </div>
               )}
+              {(() => {
+                if (!pricePerUnit || !isWeightVolume) return null;
+                const refUnit = getRefUnit(unit);
+                if (!refUnit) return null;
+                const peers = listPeers.filter(
+                  (p) => p.id !== itemId && p.pricePerRefUnit !== null && getRefUnit(p.unit) === refUnit
+                );
+                if (peers.length === 0) return null;
+                const currentEntry = {
+                  id: '__new__',
+                  name: name.trim() || 'Este item',
+                  pricePerRefUnit: pricePerUnit.value,
+                };
+                const all = [
+                  ...peers.map((p) => ({
+                    id: p.id,
+                    name: p.name,
+                    pricePerRefUnit: p.pricePerRefUnit as number,
+                  })),
+                  currentEntry,
+                ].sort((a, b) => a.pricePerRefUnit - b.pricePerRefUnit);
+                const minPrice = Math.min(...all.map((e) => e.pricePerRefUnit));
+                return (
+                  <div className="mt-2 border-t border-gray-100 pt-2">
+                    <p className="text-caption text-on-surface-muted mb-1">
+                      Comparando por {refUnit} nesta lista:
+                    </p>
+                    {all.map((entry) => {
+                      const isCheapest = entry.pricePerRefUnit <= minPrice + 0.001;
+                      const isCurrent = entry.id === '__new__';
+                      return (
+                        <div key={entry.id} className="flex justify-between py-0.5">
+                          <span
+                            className={`text-caption ${isCurrent ? 'text-on-surface font-medium' : 'text-on-surface-muted'}`}
+                          >
+                            {entry.name}
+                          </span>
+                          <span
+                            className={`text-caption ${isCheapest ? 'text-primary font-medium' : 'text-on-surface-muted'}`}
+                          >
+                            {formatBRL(entry.pricePerRefUnit)}/{refUnit}
+                            {isCheapest ? ' ★' : ''}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           )}
 

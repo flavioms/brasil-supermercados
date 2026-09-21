@@ -9,57 +9,10 @@ import type { ListItem } from '@/models/ListItem';
 
 interface ItemRowProps {
   item: ListItem;
-  allItems: ListItem[];
   onEditRequest: (itemId: string) => void;
 }
 
-function PriceComparisonBadge({ item, allItems }: { item: ListItem; allItems: ListItem[] }) {
-  if (item.pricePerRefUnit === null) return null;
-
-  const refUnit = getRefUnit(item.unit);
-  if (!refUnit) return null;
-
-  // Filter comparable items (same refUnit, different id)
-  const comparable = allItems.filter((other) => {
-    if (other.id === item.id) return false;
-    return getRefUnit(other.unit) === refUnit && other.pricePerRefUnit !== null;
-  });
-
-  if (comparable.length === 0) {
-    // Solo: just show the normalized price
-    return (
-      <span className="text-caption text-on-surface-muted rounded bg-gray-100 px-1.5 py-0.5">
-        {formatBRL(item.pricePerRefUnit)}/{refUnit}
-      </span>
-    );
-  }
-
-  const cheapestPrice = Math.min(
-    item.pricePerRefUnit,
-    ...comparable.map((o) => o.pricePerRefUnit as number)
-  );
-
-  const isBest = item.pricePerRefUnit <= cheapestPrice + 0.001;
-
-  if (isBest) {
-    return (
-      <span className="bg-primary/10 text-caption text-primary flex items-center gap-0.5 rounded px-1.5 py-0.5 font-medium">
-        ★ {formatBRL(item.pricePerRefUnit)}/{refUnit}
-      </span>
-    );
-  }
-
-  return (
-    <span className="bg-warning/10 text-warning flex flex-col items-end rounded px-1.5 py-0.5">
-      <span className="text-caption font-medium">
-        {formatBRL(item.pricePerRefUnit)}/{refUnit}
-      </span>
-      <span className="text-[10px] tracking-wide uppercase">mais caro</span>
-    </span>
-  );
-}
-
-export function ItemRow({ item, allItems, onEditRequest }: ItemRowProps) {
+export function ItemRow({ item, onEditRequest }: ItemRowProps) {
   const handleToggle = async () => {
     hapticFeedback([10]);
     await ListItemController.toggleCheck(item.id);
@@ -69,6 +22,8 @@ export function ItemRow({ item, allItems, onEditRequest }: ItemRowProps) {
     hapticFeedback([20, 10, 20]);
     await ListItemController.deleteItem(item.id);
   };
+
+  const refUnit = getRefUnit(item.unit);
 
   return (
     <SwipeContainer
@@ -113,13 +68,16 @@ export function ItemRow({ item, allItems, onEditRequest }: ItemRowProps) {
           >
             {item.name}
           </div>
-          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-            <span className="text-caption text-on-surface-muted">
-              {WEIGHT_VOLUME_UNITS.includes(item.unit)
-                ? `${item.quantity} ${item.unit} por ${formatBRL(item.lineTotal)}`
-                : `${item.quantity} ${item.unit} × ${formatBRL(item.unitPrice)}`}
-            </span>
-            <PriceComparisonBadge item={item} allItems={allItems} />
+          <div className="text-caption text-on-surface-muted mt-0.5">
+            {WEIGHT_VOLUME_UNITS.includes(item.unit)
+              ? `${item.quantity} ${item.unit} por ${formatBRL(item.lineTotal)}`
+              : `${item.quantity} ${item.unit} × ${formatBRL(item.unitPrice)}`}
+            {item.pricePerRefUnit !== null && refUnit && (
+              <span className="text-on-surface-muted/60">
+                {' · '}
+                {formatBRL(item.pricePerRefUnit)}/{refUnit}
+              </span>
+            )}
           </div>
         </button>
 
