@@ -26,7 +26,7 @@ export function StickyTotalFooter({ totalCost, checkedTotal, budgetGoal }: Stick
   const remaining = budgetGoal !== null ? budgetGoal - checkedTotal : null;
 
   return (
-    <footer className="sticky bottom-0 border-t border-gray-200 bg-white px-4 pb-safe-area-inset-bottom pt-3 shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
+    <footer className="pb-safe-area-inset-bottom sticky bottom-0 border-t border-gray-200 bg-white px-4 pt-3 shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
       {budgetGoal !== null && (
         <div className="mb-2">
           <BudgetProgressBar current={checkedTotal} goal={budgetGoal} />
@@ -37,7 +37,7 @@ export function StickyTotalFooter({ totalCost, checkedTotal, budgetGoal }: Stick
         <div>
           <div className="text-caption text-on-surface-muted">Total da lista</div>
           <div
-            className={`text-title font-bold text-on-surface ${isPulsing ? 'animate-[pulse-quick_0.3s_ease-in-out]' : ''}`}
+            className={`text-title text-on-surface font-bold ${isPulsing ? 'animate-[pulse-quick_0.3s_ease-in-out]' : ''}`}
             data-testid="total-cost"
           >
             {formatBRL(totalCost)}
@@ -46,7 +46,7 @@ export function StickyTotalFooter({ totalCost, checkedTotal, budgetGoal }: Stick
 
         <div className="text-right">
           <div className="text-caption text-on-surface-muted">No carrinho</div>
-          <div className="text-title font-semibold text-primary" data-testid="checked-total">
+          <div className="text-title text-primary font-semibold" data-testid="checked-total">
             {formatBRL(checkedTotal)}
           </div>
         </div>
@@ -54,7 +54,7 @@ export function StickyTotalFooter({ totalCost, checkedTotal, budgetGoal }: Stick
 
       {remaining !== null && (
         <div
-          className={`mt-1 text-right text-caption ${remaining < 0 ? 'text-danger' : 'text-on-surface-muted'}`}
+          className={`text-caption mt-1 text-right ${remaining < 0 ? 'text-danger' : 'text-on-surface-muted'}`}
           data-testid="remaining"
         >
           {remaining >= 0

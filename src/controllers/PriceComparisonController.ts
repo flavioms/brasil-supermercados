@@ -29,7 +29,9 @@ export const PriceComparisonController = {
           item.quantity,
           item.unit
         );
-        return result ? { id: item.id, pricePerRefUnit: result.value, refUnit: result.refUnit } : null;
+        return result
+          ? { id: item.id, pricePerRefUnit: result.value, refUnit: result.refUnit }
+          : null;
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
 

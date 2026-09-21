@@ -71,7 +71,11 @@ export const ListItemController = {
       name: changes.name !== undefined ? changes.name.trim() : existing.name,
     };
 
-    if (changes.name !== undefined || changes.quantity !== undefined || changes.unitPrice !== undefined) {
+    if (
+      changes.name !== undefined ||
+      changes.quantity !== undefined ||
+      changes.unitPrice !== undefined
+    ) {
       const validation = validateItemFields({
         name: updated.name,
         quantity: updated.quantity,

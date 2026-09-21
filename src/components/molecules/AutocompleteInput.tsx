@@ -70,14 +70,14 @@ export function AutocompleteInput({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls="autocomplete-listbox"
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="text-body focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
       />
 
       {isOpen && (
         <ul
           id="autocomplete-listbox"
           role="listbox"
-          className="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg"
+          className="absolute top-full right-0 left-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg"
         >
           {suggestions.map((s, i) => (
             <li

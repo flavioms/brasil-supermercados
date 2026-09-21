@@ -89,13 +89,13 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
       label={isEditMode ? 'Editar item' : 'Adicionar item'}
     >
       <div className="px-4 pb-6">
-        <h2 className="mb-4 text-title font-semibold text-on-surface">
+        <h2 className="text-title text-on-surface mb-4 font-semibold">
           {isEditMode ? 'Editar item' : 'Adicionar item'}
         </h2>
 
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-caption text-on-surface-muted">Nome</label>
+            <label className="text-caption text-on-surface-muted mb-1 block">Nome</label>
             <AutocompleteInput
               value={name}
               onChange={setName}
@@ -106,7 +106,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-caption text-on-surface-muted">Quantidade</label>
+              <label className="text-caption text-on-surface-muted mb-1 block">Quantidade</label>
               <input
                 type="number"
                 inputMode={INTEGER_UNITS.includes(unit) ? 'numeric' : 'decimal'}
@@ -124,12 +124,12 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
                     setQuantity(String(Math.round(num * 100) / 100));
                   }
                 }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="text-body focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-caption text-on-surface-muted">Unidade</label>
+              <label className="text-caption text-on-surface-muted mb-1 block">Unidade</label>
               <select
                 value={unit}
                 onChange={(e) => {
@@ -140,7 +140,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
                     setQuantity(String(Math.max(1, isNaN(num) ? 1 : Math.round(num))));
                   }
                 }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="text-body focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -152,7 +152,10 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
           </div>
 
           <div>
-            <label htmlFor="item-unit-price" className="mb-1 block text-caption text-on-surface-muted">
+            <label
+              htmlFor="item-unit-price"
+              className="text-caption text-on-surface-muted mb-1 block"
+            >
               {isWeightVolume ? 'Preço da embalagem (R$)' : 'Preço unitário (R$)'}
             </label>
             <input
@@ -164,7 +167,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
               value={unitPrice}
               onChange={(e) => setUnitPrice(e.target.value)}
               placeholder="0,00"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-body focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="text-body focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
             />
           </div>
 
@@ -173,10 +176,10 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
             <div className="rounded-lg bg-gray-50 px-3 py-2">
               <div className="flex items-center justify-between">
                 <span className="text-caption text-on-surface-muted">Total do item</span>
-                <span className="text-title font-bold text-primary">{formatBRL(lineTotal)}</span>
+                <span className="text-title text-primary font-bold">{formatBRL(lineTotal)}</span>
               </div>
               {pricePerUnit && (
-                <div className="mt-0.5 text-right text-caption text-on-surface-muted">
+                <div className="text-caption text-on-surface-muted mt-0.5 text-right">
                   {formatBRL(pricePerUnit.value)}/{pricePerUnit.refUnit}
                 </div>
               )}
@@ -189,7 +192,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
         <button
           onClick={handleConfirm}
           disabled={!name.trim() || qty <= 0}
-          className="mt-4 w-full rounded-xl bg-primary py-3 text-body font-semibold text-white disabled:opacity-50"
+          className="bg-primary text-body mt-4 w-full rounded-xl py-3 font-semibold text-white disabled:opacity-50"
         >
           {isEditMode ? 'Salvar alterações' : 'Adicionar à lista'}
         </button>

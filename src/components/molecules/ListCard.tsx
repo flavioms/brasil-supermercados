@@ -31,11 +31,13 @@ export function ListCard({ list, onClick }: ListCardProps) {
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h3 className="text-title font-semibold text-on-surface">{list.name}</h3>
-          <span className="text-caption text-on-surface-muted">{formatRelativeDate(list.updatedAt)}</span>
+          <h3 className="text-title text-on-surface font-semibold">{list.name}</h3>
+          <span className="text-caption text-on-surface-muted">
+            {formatRelativeDate(list.updatedAt)}
+          </span>
         </div>
         <div className="text-right">
-          <div className="text-title font-bold text-on-surface">{formatBRL(list.totalCost)}</div>
+          <div className="text-title text-on-surface font-bold">{formatBRL(list.totalCost)}</div>
           {list.budgetGoal !== null && (
             <div className="text-caption text-on-surface-muted">
               meta: {formatBRL(list.budgetGoal)}

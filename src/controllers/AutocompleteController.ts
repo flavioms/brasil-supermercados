@@ -33,7 +33,12 @@ export const AutocompleteController = {
       const key = item.name.toLowerCase();
       const existing = seen.get(key);
       if (!existing || item.createdAt > existing._createdAt) {
-        seen.set(key, { name: item.name, unit: item.unit, lastPrice: item.unitPrice, _createdAt: item.createdAt });
+        seen.set(key, {
+          name: item.name,
+          unit: item.unit,
+          lastPrice: item.unitPrice,
+          _createdAt: item.createdAt,
+        });
       }
     }
 
@@ -43,16 +48,9 @@ export const AutocompleteController = {
   async getSuggestions(query: string, limit = 5): Promise<Suggestion[]> {
     if (query.trim().length < 2) return [];
 
-    const normalizedQuery = query
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '');
+    const normalizedQuery = query.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-    const normalize = (s: string) =>
-      s
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '');
+    const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
     // 1. History first
     if (!localIndex) {
@@ -71,7 +69,10 @@ export const AutocompleteController = {
     const historyNames = new Set(fromHistory.map((s) => s.name.toLowerCase()));
 
     const fromCatalog = (catalogCache ?? [])
-      .filter((s) => !historyNames.has(s.name.toLowerCase()) && normalize(s.name).includes(normalizedQuery))
+      .filter(
+        (s) =>
+          !historyNames.has(s.name.toLowerCase()) && normalize(s.name).includes(normalizedQuery)
+      )
       .slice(0, limit - fromHistory.length);
 
     return [...fromHistory, ...fromCatalog];

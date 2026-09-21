@@ -11,7 +11,7 @@ export function PriceBadge({ pricePerRefUnit, refUnit }: PriceBadgeProps) {
   if (pricePerRefUnit === null || refUnit === null) return null;
 
   return (
-    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-caption text-on-surface-muted">
+    <span className="text-caption text-on-surface-muted rounded bg-gray-100 px-1.5 py-0.5">
       {formatBRL(pricePerRefUnit)}/{refUnit}
     </span>
   );

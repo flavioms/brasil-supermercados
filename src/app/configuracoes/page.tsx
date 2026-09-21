@@ -21,7 +21,7 @@ export default function ConfiguracoesPage() {
   };
 
   return (
-    <main className="min-h-dvh bg-surface">
+    <main className="bg-surface min-h-dvh">
       {/* AppBar */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 py-4 shadow-sm">
         <div className="flex items-center gap-3">
@@ -30,11 +30,21 @@ export default function ConfiguracoesPage() {
             aria-label="Voltar"
             className="flex h-[var(--spacing-touch)] w-[var(--spacing-touch)] items-center justify-center"
           >
-            <svg className="h-6 w-6 text-on-surface" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="text-on-surface h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          <h1 className="text-title font-bold text-on-surface">Configurações</h1>
+          <h1 className="text-title text-on-surface font-bold">Configurações</h1>
         </div>
       </header>
 
@@ -42,7 +52,7 @@ export default function ConfiguracoesPage() {
         {/* App info */}
         <section className="mb-6 rounded-xl border border-gray-200 bg-white">
           <div className="px-4 py-3">
-            <h2 className="mb-3 text-caption font-semibold uppercase tracking-wide text-on-surface-muted">
+            <h2 className="text-caption text-on-surface-muted mb-3 font-semibold tracking-wide uppercase">
               Sobre o app
             </h2>
             <div className="flex items-center justify-between py-2">
@@ -55,7 +65,7 @@ export default function ConfiguracoesPage() {
         {/* Data management */}
         <section className="rounded-xl border border-gray-200 bg-white">
           <div className="px-4 py-3">
-            <h2 className="mb-3 text-caption font-semibold uppercase tracking-wide text-on-surface-muted">
+            <h2 className="text-caption text-on-surface-muted mb-3 font-semibold tracking-wide uppercase">
               Dados
             </h2>
             <button
@@ -63,22 +73,32 @@ export default function ConfiguracoesPage() {
               className="flex w-full items-center justify-between py-3 text-left"
             >
               <div>
-                <div className="text-body font-medium text-danger">Apagar todos os dados</div>
+                <div className="text-body text-danger font-medium">Apagar todos os dados</div>
                 <div className="text-caption text-on-surface-muted">
                   Remove todas as listas e itens do dispositivo
                 </div>
               </div>
-              <svg className="h-5 w-5 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg
+                className="text-danger h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
               </svg>
             </button>
           </div>
         </section>
 
         {/* LGPD notice */}
-        <p className="mt-6 text-center text-caption text-on-surface-muted">
-          Seus dados ficam apenas no seu dispositivo.{'\n'}Nenhuma informação é enviada para servidores.
+        <p className="text-caption text-on-surface-muted mt-6 text-center">
+          Seus dados ficam apenas no seu dispositivo.{'\n'}Nenhuma informação é enviada para
+          servidores.
         </p>
       </div>
     </main>

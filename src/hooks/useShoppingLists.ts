@@ -7,12 +7,7 @@ import type { ShoppingList } from '@/models/ShoppingList';
 export function useShoppingLists(): ShoppingList[] {
   return (
     useLiveQuery(
-      () =>
-        db.shoppingLists
-          .where('status')
-          .equals('active')
-          .reverse()
-          .sortBy('createdAt'),
+      () => db.shoppingLists.where('status').equals('active').reverse().sortBy('createdAt'),
       [],
       []
     ) ?? []

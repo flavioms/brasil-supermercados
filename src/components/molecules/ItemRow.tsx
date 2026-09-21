@@ -28,7 +28,7 @@ function PriceComparisonBadge({ item, allItems }: { item: ListItem; allItems: Li
   if (comparable.length === 0) {
     // Solo: just show the normalized price
     return (
-      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-caption text-on-surface-muted">
+      <span className="text-caption text-on-surface-muted rounded bg-gray-100 px-1.5 py-0.5">
         {formatBRL(item.pricePerRefUnit)}/{refUnit}
       </span>
     );
@@ -43,16 +43,18 @@ function PriceComparisonBadge({ item, allItems }: { item: ListItem; allItems: Li
 
   if (isBest) {
     return (
-      <span className="flex items-center gap-0.5 rounded bg-primary/10 px-1.5 py-0.5 text-caption font-medium text-primary">
+      <span className="bg-primary/10 text-caption text-primary flex items-center gap-0.5 rounded px-1.5 py-0.5 font-medium">
         ★ {formatBRL(item.pricePerRefUnit)}/{refUnit}
       </span>
     );
   }
 
   return (
-    <span className="flex flex-col items-end rounded bg-warning/10 px-1.5 py-0.5 text-warning">
-      <span className="text-caption font-medium">{formatBRL(item.pricePerRefUnit)}/{refUnit}</span>
-      <span className="text-[10px] uppercase tracking-wide">mais caro</span>
+    <span className="bg-warning/10 text-warning flex flex-col items-end rounded px-1.5 py-0.5">
+      <span className="text-caption font-medium">
+        {formatBRL(item.pricePerRefUnit)}/{refUnit}
+      </span>
+      <span className="text-[10px] tracking-wide uppercase">mais caro</span>
     </span>
   );
 }
@@ -106,7 +108,7 @@ export function ItemRow({ item, allItems, onEditRequest }: ItemRowProps) {
         >
           <div
             className={`text-body font-medium ${
-              item.isChecked ? 'line-through text-on-surface-muted' : 'text-on-surface'
+              item.isChecked ? 'text-on-surface-muted line-through' : 'text-on-surface'
             }`}
           >
             {item.name}
@@ -123,7 +125,7 @@ export function ItemRow({ item, allItems, onEditRequest }: ItemRowProps) {
 
         {/* Line total */}
         <div className="flex-shrink-0 text-right">
-          <div className="text-body font-semibold text-on-surface">{formatBRL(item.lineTotal)}</div>
+          <div className="text-body text-on-surface font-semibold">{formatBRL(item.lineTotal)}</div>
         </div>
       </div>
     </SwipeContainer>

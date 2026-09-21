@@ -59,7 +59,7 @@ export function SwipeContainer({
     <div className="relative overflow-hidden">
       {/* Right action (swipe right) */}
       <div
-        className={`absolute inset-y-0 left-0 flex items-center justify-start bg-primary pl-4 transition-opacity ${
+        className={`bg-primary absolute inset-y-0 left-0 flex items-center justify-start pl-4 transition-opacity ${
           showRight ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ width: Math.max(0, deltaX) }}
@@ -70,7 +70,7 @@ export function SwipeContainer({
 
       {/* Left action (swipe left) */}
       <div
-        className={`absolute inset-y-0 right-0 flex items-center justify-end bg-danger pr-4 transition-opacity ${
+        className={`bg-danger absolute inset-y-0 right-0 flex items-center justify-end pr-4 transition-opacity ${
           showLeft ? 'opacity-100' : 'opacity-0'
         }`}
         style={{ width: Math.max(0, -deltaX) }}
