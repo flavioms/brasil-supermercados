@@ -8,6 +8,19 @@ const __dirname = dirname(__filename);
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
 export default [
+  {
+    ignores: [
+      '.next/**',
+      'out/**',
+      'node_modules/**',
+      'coverage/**',
+      'public/sw.js',
+      'public/workbox-*.js',
+      'next-env.d.ts',
+      '*.config.mjs',
+      '*.config.js',
+    ],
+  },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     rules: {
