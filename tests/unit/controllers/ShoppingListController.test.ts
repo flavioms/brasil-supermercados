@@ -35,6 +35,27 @@ describe('ShoppingListController', () => {
       const list = await db.shoppingLists.get(id);
       expect(list?.name).toBe('New Name');
     });
+
+    it('rejects too-short name', async () => {
+      const id = await ShoppingListController.createList('Valid Name');
+      await expect(ShoppingListController.renameList(id, 'X')).rejects.toThrow();
+    });
+  });
+
+  describe('setBudgetGoal', () => {
+    it('sets a numeric budget goal', async () => {
+      const id = await ShoppingListController.createList('Budget Test');
+      await ShoppingListController.setBudgetGoal(id, 500);
+      const list = await db.shoppingLists.get(id);
+      expect(list?.budgetGoal).toBe(500);
+    });
+
+    it('clears budget goal to null', async () => {
+      const id = await ShoppingListController.createList('Budget Test', 300);
+      await ShoppingListController.setBudgetGoal(id, null);
+      const list = await db.shoppingLists.get(id);
+      expect(list?.budgetGoal).toBeNull();
+    });
   });
 
   describe('archiveList / restoreList', () => {

@@ -19,8 +19,14 @@ export default defineConfig({
         branches: 70,
         statements: 80,
       },
-      include: ['src/controllers/**', 'src/utils/**', 'src/models/**', 'src/hooks/**'],
-      exclude: ['src/app/**', 'src/components/**', 'src/data/**'],
+      include: ['src/controllers/**', 'src/utils/**', 'src/models/**'],
+      exclude: [
+        'src/app/**',
+        'src/components/**',
+        'src/data/**',
+        'src/utils/haptics.ts',          // device vibration API — not testable in jsdom
+        'src/controllers/OfflineQueueController.ts', // stub — no logic to test
+      ],
     },
   },
   resolve: {

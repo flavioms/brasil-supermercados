@@ -41,4 +41,30 @@ describe('AutocompleteController', () => {
     const results = await AutocompleteController.getSuggestions('a');
     expect(results.length).toBeLessThanOrEqual(5);
   });
+
+  it('returns early when history fills the limit', async () => {
+    const listId = 'test-limit';
+    const items = Array.from({ length: 6 }, (_, i) =>
+      createListItem({ listId, name: `Arroz Tipo ${i + 1}`, quantity: 1, unit: 'kg', unitPrice: 5 })
+    );
+    await db.listItems.bulkAdd(items);
+    await AutocompleteController.buildLocalIndex();
+
+    const results = await AutocompleteController.getSuggestions('Arroz', 5);
+    expect(results).toHaveLength(5);
+    expect(results.every((r) => r.name.startsWith('Arroz'))).toBe(true);
+  });
+
+  it('keeps lastPrice from most recent purchase', async () => {
+    const listId = 'price-test';
+    const old = createListItem({ listId, name: 'Leite', quantity: 1, unit: 'L', unitPrice: 4 });
+    old.createdAt = 1000;
+    const newer = createListItem({ listId, name: 'Leite', quantity: 1, unit: 'L', unitPrice: 5 });
+    newer.createdAt = 2000;
+    await db.listItems.bulkAdd([old, newer]);
+    await AutocompleteController.buildLocalIndex();
+
+    const [result] = await AutocompleteController.getSuggestions('Leite', 1);
+    expect(result?.lastPrice).toBe(5);
+  });
 });
