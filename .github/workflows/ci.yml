@@ -49,13 +49,11 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci && npm run build
-      - uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: supermercado-brasil
-          directory: out
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy preview para Cloudflare Pages
+        run: npx wrangler pages deploy out --project-name=supermercado-brasil --branch=${{ github.head_ref }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
   deploy-production:
     needs: validate
@@ -68,9 +66,8 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci && npm run build
-      - uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: supermercado-brasil
-          directory: out
+      - name: Deploy produção para Cloudflare Pages
+        run: npx wrangler pages deploy out --project-name=supermercado-brasil --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
