@@ -26,7 +26,7 @@ jobs:
       - name: Verificar formatação
         run: npm run format:check
 
-      - name: Testes com cobertura
+      - name: Testes unitários com cobertura
         run: npm run test:coverage
 
       - name: Upload cobertura
@@ -35,22 +35,39 @@ jobs:
           files: ./coverage/lcov.info
         if: always()
 
-      - name: Build (verifica que o export estático funciona)
+      - name: Instalar Chromium para Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Testes E2E
+        run: npm run test:e2e
+
+      - name: Build estático de produção
         run: npm run build
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
+          NEXT_PUBLIC_CLARITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_CLARITY_PROJECT_ID }}
+
+      - name: Upload artifact de build
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-out
+          path: out/
+          retention-days: 1
 
   deploy-preview:
     needs: validate
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Download artifact de build
+        uses: actions/download-artifact@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci && npm run build
+          name: static-out
+          path: out/
+
       - name: Deploy preview para Cloudflare Pages
-        run: npx wrangler pages deploy out --project-name=supermercado-brasil --branch=${{ github.head_ref }}
+        run: npx wrangler@3 pages deploy out --project-name=supermercado-brasil --branch=${{ github.head_ref }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -60,14 +77,14 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Download artifact de build
+        uses: actions/download-artifact@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci && npm run build
+          name: static-out
+          path: out/
+
       - name: Deploy produção para Cloudflare Pages
-        run: npx wrangler pages deploy out --project-name=supermercado-brasil --branch=main
+        run: npx wrangler@3 pages deploy out --project-name=supermercado-brasil --branch=main
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
