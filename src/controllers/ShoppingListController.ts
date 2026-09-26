@@ -1,6 +1,7 @@
 import { db } from '@/models/db';
 import { createShoppingList } from '@/models/ShoppingList';
 import { validateListName } from '@/utils/validation';
+import { analytics } from '@/lib/analytics';
 
 export const ShoppingListController = {
   async createList(name: string, budgetGoal: number | null = null): Promise<string> {
@@ -10,6 +11,7 @@ export const ShoppingListController = {
     }
     const list = createShoppingList({ name: name.trim(), budgetGoal });
     await db.shoppingLists.add(list);
+    analytics.capture('list_created', { budgetSet: budgetGoal !== null });
     return list.id;
   },
 
@@ -29,6 +31,7 @@ export const ShoppingListController = {
       budgetGoal: goal,
       updatedAt: Date.now(),
     });
+    analytics.capture('budget_set', { hasGoal: goal !== null });
   },
 
   async archiveList(listId: string): Promise<void> {
@@ -53,11 +56,27 @@ export const ShoppingListController = {
   },
 
   async recomputeTotals(listId: string): Promise<void> {
-    const items = await db.listItems.where('listId').equals(listId).toArray();
+    const [items, list] = await Promise.all([
+      db.listItems.where('listId').equals(listId).toArray(),
+      db.shoppingLists.get(listId),
+    ]);
     const totalCost = items.reduce((sum, item) => sum + item.lineTotal, 0);
     const checkedTotal = items
       .filter((item) => item.isChecked)
       .reduce((sum, item) => sum + item.lineTotal, 0);
+
+    if (list?.budgetGoal && list.budgetGoal > 0) {
+      const wasUnder = (list.totalCost ?? 0) <= list.budgetGoal;
+      const isNowOver = totalCost > list.budgetGoal;
+      if (wasUnder && isNowOver) {
+        analytics.capture('budget_exceeded', {
+          overageAmount: totalCost - list.budgetGoal,
+          budgetGoal: list.budgetGoal,
+          totalCost,
+        });
+      }
+    }
+
     await db.shoppingLists.update(listId, {
       totalCost,
       checkedTotal,

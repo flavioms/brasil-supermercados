@@ -4,6 +4,7 @@ import type { ItemUnit } from '@/models/ListItem';
 import { ShoppingListController } from './ShoppingListController';
 import { validateItemFields } from '@/utils/validation';
 import { calcPricePerRefUnit, WEIGHT_VOLUME_UNITS } from '@/utils/units';
+import { analytics } from '@/lib/analytics';
 
 export interface AddItemInput {
   listId: string;
@@ -55,6 +56,11 @@ export const ListItemController = {
 
     await db.listItems.add(item);
     await ShoppingListController.recomputeTotals(input.listId);
+    analytics.capture('item_added', {
+      hasPrice: input.unitPrice > 0,
+      unit: input.unit,
+      hasCategory: !!input.categoryId,
+    });
     return item.id;
   },
 
@@ -107,12 +113,14 @@ export const ListItemController = {
     const item = await db.listItems.get(itemId);
     if (!item) throw new Error('Item não encontrado');
 
+    const newChecked = !item.isChecked;
     await db.listItems.update(itemId, {
-      isChecked: !item.isChecked,
+      isChecked: newChecked,
       updatedAt: Date.now(),
     });
 
     await ShoppingListController.recomputeTotals(item.listId);
+    analytics.capture(newChecked ? 'item_checked' : 'item_unchecked');
   },
 
   async deleteItem(itemId: string): Promise<void> {

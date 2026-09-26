@@ -21,6 +21,7 @@
     "dexie": "^4.0.10",
     "dexie-react-hooks": "^1.1.7",
     "next": "^15.3.4",
+    "posthog-js": "^1.434.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
