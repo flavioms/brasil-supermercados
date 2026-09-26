@@ -198,7 +198,8 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
                 const refUnit = getRefUnit(unit);
                 if (!refUnit) return null;
                 const peers = listPeers.filter(
-                  (p) => p.id !== itemId && p.pricePerRefUnit !== null && getRefUnit(p.unit) === refUnit
+                  (p) =>
+                    p.id !== itemId && p.pricePerRefUnit !== null && getRefUnit(p.unit) === refUnit
                 );
                 if (peers.length === 0) return null;
                 const currentEntry = {
