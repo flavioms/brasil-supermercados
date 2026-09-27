@@ -1,23 +1,23 @@
-# Inventário de Componentes — Atomic Design
+# Component Inventory — Atomic Design
 
-Baseado nas telas em `docs/layout/`. Hierarquia: Átomos → Moléculas → Organismos → Templates → Pages.
+Based on the screens in `docs/layout/`. Hierarchy: Atoms → Molecules → Organisms → Templates → Pages.
 
-Para tokens visuais (cores, tamanhos, espaçamentos) consultar [`docs/design/tokens.md`](./tokens.md).
-Para padrões de código (props, hooks, controllers) consultar [`docs/engineering/coding-standards.md`](../engineering/coding-standards.md).
+For visual tokens (colors, sizes, spacing) see [`docs/design/tokens.md`](./tokens.md).
+For code patterns (props, hooks, controllers) see [`docs/engineering/coding-standards.md`](../engineering/coding-standards.md).
 
 ---
 
-## Visão Geral
+## Overview
 
 ```
-ÁTOMOS          → primitivos sem dependências de outros componentes
-MOLÉCULAS       → 2+ átomos com uma função coesa
-ORGANISMOS      → seções completas com múltiplas moléculas
-TEMPLATES       → estrutura da tela sem dados reais
-PAGES           → templates com dados via useLiveQuery
+ATOMS           → primitives with no dependencies on other components
+MOLECULES       → 2+ atoms with a single cohesive function
+ORGANISMS       → complete sections with multiple molecules
+TEMPLATES       → screen structure without real data
+PAGES           → templates with data via useLiveQuery
 ```
 
-Estrutura de diretórios:
+Directory structure:
 ```
 src/components/
 ├── atoms/
@@ -26,72 +26,72 @@ src/components/
 └── templates/
 ```
 
-Pages ficam em `src/app/` (Next.js App Router).
+Pages live in `src/app/` (Next.js App Router).
 
 ---
 
-## Átomos
+## Atoms
 
-Primitivos sem dependências de outros componentes do projeto.
+Primitives with no dependencies on other components in the project.
 
 ---
 
 ### `CheckCircle`
 
-**Arquivo:** `src/components/atoms/CheckCircle.tsx`
+**File:** `src/components/atoms/CheckCircle.tsx`
 
-Círculo de seleção de item. Dois estados visuais:
-- **Idle:** contorno cinza (`--color-border`), sem preenchimento
-- **Checked:** fundo verde (`--color-primary`), ícone de check branco
+Item selection circle. Two visual states:
+- **Idle:** gray outline (`--color-border`), no fill
+- **Checked:** green fill (`--color-primary`), white check icon
 
 ```typescript
 interface CheckCircleProps {
   checked: boolean;
   onToggle: () => void;
-  label: string; // aria-label obrigatório
+  label: string; // required aria-label
 }
 ```
 
-Área de toque: `min-w-[var(--size-touch-min)] min-h-[var(--size-touch-min)]` (48×48px).
-Tamanho visual do círculo: 24px com borda de 2px.
+Touch area: `min-w-[var(--size-touch-min)] min-h-[var(--size-touch-min)]` (48×48px).
+Visual circle size: 24px with a 2px border.
 
 ---
 
 ### `PriceBadge`
 
-**Arquivo:** `src/components/atoms/PriceBadge.tsx`
+**File:** `src/components/atoms/PriceBadge.tsx`
 
-Pill laranja com preço por unidade de referência. Exibido apenas para itens com unidade pesável/volumétrica (`kg`, `g`, `L`, `ml`).
+Orange pill showing price per reference unit. Displayed only for items with a weighable/volumetric unit (`kg`, `g`, `L`, `ml`).
 
 ```typescript
 interface PriceBadgeProps {
-  pricePerRefUnit: number; // já calculado pelo controller
-  unit: 'kg' | 'L';       // unidade de referência normalizada
+  pricePerRefUnit: number; // already computed by the controller
+  unit: 'kg' | 'L';       // normalized reference unit
 }
-// Exemplo visual: "R$ 9,99/L"
+// Visual example: "R$ 9,99/L"
 ```
 
-Estilo: `bg-[var(--color-warning-surface)] text-[var(--color-warning)] rounded-full px-2 py-0.5 text-xs font-medium`.
+Style: `bg-[var(--color-warning-surface)] text-[var(--color-warning)] rounded-full px-2 py-0.5 text-xs font-medium`.
 
 ---
 
 ### `ProgressBar`
 
-**Arquivo:** `src/components/atoms/ProgressBar.tsx`
+**File:** `src/components/atoms/ProgressBar.tsx`
 
-Barra de progresso de orçamento com cor dinâmica baseada no percentual.
+Budget progress bar with color that changes dynamically based on percentage.
 
 ```typescript
 interface ProgressBarProps {
   current: number;
   goal: number | null;
 }
-// Quando goal === null: renderiza null (sem barra)
+// When goal === null: renders null (no bar)
 ```
 
-Altura: `var(--size-budget-bar)` (4px). Track cinza (`--color-border`). Fill arredondado (`rounded-full`).
+Height: `var(--size-budget-bar)` (4px). Gray track (`--color-border`). Rounded fill (`rounded-full`).
 
-Lógica de cor (ver `docs/design/tokens.md`):
+Color logic (see `docs/design/tokens.md`):
 - `< 80%`: `bg-primary-light`
 - `80–99%`: `bg-warning`
 - `≥ 100%`: `bg-danger`
@@ -100,84 +100,84 @@ Lógica de cor (ver `docs/design/tokens.md`):
 
 ### `FAB`
 
-**Arquivo:** `src/components/atoms/FAB.tsx`
+**File:** `src/components/atoms/FAB.tsx`
 
-Botão de ação flutuante. Ícone "+" centralizado.
+Floating action button. Centered "+" icon.
 
 ```typescript
 interface FABProps {
   onPress: () => void;
-  label: string; // "Adicionar item" ou "Nova lista" — para aria-label
+  label: string; // "Add item" or "New list" — for aria-label
 }
 ```
 
-Tamanho: `w-[var(--size-fab)] h-[var(--size-fab)]` (56×56px). Cor: `bg-primary`. Sombra: `shadow-fab`. Ícone: `+` em branco, 24px.
-Posicionamento: `absolute bottom-[calc(var(--size-bottom-nav)+var(--spacing-4))] left-1/2 -translate-x-1/2 z-[var(--z-fab)]`.
+Size: `w-[var(--size-fab)] h-[var(--size-fab)]` (56×56px). Color: `bg-primary`. Shadow: `shadow-fab`. Icon: white `+`, 24px.
+Positioning: `absolute bottom-[calc(var(--size-bottom-nav)+var(--spacing-4))] left-1/2 -translate-x-1/2 z-[var(--z-fab)]`.
 
 ---
 
 ### `SectionLabel`
 
-**Arquivo:** `src/components/atoms/SectionLabel.tsx`
+**File:** `src/components/atoms/SectionLabel.tsx`
 
-Rótulo de seção em caixa alta. Ex: "LISTAS ATIVAS", "PARA PEGAR (5)", "ARQUIVADAS (3)".
+Uppercase section label. E.g.: "ACTIVE LISTS", "TO GRAB (5)", "ARCHIVED (3)".
 
 ```typescript
 interface SectionLabelProps {
   text: string;
-  count?: number; // exibido entre parênteses se fornecido
+  count?: number; // shown in parentheses if provided
 }
 ```
 
-Estilo: `text-xs font-semibold uppercase tracking-wider text-text-secondary px-4 pt-6 pb-2`.
+Style: `text-xs font-semibold uppercase tracking-wider text-text-secondary px-4 pt-6 pb-2`.
 
 ---
 
 ### `IconButton`
 
-**Arquivo:** `src/components/atoms/IconButton.tsx`
+**File:** `src/components/atoms/IconButton.tsx`
 
-Botão de ícone genérico com área de toque mínima garantida.
+Generic icon button with a guaranteed minimum touch area.
 
 ```typescript
 interface IconButtonProps {
   icon: React.ReactNode;
   onPress: () => void;
-  label: string;          // aria-label obrigatório
-  variant?: 'default' | 'ghost'; // ghost sem fundo
+  label: string;          // required aria-label
+  variant?: 'default' | 'ghost'; // ghost has no background
 }
 ```
 
-Área de toque: `min-w-[var(--size-touch-min)] min-h-[var(--size-touch-min)]` (48×48px).
-Usado em: back arrow do AppBar, botão de fechar (×) do bottom sheet, menu de três pontos.
+Touch area: `min-w-[var(--size-touch-min)] min-h-[var(--size-touch-min)]` (48×48px).
+Used in: AppBar back arrow, bottom sheet close (×) button, three-dot menu.
 
 ---
 
 ### `BottomSheetHandle`
 
-**Arquivo:** `src/components/atoms/BottomSheetHandle.tsx`
+**File:** `src/components/atoms/BottomSheetHandle.tsx`
 
-Barra cinza de arrastar no topo do bottom sheet. Puramente visual.
+Gray drag handle at the top of the bottom sheet. Purely visual.
 
 ```typescript
-// Sem props
+// No props
 ```
 
-Estilo: `w-[var(--size-sheet-handle-w)] h-[var(--size-sheet-handle-h)] rounded-full bg-border mx-auto mt-3 mb-2`.
+Style: `w-[var(--size-sheet-handle-w)] h-[var(--size-sheet-handle-h)] rounded-full bg-border mx-auto mt-3 mb-2`.
 
 ---
 
-## Moléculas
+## Molecules
 
-Composições de 2+ átomos com uma única função coesa.
+Compositions of 2+ atoms with a single cohesive function.
 
 ---
 
 ### `ItemRow`
 
-**Arquivo:** `src/components/molecules/ItemRow.tsx`
+**File:** `src/components/molecules/ItemRow.tsx`
 
-Linha de item da lista com suporte a swipe. Componente mais complexo do app.
+List item row with swipe support. The most complex component in the app.
 
 ```typescript
 interface ItemRowProps {
@@ -187,26 +187,26 @@ interface ItemRowProps {
 }
 ```
 
-**Estados visuais:**
-- **Idle (não marcado):** `CheckCircle` vazio, nome normal, preço right-aligned
-- **Checked (marcado):** `CheckCircle` verde preenchido, nome riscado + `text-text-disabled`, preço riscado
-- **Swipe direita (revelar "Marcar"):** fundo verde `bg-primary-light` aparece à esquerda; indicador de swipe no ícone green com ✓
-- **Swipe esquerda (revelar "Deletar"):** fundo vermelho `bg-danger` aparece à direita; ícone de lixeira branco
+**Visual states:**
+- **Idle (unchecked):** empty `CheckCircle`, normal name, right-aligned price
+- **Checked:** filled green `CheckCircle`, strikethrough name + `text-text-disabled`, strikethrough price
+- **Swipe right (reveal "Check"):** green background `bg-primary-light` appears on the left; swipe indicator with a green ✓ icon
+- **Swipe left (reveal "Delete"):** red background `bg-danger` appears on the right; white trash icon
 
-**Composição:**
+**Composition:**
 - `CheckCircle` (left)
-- Nome do item (`text-base`) + `PriceBadge` opcional + unidade/preço unitário (`text-xs text-text-secondary`)
-- Preço total (`text-lg font-medium tabular-nums`, right-aligned)
+- Item name (`text-base`) + optional `PriceBadge` + unit/unit price (`text-xs text-text-secondary`)
+- Total price (`text-lg font-medium tabular-nums`, right-aligned)
 
-**Dependências:** `CheckCircle`, `PriceBadge`
+**Dependencies:** `CheckCircle`, `PriceBadge`
 
 ---
 
 ### `ListCard`
 
-**Arquivo:** `src/components/molecules/ListCard.tsx`
+**File:** `src/components/molecules/ListCard.tsx`
 
-Card clicável de lista na home screen.
+Clickable list card on the home screen.
 
 ```typescript
 interface ListCardProps {
@@ -218,31 +218,31 @@ interface ListCardProps {
 **Layout:**
 ```
 ┌──────────────────────────────────┐
-│ Carrefour Semanal      R$ 234,90 │ ← nome (bold) + total (text-primary bold)
-│ ████████████░░░░░░░░░░░   hoje > │ ← ProgressBar + data relativa + chevron
-│ R$ 234,90 / R$ 300,00      78%  │ ← valores absolutos + percentual
+│ Carrefour Semanal      R$ 234,90 │ ← name (bold) + total (text-primary bold)
+│ ████████████░░░░░░░░░░░   hoje > │ ← ProgressBar + relative date + chevron
+│ R$ 234,90 / R$ 300,00      78%  │ ← absolute values + percentage
 └──────────────────────────────────┘
 ```
 
-Quando `budgetGoal === null`: omite `ProgressBar` e mostra "Sem meta de orçamento" em `text-text-secondary`.
-Estilo do card: `bg-surface rounded-md shadow-card px-5 py-4`.
+When `budgetGoal === null`: omits `ProgressBar` and shows "No budget goal" in `text-text-secondary`.
+Card style: `bg-surface rounded-md shadow-card px-5 py-4`.
 
-**Dependências:** `ProgressBar`
+**Dependencies:** `ProgressBar`
 
 ---
 
 ### `BudgetBarHeader`
 
-**Arquivo:** `src/components/molecules/BudgetBarHeader.tsx`
+**File:** `src/components/molecules/BudgetBarHeader.tsx`
 
-Barra de orçamento colada imediatamente abaixo do AppBar na tela de sessão de compra.
+Budget bar attached directly below the AppBar on the shopping session screen.
 
 ```typescript
 interface BudgetBarHeaderProps {
   current: number;
   goal: number;
 }
-// Exibido apenas quando goal > 0
+// Shown only when goal > 0
 ```
 
 **Layout:**
@@ -250,17 +250,17 @@ interface BudgetBarHeaderProps {
 [████████████████░░░░]  R$ 487,50 / R$ 600,00
 ```
 
-`ProgressBar` (4px) + label right-aligned `text-xs text-text-secondary tabular-nums`.
+`ProgressBar` (4px) + right-aligned label `text-xs text-text-secondary tabular-nums`.
 
-**Dependências:** `ProgressBar`
+**Dependencies:** `ProgressBar`
 
 ---
 
 ### `FooterRow`
 
-**Arquivo:** `src/components/molecules/FooterRow.tsx`
+**File:** `src/components/molecules/FooterRow.tsx`
 
-Uma linha do rodapé de totais.
+A single row of the totals footer.
 
 ```typescript
 interface FooterRowProps {
@@ -268,23 +268,23 @@ interface FooterRowProps {
   value: number;
   variant: 'default' | 'highlight' | 'total';
 }
-// default:    text-sm text-text-secondary + valor text-sm text-text-secondary
-// highlight:  text-sm text-text-secondary + valor text-base font-medium text-primary
-// total:      text-base text-text-primary  + valor text-2xl font-bold text-text-primary
+// default:    text-sm text-text-secondary + value text-sm text-text-secondary
+// highlight:  text-sm text-text-secondary + value text-base font-medium text-primary
+// total:      text-base text-text-primary  + value text-2xl font-bold text-text-primary
 ```
 
-Exemplos:
-- `variant="highlight"` → "No carrinho" / "R$ 30,49" (verde)
-- `variant="total"` → "Total geral" / "R$ 70,97" (bold grande)
-- `variant="default"` → "Falta para a meta" / "R$ 529,03"
+Examples:
+- `variant="highlight"` → "In cart" / "R$ 30,49" (green)
+- `variant="total"` → "Grand total" / "R$ 70,97" (large bold)
+- `variant="default"` → "Remaining to goal" / "R$ 529,03"
 
 ---
 
 ### `AutocompleteOption`
 
-**Arquivo:** `src/components/molecules/AutocompleteOption.tsx`
+**File:** `src/components/molecules/AutocompleteOption.tsx`
 
-Uma sugestão no dropdown de autocomplete do formulário de item.
+A suggestion in the autocomplete dropdown of the item form.
 
 ```typescript
 interface AutocompleteOptionProps {
@@ -292,19 +292,19 @@ interface AutocompleteOptionProps {
   type: 'history' | 'suggestion';
   onSelect: (text: string) => void;
 }
-// history:    ícone de relógio (últimos adicionados)
-// suggestion: ícone de lupa (do catálogo produtos-br.json)
+// history:    clock icon (recently added items)
+// suggestion: magnifying-glass icon (from the produtos-br.json catalog)
 ```
 
-Área de toque mínima: 48px de altura. Item selecionado recebe `bg-background`.
+Minimum touch area: 48px height. Selected item receives `bg-background`.
 
 ---
 
 ### `NavItem`
 
-**Arquivo:** `src/components/molecules/NavItem.tsx`
+**File:** `src/components/molecules/NavItem.tsx`
 
-Uma aba da navegação inferior.
+A tab in the bottom navigation.
 
 ```typescript
 interface NavItemProps {
@@ -313,53 +313,53 @@ interface NavItemProps {
   active: boolean;
   href: string;
 }
-// Ativo: ícone e label em text-primary
-// Inativo: ícone e label em text-text-secondary
+// Active: icon and label in text-primary
+// Inactive: icon and label in text-text-secondary
 ```
 
-Ícones das 3 abas:
-- **Listas** (ativa na home/sessão): ícone de lista com check
-- **Analíticos**: ícone de gráfico de barras
-- **Config**: ícone de engrenagem
+Icons for the 3 tabs:
+- **Lists** (active on home/session): list-with-check icon
+- **Analytics**: bar chart icon
+- **Settings**: gear icon
 
 ---
 
-## Organismos
+## Organisms
 
-Seções completas da UI compostas por múltiplas moléculas.
+Complete UI sections composed of multiple molecules.
 
 ---
 
 ### `AppBar`
 
-**Arquivo:** `src/components/organisms/AppBar.tsx`
+**File:** `src/components/organisms/AppBar.tsx`
 
-Barra superior de navegação. Duas variantes:
+Top navigation bar. Two variants:
 
 ```typescript
 interface AppBarProps {
   variant: 'home' | 'session';
   title: string;
-  // home: apenas título + ícone offline
-  // session: back arrow + título + menu de 3 pontos
+  // home: title only + offline icon
+  // session: back arrow + title + three-dot menu
   onBack?: () => void;       // variant='session'
   onMenu?: () => void;       // variant='session'
   offlineIndicator?: boolean; // variant='home'
 }
 ```
 
-Estilo: `bg-primary text-white h-[var(--size-app-bar)] px-4 flex items-center`.
-Ícone offline: círculo vazio no canto direito (indica status da conexão).
+Style: `bg-primary text-white h-[var(--size-app-bar)] px-4 flex items-center`.
+Offline icon: empty circle in the right corner (indicates connection status).
 
-**Dependências:** `IconButton`
+**Dependencies:** `IconButton`
 
 ---
 
 ### `ListSection`
 
-**Arquivo:** `src/components/organisms/ListSection.tsx`
+**File:** `src/components/organisms/ListSection.tsx`
 
-Seção de listas ativas + seção colapsável de arquivadas.
+Active lists section + collapsible archived section.
 
 ```typescript
 interface ListSectionProps {
@@ -371,41 +371,41 @@ interface ListSectionProps {
 
 **Layout:**
 ```
-LISTAS ATIVAS
+ACTIVE LISTS
 [ListCard]
 [ListCard]
 [ListCard]
-ARQUIVADAS (3) ↓   ← colapsável
+ARCHIVED (3) ↓   ← collapsible
 ```
 
-**Dependências:** `SectionLabel`, `ListCard`
+**Dependencies:** `SectionLabel`, `ListCard`
 
 ---
 
 ### `ItemSection`
 
-**Arquivo:** `src/components/organisms/ItemSection.tsx`
+**File:** `src/components/organisms/ItemSection.tsx`
 
-Seção de itens com título e lista de `ItemRow`.
+Item section with a title and a list of `ItemRow`.
 
 ```typescript
 interface ItemSectionProps {
-  title: string;         // "PARA PEGAR (5)" ou "NO CARRINHO (2)"
+  title: string;         // "TO GRAB (5)" or "IN CART (2)"
   items: ListItem[];
-  collapsible?: boolean; // "NO CARRINHO" pode ser colapsado
+  collapsible?: boolean; // "IN CART" can be collapsed
   defaultCollapsed?: boolean;
 }
 ```
 
-**Dependências:** `SectionLabel`, `ItemRow`
+**Dependencies:** `SectionLabel`, `ItemRow`
 
 ---
 
 ### `StickyTotalFooter`
 
-**Arquivo:** `src/components/organisms/StickyTotalFooter.tsx`
+**File:** `src/components/organisms/StickyTotalFooter.tsx`
 
-Barra de rodapé sticky com totais da sessão de compra.
+Sticky footer bar with shopping session totals.
 
 ```typescript
 interface StickyTotalFooterProps {
@@ -413,78 +413,78 @@ interface StickyTotalFooterProps {
   checkedTotal: number;
   budgetGoal: number | null;
 }
-// Quando budgetGoal === null: omite a linha "Falta para a meta"
+// When budgetGoal === null: omits the "Remaining to goal" line
 ```
 
 **Layout:**
 ```
-No carrinho              R$ 30,49   ← FooterRow variant="highlight"
-Total geral              R$ 70,97   ← FooterRow variant="total"
-Falta para a meta        R$ 529,03  ← FooterRow variant="default" (condicional)
+In cart                  R$ 30,49   ← FooterRow variant="highlight"
+Grand total               R$ 70,97   ← FooterRow variant="total"
+Remaining to goal         R$ 529,03  ← FooterRow variant="default" (conditional)
 ```
 
-Posicionamento: `sticky bottom-0 z-[var(--z-sticky-footer)] bg-surface border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] px-4 py-3`.
+Positioning: `sticky bottom-0 z-[var(--z-sticky-footer)] bg-surface border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] px-4 py-3`.
 
-**Dependências:** `FooterRow`
+**Dependencies:** `FooterRow`
 
 ---
 
 ### `BottomNav`
 
-**Arquivo:** `src/components/organisms/BottomNav.tsx`
+**File:** `src/components/organisms/BottomNav.tsx`
 
-Navegação inferior com 3 abas. Detecta rota ativa via `usePathname()`.
+Bottom navigation with 3 tabs. Detects the active route via `usePathname()`.
 
 ```typescript
-// Sem props — as rotas e ícones são fixos
+// No props — routes and icons are fixed
 ```
 
-Posicionamento: `sticky bottom-0 z-[var(--z-bottom-nav)] bg-surface border-t border-border`.
-Altura: `h-[var(--size-bottom-nav)]`.
+Positioning: `sticky bottom-0 z-[var(--z-bottom-nav)] bg-surface border-t border-border`.
+Height: `h-[var(--size-bottom-nav)]`.
 
-**Dependências:** `NavItem`
+**Dependencies:** `NavItem`
 
 ---
 
 ### `ItemFormSheet`
 
-**Arquivo:** `src/components/organisms/ItemFormSheet.tsx`
+**File:** `src/components/organisms/ItemFormSheet.tsx`
 
-Bottom sheet de adição/edição de item. Contém o formulário completo.
+Bottom sheet for adding/editing an item. Contains the full form.
 
 ```typescript
 interface ItemFormSheetProps {
   listId: string;
   onClose: () => void;
-  editItemId?: string; // se definido, modo de edição
+  editItemId?: string; // if set, edit mode
 }
 ```
 
-**Campos:**
-1. **Nome do produto** — input text + `AutocompleteOption` dropdown
-2. **Quantidade** — input numérico
-3. **Unidade** — select (`un | kg | g | L | ml | cx | pct`)
-4. **Preço** — input numérico com prefixo "R$"
-5. **Preview de total** — `lineTotal` calculado em tempo real (verde)
-6. **Botão de ação** — "Adicionar" / "Salvar" (full width, `bg-primary`)
+**Fields:**
+1. **Product name** — text input + `AutocompleteOption` dropdown
+2. **Quantity** — numeric input
+3. **Unit** — select (`un | kg | g | L | ml | cx | pct`)
+4. **Price** — numeric input with "R$" prefix
+5. **Total preview** — `lineTotal` computed in real time (green)
+6. **Action button** — "Add" / "Save" (full width, `bg-primary`)
 
-Keyboard Android visível abaixo do sheet — campos de formulário devem scrollar acima do teclado.
-Overlay escuro atrás: `bg-[var(--color-overlay)] z-[var(--z-overlay)]`.
+Android keyboard visible below the sheet — form fields must scroll above the keyboard.
+Dark overlay behind: `bg-[var(--color-overlay)] z-[var(--z-overlay)]`.
 
-**Dependências:** `BottomSheetHandle`, `IconButton`, `AutocompleteOption`
+**Dependencies:** `BottomSheetHandle`, `IconButton`, `AutocompleteOption`
 **Controller:** `ListItemController.addItem()` / `ListItemController.updateItem()`
 
 ---
 
 ## Templates
 
-Estrutura da tela sem dados reais. Compõem os organismos no layout correto.
+Screen structure without real data. Compose organisms in the correct layout.
 
 ---
 
 ### `HomeTemplate`
 
-**Arquivo:** `src/components/templates/HomeTemplate.tsx`
+**File:** `src/components/templates/HomeTemplate.tsx`
 
 ```typescript
 interface HomeTemplateProps {
@@ -495,26 +495,26 @@ interface HomeTemplateProps {
 }
 ```
 
-**Estrutura:**
+**Structure:**
 ```
 AppBar (variant="home", title="Supermercado Brasil")
 ─────────────────────────────────────────────────
 [scrollable content]
   ListSection
 ─────────────────────────────────────────────────
-FAB ("Nova lista", onPress=onNewList)
-BottomNav (active="listas")
+FAB ("New list", onPress=onNewList)
+BottomNav (active="lists")
 ```
 
-**Responsividade:**
-- Mobile: layout full-width
-- Desktop: container com `max-w-[var(--size-app-max-w)] mx-auto`
+**Responsiveness:**
+- Mobile: full-width layout
+- Desktop: container with `max-w-[var(--size-app-max-w)] mx-auto`
 
 ---
 
 ### `BuyingSessionTemplate`
 
-**Arquivo:** `src/components/templates/BuyingSessionTemplate.tsx`
+**File:** `src/components/templates/BuyingSessionTemplate.tsx`
 
 ```typescript
 interface BuyingSessionTemplateProps {
@@ -528,26 +528,26 @@ interface BuyingSessionTemplateProps {
 }
 ```
 
-**Estrutura:**
+**Structure:**
 ```
 AppBar (variant="session", title=list.name)
-BudgetBarHeader (quando budgetGoal !== null)
+BudgetBarHeader (when budgetGoal !== null)
 ─────────────────────────────────────────────────
 [scrollable content]
-  ItemSection ("PARA PEGAR", pendingItems)
-  ItemSection ("NO CARRINHO", checkedItems, collapsible)
+  ItemSection ("TO GRAB", pendingItems)
+  ItemSection ("IN CART", checkedItems, collapsible)
 ─────────────────────────────────────────────────
 StickyTotalFooter
-FAB ("Adicionar item", onPress=onAddItem)
-BottomNav (active="listas")
-[ItemFormSheet — condicional, quando FAB pressionado]
+FAB ("Add item", onPress=onAddItem)
+BottomNav (active="lists")
+[ItemFormSheet — conditional, when FAB is pressed]
 ```
 
 ---
 
 ## Pages
 
-Templates conectados aos dados reais via `useLiveQuery`.
+Templates connected to real data via `useLiveQuery`.
 
 ---
 
@@ -555,27 +555,27 @@ Templates conectados aos dados reais via `useLiveQuery`.
 
 ```typescript
 'use client';
-// Conecta: useShoppingLists() → HomeTemplate
-// Exibe: listas ativas + contagem de arquivadas
-// Navega: router.push('/lista/[id]') ao clicar no card
+// Connects: useShoppingLists() → HomeTemplate
+// Shows: active lists + archived count
+// Navigates: router.push('/lista/[id]') on card click
 ```
 
 ---
 
-### `app/lista/[id]/page.tsx` — Sessão de Compra
+### `app/lista/[id]/page.tsx` — Shopping Session
 
 ```typescript
 'use client';
-// Conecta: useShoppingList(id) + useListItems(id) → BuyingSessionTemplate
-// generateStaticParams: retorna [] (id lido no cliente via useParams)
-// Separa: itens em pendingItems (isChecked=false) e checkedItems (isChecked=true)
+// Connects: useShoppingList(id) + useListItems(id) → BuyingSessionTemplate
+// generateStaticParams: returns [] (id read client-side via useParams)
+// Splits: items into pendingItems (isChecked=false) and checkedItems (isChecked=true)
 ```
 
 ---
 
-## Tabela de Componentes × Telas
+## Component × Screen Matrix
 
-| Componente | Home | Sessão | Formulário |
+| Component | Home | Session | Form |
 |---|:---:|:---:|:---:|
 | `AppBar` | ✓ | ✓ | — |
 | `BudgetBarHeader` | — | ✓ | — |

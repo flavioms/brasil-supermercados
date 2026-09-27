@@ -1,116 +1,116 @@
-# Modelo de Dados
+# Data Model
 
 ---
 
-## Princípios
+## Principles
 
-- Todas as entidades são **POJOs** (plain JavaScript objects) — sem métodos, sem herança
-- O IndexedDB via Dexie.js é o único banco de dados
-- **Desnormalização intencional**: `lineTotal`, `totalCost` e `checkedTotal` são redundantes,
-  mas necessários para performance em dispositivos mid-range (evitam agregações em toda renderização)
-- A **fonte da verdade** são sempre os dados atômicos (`unitPrice × quantity`); os campos
-  desnormalizados são recomputados pelo Controller após cada mutação
+- All entities are **POJOs** (plain JavaScript objects) — no methods, no inheritance
+- IndexedDB via Dexie.js is the only database
+- **Intentional denormalization**: `lineTotal`, `totalCost`, and `checkedTotal` are redundant,
+  but necessary for performance on mid-range devices (they avoid aggregations on every render)
+- The **source of truth** is always the atomic data (`unitPrice × quantity`); the
+  denormalized fields are recomputed by the Controller after each mutation
 
 ---
 
-## Entidades
+## Entities
 
 ### `ShoppingList`
 
-Representa uma viagem ao supermercado.
+Represents a trip to the supermarket.
 
-| Campo | Tipo | Obrigatório | Descrição |
+| Field | Type | Required | Description |
 |-------|------|-------------|-----------|
-| `id` | `string` (UUID v4) | Sim | Chave primária |
-| `name` | `string` | Sim | Nome da lista, ex: "Carrefour 14/09" |
-| `budgetGoal` | `number \| null` | Não | Meta de orçamento em BRL; `null` = sem meta |
-| `status` | `'active' \| 'archived'` | Sim | Estado da lista |
-| `totalCost` | `number` | Sim | **Cache**: soma de todos os `lineTotal` (denorm.) |
-| `checkedTotal` | `number` | Sim | **Cache**: soma de `lineTotal` dos itens marcados (denorm.) |
-| `colorTag` | `string \| null` | Não | Cor hex para identificação visual (opcional) |
-| `createdAt` | `number` | Sim | Unix timestamp em ms |
-| `updatedAt` | `number` | Sim | Unix timestamp em ms |
+| `id` | `string` (UUID v4) | Yes | Primary key |
+| `name` | `string` | Yes | List name, e.g., "Carrefour 09/14" |
+| `budgetGoal` | `number \| null` | No | Budget goal in BRL; `null` = no goal |
+| `status` | `'active' \| 'archived'` | Yes | List state |
+| `totalCost` | `number` | Yes | **Cache**: sum of all `lineTotal` (denorm.) |
+| `checkedTotal` | `number` | Yes | **Cache**: sum of `lineTotal` for checked items (denorm.) |
+| `colorTag` | `string \| null` | No | Hex color for visual identification (optional) |
+| `createdAt` | `number` | Yes | Unix timestamp in ms |
+| `updatedAt` | `number` | Yes | Unix timestamp in ms |
 
-**Índices Dexie**: `status`, `createdAt`
+**Dexie indexes**: `status`, `createdAt`
 
 ---
 
 ### `ListItem`
 
-Representa um produto na lista de compras.
+Represents a product in the shopping list.
 
-| Campo | Tipo | Obrigatório | Descrição |
+| Field | Type | Required | Description |
 |-------|------|-------------|-----------|
-| `id` | `string` (UUID v4) | Sim | Chave primária |
-| `listId` | `string` | Sim | FK → `ShoppingList.id` |
-| `name` | `string` | Sim | Nome do produto, ex: "Arroz Camil 5kg" |
-| `quantity` | `number` | Sim | Quantidade (mín: 0,001) |
-| `unit` | `'un' \| 'kg' \| 'g' \| 'L' \| 'ml' \| 'cx' \| 'pct'` | Sim | Unidade de medida |
-| `unitPrice` | `number` | Sim | Preço por unidade em BRL (mín: 0,00) |
-| `lineTotal` | `number` | Sim | **Cache**: `quantity × unitPrice` (denorm.) |
-| `pricePerRefUnit` | `number \| null` | Não | **Cache**: preço por unidade de referência (R$/kg, R$/L) para comparativo |
-| `isChecked` | `boolean` | Sim | `true` = item está no carrinho |
-| `position` | `number` | Sim | Ordem de exibição (gap encoding, múltiplos de 1000) |
-| `categoryId` | `string \| null` | Não | FK → `Category.id` (V1+) |
-| `barcodeEan` | `string \| null` | Não | EAN-13 ou EAN-8 (V1+) |
-| `priceSource` | `'manual' \| 'barcode' \| 'nfe'` | Sim | Origem do preço (auditoria) |
-| `createdAt` | `number` | Sim | Unix timestamp em ms |
-| `updatedAt` | `number` | Sim | Unix timestamp em ms |
+| `id` | `string` (UUID v4) | Yes | Primary key |
+| `listId` | `string` | Yes | FK → `ShoppingList.id` |
+| `name` | `string` | Yes | Product name, e.g., "Camil Rice 5kg" |
+| `quantity` | `number` | Yes | Quantity (min: 0.001) |
+| `unit` | `'un' \| 'kg' \| 'g' \| 'L' \| 'ml' \| 'cx' \| 'pct'` | Yes | Unit of measure |
+| `unitPrice` | `number` | Yes | Price per unit in BRL (min: 0.00) |
+| `lineTotal` | `number` | Yes | **Cache**: `quantity × unitPrice` (denorm.) |
+| `pricePerRefUnit` | `number \| null` | No | **Cache**: price per reference unit (R$/kg, R$/L) for comparison |
+| `isChecked` | `boolean` | Yes | `true` = item is in the cart |
+| `position` | `number` | Yes | Display order (gap encoding, multiples of 1000) |
+| `categoryId` | `string \| null` | No | FK → `Category.id` (V1+) |
+| `barcodeEan` | `string \| null` | No | EAN-13 or EAN-8 (V1+) |
+| `priceSource` | `'manual' \| 'barcode' \| 'nfe'` | Yes | Price origin (audit) |
+| `createdAt` | `number` | Yes | Unix timestamp in ms |
+| `updatedAt` | `number` | Yes | Unix timestamp in ms |
 
-**Índices Dexie**: `listId`, `isChecked`, `position`, `barcodeEan`
+**Dexie indexes**: `listId`, `isChecked`, `position`, `barcodeEan`
 
-**Nota sobre `pricePerRefUnit`**:
-Calculado para itens com `unit != 'un'` e `unit != 'cx'`:
-- Itens em kg/g → normalizado para R$/kg
-- Itens em L/ml → normalizado para R$/L
+**Note on `pricePerRefUnit`**:
+Calculated for items with `unit != 'un'` and `unit != 'cx'`:
+- Items in kg/g → normalized to R$/kg
+- Items in L/ml → normalized to R$/L
 
 ---
 
-### `Category` (V1+, scaffolded no V0)
+### `Category` (V1+, scaffolded in V0)
 
-| Campo | Tipo | Descrição |
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | `string` | PK |
-| `name` | `string` | "Laticínios", "Limpeza", "Carnes" |
-| `icon` | `string` | Emoji ou token de ícone |
-| `colorHex` | `string` | Cor para diferenciação visual |
-| `sortOrder` | `number` | Ordem de exibição |
+| `name` | `string` | "Dairy", "Cleaning", "Meat" |
+| `icon` | `string` | Emoji or icon token |
+| `colorHex` | `string` | Color for visual differentiation |
+| `sortOrder` | `number` | Display order |
 
-**Categorias padrão BR**: Açougue, Padaria, Frios/Laticínios, Mercearia, Hortifruti,
-Limpeza, Higiene Pessoal, Bebidas, Congelados, Outros
+**Default BR categories**: Butcher, Bakery, Deli/Dairy, Grocery, Produce,
+Cleaning, Personal Hygiene, Beverages, Frozen, Other
 
 ---
 
 ### `Product` (V1+)
 
-Cache local do catálogo de produtos por EAN. Populado via Open Food Facts + scan.
+Local cache of the product catalog by EAN. Populated via Open Food Facts + scan.
 
-| Campo | Tipo | Descrição |
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | `string` | PK |
-| `ean` | `string` | EAN-13/EAN-8 (índice único) |
-| `name` | `string` | Nome do produto |
-| `brand` | `string \| null` | Marca |
-| `defaultUnit` | `string` | Unidade padrão do produto |
+| `ean` | `string` | EAN-13/EAN-8 (unique index) |
+| `name` | `string` | Product name |
+| `brand` | `string \| null` | Brand |
+| `defaultUnit` | `string` | Default unit for the product |
 | `categoryId` | `string \| null` | FK → Category |
-| `lastSeenPrice` | `number \| null` | Último preço registrado (denorm.) |
-| `lastSeenAt` | `number \| null` | Data do último preço |
-| `source` | `'openfoodfacts' \| 'manual' \| 'nfe'` | Origem do dado |
+| `lastSeenPrice` | `number \| null` | Last recorded price (denorm.) |
+| `lastSeenAt` | `number \| null` | Date of the last price |
+| `source` | `'openfoodfacts' \| 'manual' \| 'nfe'` | Data origin |
 
 ---
 
 ### `PriceHistory` (V1+)
 
-Histórico de preços pagos por produto. Base para alertas de variação e comparativos.
+History of prices paid per product. Basis for variation alerts and comparisons.
 
-| Campo | Tipo | Descrição |
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | `string` | PK |
-| `ean` | `string` | FK → Product.ean (índice) |
-| `listId` | `string` | Qual lista registrou esse preço |
-| `price` | `number` | Preço unitário pago |
-| `unit` | `string` | Unidade do preço |
-| `pricePerRefUnit` | `number \| null` | Preço normalizado (R$/kg ou R$/L) |
+| `ean` | `string` | FK → Product.ean (index) |
+| `listId` | `string` | Which list recorded this price |
+| `price` | `number` | Unit price paid |
+| `unit` | `string` | Price unit |
+| `pricePerRefUnit` | `number \| null` | Normalized price (R$/kg or R$/L) |
 | `recordedAt` | `number` | Unix timestamp ms |
 | `storeId` | `string \| null` | FK → Store.id (V2) |
 
@@ -118,101 +118,101 @@ Histórico de preços pagos por produto. Base para alertas de variação e compa
 
 ### `Store` (V2+)
 
-Estabelecimento onde a compra foi realizada.
+Establishment where the purchase was made.
 
-| Campo | Tipo | Descrição |
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | `string` | PK |
 | `name` | `string` | "Carrefour Pinheiros" |
-| `cnpj` | `string \| null` | CNPJ do estabelecimento (extraído da NF-e) |
-| `chain` | `string \| null` | Rede: "Carrefour", "Atacadão", "Assaí" |
-| `address` | `string \| null` | Endereço |
-| `city` | `string \| null` | Cidade |
-| `state` | `string` | UF (2 caracteres) |
+| `cnpj` | `string \| null` | Establishment's CNPJ (extracted from the NF-e) |
+| `chain` | `string \| null` | Chain: "Carrefour", "Atacadão", "Assaí" |
+| `address` | `string \| null` | Address |
+| `city` | `string \| null` | City |
+| `state` | `string` | State abbreviation (2 characters) |
 
 ---
 
 ### `Receipt` (V2+)
 
-Nota Fiscal Eletrônica importada via QR code do cupom.
+Electronic Invoice (NF-e) imported via the receipt's QR code.
 
-| Campo | Tipo | Descrição |
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | `string` | PK |
-| `chaveNfe` | `string` | Chave NF-e de 44 dígitos (índice único) |
-| `listId` | `string \| null` | Lista vinculada (se o usuário importou) |
+| `chaveNfe` | `string` | 44-digit NF-e key (unique index) |
+| `listId` | `string \| null` | Linked list (if the user imported it) |
 | `storeId` | `string \| null` | FK → Store |
-| `totalValue` | `number` | Valor total da nota |
-| `issuedAt` | `number` | Data de emissão da nota |
-| `fetchedAt` | `number` | Data em que o app baixou a nota |
-| `status` | `'pending' \| 'fetched' \| 'error'` | Status do fetch |
-| `rawJson` | `string \| null` | JSON/XML da nota (armazenado para auditoria local) |
+| `totalValue` | `number` | Invoice total value |
+| `issuedAt` | `number` | Invoice issue date |
+| `fetchedAt` | `number` | Date the app downloaded the invoice |
+| `status` | `'pending' \| 'fetched' \| 'error'` | Fetch status |
+| `rawJson` | `string \| null` | Invoice JSON/XML (stored for local audit) |
 
-**LGPD**: Este dado **nunca sai do dispositivo** sem consentimento explícito.
+**LGPD**: This data **never leaves the device** without explicit consent.
 
 ---
 
-### `SyncQueueItem` (scaffold V0, ativo V1+)
+### `SyncQueueItem` (scaffold V0, active V1+)
 
-Fila de mutações para sincronização com servidor remoto (quando um backend existir).
+Queue of mutations for synchronization with a remote server (once a backend exists).
 
-| Campo | Tipo | Descrição |
+| Field | Type | Description |
 |-------|------|-----------|
 | `id` | `string` | PK |
 | `entityType` | `string` | 'ShoppingList' \| 'ListItem' \| etc. |
-| `entityId` | `string` | ID da entidade afetada |
-| `operation` | `'create' \| 'update' \| 'delete'` | Tipo de operação |
-| `payload` | `string` | JSON do delta |
-| `failCount` | `number` | Contagem de falhas de sync |
+| `entityId` | `string` | ID of the affected entity |
+| `operation` | `'create' \| 'update' \| 'delete'` | Operation type |
+| `payload` | `string` | JSON of the delta |
+| `failCount` | `number` | Sync failure count |
 | `createdAt` | `number` | Unix timestamp ms |
 
 ---
 
-## Schema IndexedDB (Dexie)
+## IndexedDB Schema (Dexie)
 
 ```javascript
-// Versão 1 — V0 MVP
+// Version 1 — V0 MVP
 db.version(1).stores({
   shoppingLists: '++id, status, createdAt',
   listItems:     '++id, listId, isChecked, position, barcodeEan',
   categories:    '++id, sortOrder',
 });
 
-// Versão 2 — V1 (barcode + histórico)
+// Version 2 — V1 (barcode + history)
 db.version(2).stores({
   products:      '++id, &ean, categoryId',
   priceHistory:  '++id, ean, listId, recordedAt',
   syncQueue:     '++id, entityType, operation, createdAt',
 });
 
-// Versão 3 — V2 (NF-e + comparativo)
+// Version 3 — V2 (NF-e + comparison)
 db.version(3).stores({
   stores:   '++id, cnpj',
   receipts: '++id, &chaveNfe, listId, status',
 });
 ```
 
-Cada incremento de versão mapeia para um release. O Dexie aplica migrações ao detectar
-que o banco está em versão anterior ao código atual.
+Each version increment maps to a release. Dexie applies migrations when it detects
+that the database is at a version earlier than the current code.
 
 ---
 
-## Política de Dados: Local vs. Sincronizado
+## Data Policy: Local vs. Synced
 
-| Entidade | V0 | V1 | V2 |
+| Entity | V0 | V1 | V2 |
 |----------|-----|-----|-----|
-| ShoppingList | Só local | Backup opt-in | Backup opt-in |
-| ListItem | Só local | Com a lista | Com a lista |
-| Category | Local (padrões embutidos) | Local | Local |
-| Product (EAN cache) | — | Local | Catálogo crowd compartilhado (opt-in) |
-| PriceHistory | — | Local | Contribuição anônima opt-in |
+| ShoppingList | Local only | Opt-in backup | Opt-in backup |
+| ListItem | Local only | With the list | With the list |
+| Category | Local (built-in defaults) | Local | Local |
+| Product (EAN cache) | — | Local | Shared crowd catalog (opt-in) |
+| PriceHistory | — | Local | Opt-in anonymous contribution |
 | Store | — | — | Local + crowd |
-| Receipt (NF-e) | — | — | **Sempre local** (LGPD: dado fiscal sensível) |
-| SyncQueue | Stub (não drena) | Drena para backend | Drena para backend |
+| Receipt (NF-e) | — | — | **Always local** (LGPD: sensitive fiscal data) |
+| SyncQueue | Stub (does not drain) | Drains to backend | Drains to backend |
 
 ---
 
-## Diagrama de Relacionamentos
+## Relationship Diagram
 
 ```
 ShoppingList ──────< ListItem
@@ -232,21 +232,21 @@ Product ──────< PriceHistory (V1)
 
 ---
 
-## Conversão de Unidades (Tabela de Referência)
+## Unit Conversion (Reference Table)
 
-Usada pelo `PriceComparisonController` para normalizar preços:
+Used by `PriceComparisonController` to normalize prices:
 
-| Unidade | Categoria | Unidade de Referência | Fator |
+| Unit | Category | Reference Unit | Factor |
 |---------|-----------|----------------------|-------|
-| `kg` | Peso | R$/kg | ÷ 1 |
-| `g` | Peso | R$/kg | ÷ 0,001 |
+| `kg` | Weight | R$/kg | ÷ 1 |
+| `g` | Weight | R$/kg | ÷ 0.001 |
 | `L` | Volume | R$/L | ÷ 1 |
-| `ml` | Volume | R$/L | ÷ 0,001 |
-| `un` | Unidade | R$/un | ÷ 1 |
-| `cx` | Unidade | R$/un | ÷ 1 |
-| `pct` | Pacote | R$/pct | ÷ 1 |
+| `ml` | Volume | R$/L | ÷ 0.001 |
+| `un` | Unit | R$/un | ÷ 1 |
+| `cx` | Unit | R$/un | ÷ 1 |
+| `pct` | Package | R$/pct | ÷ 1 |
 
-**Exemplo prático**:
-- Óleo de soja 900ml por R$ 8,99 → `8,99 ÷ 0,9` = **R$ 9,99/L**
-- Óleo de soja 2L por R$ 18,00 → `18,00 ÷ 2` = **R$ 9,00/L**
-- Destaque: o 2L é R$ 0,99/L mais barato — exibe badge "Melhor valor"
+**Practical example**:
+- Soybean oil 900ml for R$ 8.99 → `8.99 ÷ 0.9` = **R$ 9.99/L**
+- Soybean oil 2L for R$ 18.00 → `18.00 ÷ 2` = **R$ 9.00/L**
+- Highlight: the 2L is R$ 0.99/L cheaper — displays a "Best value" badge

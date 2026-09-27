@@ -1,255 +1,255 @@
-# Diretrizes de UX/UI
+# UX/UI Guidelines
 
-Este documento define as regras de interface do Supermercado Brasil. Toda decisão de design
-deve ser validada contra estas diretrizes. O contexto de uso é o fio condutor de cada regra.
-
----
-
-## Contexto de Uso
-
-O usuário está **dentro de um supermercado**, em movimento, com atenção dividida:
-
-- ✋ Segura produtos, o carrinho ou a cestinha com uma mão
-- 👍 Usa o **polegar** da mão que segura o celular para interagir
-- 🔊 Ambiente barulhento — não processa texto longo
-- 💡 Iluminação artificial forte — lava telas com baixo contraste
-- 📶 Conexão de dados potencialmente ruim ou inexistente
-- ⏱️ Tempo escasso — cada toque deve ser rápido e preciso
-
-**Implicação central**: Se uma ação exigir mais de 2 toques ou mover o polegar para o
-topo da tela, ela vai frustrar o usuário na hora mais crítica.
+This document defines the interface rules for Supermercado Brasil. Every design decision
+must be validated against these guidelines. The context of use is the guiding thread of each rule.
 
 ---
 
-## Zona de Alcance do Polegar
+## Context of Use
 
-A maioria dos usuários usa o celular com a mão direita. O polegar cobre naturalmente
-apenas parte da tela:
+The user is **inside a supermarket**, on the move, with divided attention:
+
+- ✋ Holds products, the cart, or the basket with one hand
+- 👍 Uses the **thumb** of the hand holding the phone to interact
+- 🔊 Noisy environment — cannot process long text
+- 💡 Strong artificial lighting — washes out low-contrast screens
+- 📶 Potentially poor or nonexistent data connection
+- ⏱️ Scarce time — every tap must be quick and precise
+
+**Core implication**: If an action requires more than 2 taps or moving the thumb to the
+top of the screen, it will frustrate the user at the most critical moment.
+
+---
+
+## Thumb Reach Zone
+
+Most users hold the phone with their right hand. The thumb naturally covers
+only part of the screen:
 
 ```
 ┌─────────────────────┐
 │   ╔═══════════╗     │
-│   ║ ZONA      ║     │  ← AÇÕES PROIBIDAS
-│   ║ MORTA     ║     │    (acesso difícil/impossível)
+│   ║ DEAD      ║     │  ← FORBIDDEN ACTIONS
+│   ║ ZONE      ║     │    (hard/impossible to reach)
 │   ╚═══════════╝     │
 │                     │
 │   ┌─────────────┐   │
-│   │ ZONA MÉDIA  │   │  ← Ações secundárias (configurações, etc.)
+│   │ MEDIUM ZONE │   │  ← Secondary actions (settings, etc.)
 │   └─────────────┘   │
 │                     │
 │ ┌───────────────────┐│
-│ │  ZONA PRIMÁRIA    ││  ← TODAS AS AÇÕES PRINCIPAIS AQUI
-│ │  (40% inferior)   ││    (adicionar, marcar, editar, ver total)
+│ │  PRIMARY ZONE     ││  ← ALL MAIN ACTIONS HERE
+│ │  (bottom 40%)     ││    (add, check, edit, view total)
 │ └───────────────────┘│
 └─────────────────────┘
 ```
 
 ---
 
-## Regras de Touch Target
+## Touch Target Rules
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-01** | Todo elemento interativo tem mínimo **48×48dp** (Android) / **44×44pt** (iOS) |
-| **UX-02** | Espaçamento mínimo entre alvos interativos adjacentes: **8dp** |
-| **UX-03** | Elementos críticos (check, FAB, botão primário) devem ter área de toque maior que o visual sugere |
+| **UX-01** | Every interactive element has a minimum of **48×48dp** (Android) / **44×44pt** (iOS) |
+| **UX-02** | Minimum spacing between adjacent interactive targets: **8dp** |
+| **UX-03** | Critical elements (check, FAB, primary button) must have a tap area larger than the visual suggests |
 
 ---
 
-## Navegação
+## Navigation
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-04** | Usar **bottom navigation bar** — nunca hamburger menu (que está sempre na zona morta) |
-| **UX-05** | Toda ação central em no máximo **2 toques** a partir de qualquer tela |
-| **UX-06** | O botão de "Adicionar Item" é um **FAB** posicionado no centro-baixo da tela |
-| **UX-07** | Links e botões de navegação secundária podem estar na parte superior; **nunca** ações primárias |
+| **UX-04** | Use a **bottom navigation bar** — never a hamburger menu (which is always in the dead zone) |
+| **UX-05** | Every central action reachable in at most **2 taps** from any screen |
+| **UX-06** | The "Add Item" button is a **FAB** positioned at the bottom-center of the screen |
+| **UX-07** | Secondary navigation links and buttons may be at the top; **never** primary actions |
 
 ---
 
-## Lista de Itens
+## Item List
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-08** | **Swipe para direita** = marcar item como "no carrinho" (ação mais frequente durante a compra) |
-| **UX-09** | **Swipe para esquerda** = deletar item (threshold de 50% da largura para confirmar; strip vermelho desliza) |
-| **UX-10** | Itens marcados **NÃO desaparecem** da lista — colapsam em seção ao fim |
-| **UX-11** | A **área de check** ocupa os 48dp à esquerda do item — zona natural do polegar direito |
-| **UX-12** | Itens marcados exibem nome em strikethrough; permanecem legíveis (usuário pode precisar referenciar) |
-| **UX-13** | Seção de itens marcados começa colapsada; um toque a expande |
+| **UX-08** | **Swipe right** = mark item as "in cart" (the most frequent action during shopping) |
+| **UX-09** | **Swipe left** = delete item (50% width threshold to confirm; red strip slides in) |
+| **UX-10** | Checked items **do NOT disappear** from the list — they collapse into a section at the end |
+| **UX-11** | The **check area** occupies the left 48dp of the item — the natural zone for the right thumb |
+| **UX-12** | Checked items display the name with strikethrough; they remain legible (the user may need to reference them) |
+| **UX-13** | The checked items section starts collapsed; one tap expands it |
 
 ---
 
-## Total em Tempo Real (feature central — inegociável)
+## Real-Time Total (core feature — non-negotiable)
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-14** | **Footer sticky sempre visível** com total geral e subtotal da sessão — nunca some |
-| **UX-15** | Ao adicionar ou alterar qualquer item: total anima com **scale pulse** (105%→100%, 150ms) |
-| **UX-16** | Altura mínima do footer: **72dp** |
-| **UX-17** | Fonte do total geral no footer: **24sp** |
-| **UX-18** | Fonte do subtotal da sessão (itens marcados): **20sp** |
-| **UX-19** | O footer exibe dois valores: "No carrinho: R$ X,XX" e "Total: R$ X,XX" |
-| **UX-20** | Se orçamento definido: o footer também exibe "Falta: R$ X,XX" ou "Passou: R$ X,XX" |
+| **UX-14** | **Sticky footer always visible** with grand total and session subtotal — never disappears |
+| **UX-15** | When adding or changing any item: the total animates with a **scale pulse** (105%→100%, 150ms) |
+| **UX-16** | Minimum footer height: **72dp** |
+| **UX-17** | Grand total font size in the footer: **24sp** |
+| **UX-18** | Session subtotal font size (checked items): **20sp** |
+| **UX-19** | The footer displays two values: "In cart: R$ X.XX" and "Total: R$ X.XX" |
+| **UX-20** | If a budget is set: the footer also displays "Remaining: R$ X.XX" or "Over: R$ X.XX" |
 
 ---
 
-## Orçamento e Progresso
+## Budget and Progress
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-21** | Barra de progresso em **3 estágios** de cor: verde (0–70%), âmbar (70–90%), vermelho (90–100%+) |
-| **UX-22** | Acima de 100% do orçamento: barra vermelha + **animação de pulso** para chamar atenção |
-| **UX-23** | A barra de progresso fica no header da tela de lista, logo abaixo do nome |
-| **UX-24** | A transição de cor deve ser gradual (CSS `transition`) para não assustar o usuário |
+| **UX-21** | Progress bar with **3 color stages**: green (0–70%), amber (70–90%), red (90–100%+) |
+| **UX-22** | Above 100% of budget: red bar + **pulse animation** to draw attention |
+| **UX-23** | The progress bar sits in the header of the list screen, right below the name |
+| **UX-24** | The color transition must be gradual (CSS `transition`) so as not to startle the user |
 
 ---
 
-## Formulário de Adição de Item (Bottom Sheet)
+## Add Item Form (Bottom Sheet)
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-25** | O formulário aparece como **bottom sheet** — metade inferior da tela (snap point 50%) |
-| **UX-26** | Quando o teclado abre, o sheet expande para **85%** para não cobrir o campo focado |
-| **UX-27** | **Preview do total da linha** (qtd × preço) atualiza em tempo real enquanto o usuário digita |
-| **UX-28** | Botão "Adicionar" / "Salvar" ocupa **largura total**, altura mínima **56dp** |
-| **UX-29** | Campo de preço usa `inputmode="decimal"` — abre teclado numérico no Android/iOS |
-| **UX-30** | Campo de preço exibe prefixo `R$` e usa vírgula como separador decimal (locale pt-BR) |
-| **UX-31** | O campo de nome recebe foco automático ao abrir o sheet |
-| **UX-32** | O seletor de unidade (un/kg/g/L...) é um select nativo — evita componente customizado pesado |
+| **UX-25** | The form appears as a **bottom sheet** — bottom half of the screen (snap point 50%) |
+| **UX-26** | When the keyboard opens, the sheet expands to **85%** so it doesn't cover the focused field |
+| **UX-27** | **Line total preview** (qty × price) updates in real time as the user types |
+| **UX-28** | "Add" / "Save" button takes up **full width**, minimum height **56dp** |
+| **UX-29** | Price field uses `inputmode="decimal"` — opens the numeric keyboard on Android/iOS |
+| **UX-30** | Price field displays the `R$` prefix and uses a comma as the decimal separator (pt-BR locale) |
+| **UX-31** | The name field receives automatic focus when the sheet opens |
+| **UX-32** | The unit selector (un/kg/g/L...) is a native select — avoids a heavy custom component |
 
 ---
 
-## Tipografia e Contraste
+## Typography and Contrast
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-33** | Nome do item: **16sp**, peso normal |
-| **UX-34** | Total da linha (direita): **18sp** |
-| **UX-35** | Total da sessão no footer: **20sp** |
-| **UX-36** | Total geral no footer: **24sp**, bold |
-| **UX-37** | Contraste mínimo **WCAG AA (4.5:1)** em todos os textos — a iluminação de loja lava telas escuras |
-| **UX-38** | Não usar cinza médio para texto — o mínimo é `#595959` em fundo branco |
-| **UX-39** | Fonte do sistema (system-ui) — evita carregamento de fonte externa que bloqueia render |
+| **UX-33** | Item name: **16sp**, normal weight |
+| **UX-34** | Line total (right side): **18sp** |
+| **UX-35** | Session total in the footer: **20sp** |
+| **UX-36** | Grand total in the footer: **24sp**, bold |
+| **UX-37** | Minimum contrast **WCAG AA (4.5:1)** on all text — store lighting washes out dark screens |
+| **UX-38** | Do not use medium gray for text — the minimum is `#595959` on a white background |
+| **UX-39** | System font (system-ui) — avoids loading an external font that blocks rendering |
 
 ---
 
-## Offline e Conectividade
+## Offline and Connectivity
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-40** | Indicador **discreto** de status offline na barra superior (ícone + cor) — sem bloquear o uso |
-| **UX-41** | **Nunca bloquear uma ação** por falta de rede — UI otimista, persiste localmente e sync depois |
-| **UX-42** | Ao reconectar: sync silencioso sem interromper a sessão de compra |
-| **UX-43** | Em modo offline: botões de scan de barcode e NF-e ficam desabilitados com tooltip explicativo |
+| **UX-40** | **Discreet** offline status indicator in the top bar (icon + color) — without blocking use |
+| **UX-41** | **Never block an action** due to lack of network — optimistic UI, persists locally and syncs later |
+| **UX-42** | On reconnect: silent sync without interrupting the shopping session |
+| **UX-43** | In offline mode: barcode scan and NF-e buttons are disabled with an explanatory tooltip |
 
 ---
 
-## Feedback Háptico
+## Haptic Feedback
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **UX-44** | Vibração curta (**10ms**) ao marcar um item — `navigator.vibrate(10)` |
-| **UX-45** | Vibração de confirmação (**[50, 30, 50]ms** — dois pulsos) ao completar swipe de deleção |
-| **UX-46** | Sempre usar feature detection: `if (navigator.vibrate)` — graceful degradation em iOS |
+| **UX-44** | Short vibration (**10ms**) when checking an item — `navigator.vibrate(10)` |
+| **UX-45** | Confirmation vibration (**[50, 30, 50]ms** — two pulses) when completing a delete swipe |
+| **UX-46** | Always use feature detection: `if (navigator.vibrate)` — graceful degradation on iOS |
 
 ---
 
-## Micro-interações Específicas
+## Specific Micro-interactions
 
-### Swipe para Marcar
+### Swipe to Check
 
 ```
-Estado inicial:
-[  ●  Nome do item              R$ 9,99]
+Initial state:
+[  ●  Item name                  R$ 9,99]
 
-Durante swipe direita (até 30% da largura):
-[══► ●  Nome do item              R$ 9,99]
-     fundo verde começa a aparecer à esquerda
+During right swipe (up to 30% of width):
+[══► ●  Item name                  R$ 9,99]
+     green background starts appearing on the left
 
-Após threshold (>30%):
-[════════════ ✓ MARCADO ═══════════════]
-     item desce para seção "No carrinho"
+After threshold (>30%):
+[════════════ ✓ CHECKED ═══════════════]
+     item moves down to "In Cart" section
      haptic: vibrate(10)
-     footer total anima
+     footer total animates
 ```
 
-### Animação de Total
+### Total Animation
 
-Quando o total muda:
-- Scale: `1 → 1.05 → 1` em 150ms
+When the total changes:
+- Scale: `1 → 1.05 → 1` over 150ms
 - CSS: `transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1)`
-- Se cruzar threshold de orçamento: background-color crossfade simultâneo
+- If it crosses a budget threshold: simultaneous background-color crossfade
 
-### Bottom Sheet — Abertura
+### Bottom Sheet — Opening
 
 ```
-Estado: fechado (height: 0)
-     ↓ toque no FAB
-Estado: abrindo (translate Y: 100% → 50%, duration: 250ms, ease-out)
-     ↓ teclado abre automaticamente
-Estado: expandido (translate Y: 50% → 15%, duration: 200ms, ease-out)
+State: closed (height: 0)
+     ↓ tap on FAB
+State: opening (translate Y: 100% → 50%, duration: 250ms, ease-out)
+     ↓ keyboard opens automatically
+State: expanded (translate Y: 50% → 15%, duration: 200ms, ease-out)
 ```
 
 ---
 
 ## Design Tokens (CSS Custom Properties)
 
-Tokens que carregam os requisitos de UX para a implementação:
+Tokens that carry the UX requirements into the implementation:
 
 ```css
-/* Tamanhos mínimos */
+/* Minimum sizes */
 --touch-target-min: 48px;
 --fab-size: 56px;
 --footer-height: 72px;
 --sheet-handle-height: 24px;
 --button-height: 56px;
 
-/* Tipografia */
+/* Typography */
 --font-size-item-name: 1rem;        /* 16sp */
 --font-size-line-total: 1.125rem;   /* 18sp */
 --font-size-session-total: 1.25rem; /* 20sp */
 --font-size-grand-total: 1.5rem;    /* 24sp */
 
-/* Cores */
---color-success: #2e7d32;   /* verde — 0–70% do orçamento */
---color-warning: #f57c00;   /* âmbar — 70–90% */
---color-danger: #c62828;    /* vermelho — 90%+ */
---color-check: #43a047;     /* verde do swipe de marcação */
---color-delete: #e53935;    /* vermelho do swipe de deleção */
+/* Colors */
+--color-success: #2e7d32;   /* green — 0–70% of budget */
+--color-warning: #f57c00;   /* amber — 70–90% */
+--color-danger: #c62828;    /* red — 90%+ */
+--color-check: #43a047;     /* green for the check swipe */
+--color-delete: #e53935;    /* red for the delete swipe */
 
-/* Superfícies */
+/* Surfaces */
 --color-surface: #ffffff;
---color-on-surface: #1a1a1a;        /* alto contraste */
+--color-on-surface: #1a1a1a;        /* high contrast */
 --color-surface-variant: #f5f5f5;
---color-on-surface-secondary: #595959; /* cinza mínimo WCAG AA */
+--color-on-surface-secondary: #595959; /* WCAG AA minimum gray */
 
-/* Bordas e formas */
+/* Borders and shapes */
 --radius-card: 12px;
 --radius-sheet: 16px;
 --radius-chip: 8px;
 
-/* Animações */
+/* Animations */
 --transition-check: 300ms ease-out;
 --transition-total-pulse: 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
 --transition-sheet: 250ms ease-out;
 --transition-color: 200ms ease;
 
 /* Zones */
---primary-action-zone: 40%;   /* percentual inferior da tela para ações primárias */
+--primary-action-zone: 40%;   /* bottom percentage of the screen for primary actions */
 ```
 
 ---
 
-## Anti-patterns (O que NÃO fazer)
+## Anti-patterns (What NOT to do)
 
-| Anti-pattern | Motivo |
+| Anti-pattern | Reason |
 |-------------|--------|
-| Propagandas durante sessão de compra | Destrói concentração no momento mais crítico |
-| Deletar itens marcados automaticamente | Usuário precisa referenciar o que já pegou |
-| Confirmações modais para ações rápidas | Torna o check impossível com uma mão |
-| Bottom sheet de altura total (100%) | Não parece contextual, parece uma nova tela |
-| Ações destrutivas com swipe curto | Muito fácil de acionar acidentalmente |
-| Total visível só em tela separada | Remove o valor principal do app |
-| Hierarquia de menus com 3+ níveis | Inacessível em movimento |
-| Pop-ups de permissão durante compra | Nunca interromper o fluxo principal |
+| Ads during the shopping session | Destroys focus at the most critical moment |
+| Automatically deleting checked items | The user needs to reference what they've already picked up |
+| Modal confirmations for quick actions | Makes checking impossible with one hand |
+| Full-height bottom sheet (100%) | Doesn't feel contextual, feels like a new screen |
+| Destructive actions with a short swipe | Too easy to trigger accidentally |
+| Total visible only on a separate screen | Removes the app's core value |
+| Menu hierarchy with 3+ levels | Inaccessible while on the move |
+| Permission pop-ups during shopping | Never interrupt the main flow |

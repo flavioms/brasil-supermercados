@@ -1,86 +1,86 @@
 # Supermercado Brasil
 
-> Ferramenta de economia pessoal para quem faz compras em supermercados brasileiros.
+> Personal finance tool for people who shop at Brazilian supermarkets.
 
-[![Status](https://img.shields.io/badge/status-planejamento-yellow)](docs/roadmap.md)
-[![Versão](https://img.shields.io/badge/versão-V0%20MVP-blue)](docs/roadmap.md#v0--mvp-registrador-de-preços)
-
----
-
-## O que é
-
-O Supermercado Brasil é um PWA (Progressive Web App) offline-first que exibe o total
-acumulado da compra **em tempo real** enquanto você percorre os corredores do mercado.
-
-Em um país onde os preços dos alimentos sobem toda semana, o app coloca o poder da
-informação na mão de quem mais precisa economizar — sem cadastro, sem internet obrigatória,
-sem instalar nada.
+[![Status](https://img.shields.io/badge/status-planning-yellow)](docs/roadmap.md)
+[![Version](https://img.shields.io/badge/version-V0%20MVP-blue)](docs/roadmap.md#v0--mvp-price-logger)
 
 ---
 
-## O problema que resolve
+## What it is
 
-- Você coloca itens no carrinho sem saber o total
-- Chega ao caixa e o valor surpreende (para cima)
-- Às vezes precisa devolver produtos na fila
-- Não tem como saber se o produto está mais caro que na semana passada
-- Não sabe qual loja é mais barata para os **seus** produtos
+Supermercado Brasil is an offline-first PWA (Progressive Web App) that shows the
+running total of your purchase **in real time** as you walk through the store aisles.
+
+In a country where food prices rise every week, the app puts the power of
+information in the hands of those who need to save the most — no sign-up, no
+mandatory internet connection, nothing to install.
 
 ---
 
-## Documentação
+## The problem it solves
 
-| Documento | Descrição |
+- You put items in the cart without knowing the total
+- You get to the checkout and the amount is a (bad) surprise
+- Sometimes you have to put products back while in line
+- There's no way to know if a product is more expensive than last week
+- You don't know which store is cheapest for **your** products
+
+---
+
+## Documentation
+
+| Document | Description |
 |-----------|-----------|
-| [Visão do Produto](docs/product-vision.md) | Problema, personas, proposta de valor, posicionamento |
-| [Análise de Concorrentes](docs/competitive-analysis.md) | Mapa de apps, gaps de mercado, oportunidades |
-| [Regras de Negócio](docs/business-rules.md) | BR-01 a BR-28: todas as regras e validações |
-| [Diretrizes de UX](docs/ux-guidelines.md) | UX-01 a UX-26: uso com uma mão, thumb zone, micro-interações |
-| [Roadmap](docs/roadmap.md) | V0 → V1 → V2: features e critérios de sucesso |
-| [Arquitetura MVC](docs/architecture/mvc-overview.md) | Fluxo de dados, inventário de telas e controllers |
-| [Modelo de Dados](docs/architecture/data-model.md) | Entidades, campos, schema IndexedDB |
-| [Stack Técnica](docs/architecture/technical-stack.md) | Tecnologias escolhidas e justificativa |
+| [Product Vision](docs/product-vision.md) | Problem, personas, value proposition, positioning |
+| [Competitive Analysis](docs/competitive-analysis.md) | App landscape map, market gaps, opportunities |
+| [Business Rules](docs/business-rules.md) | BR-01 to BR-28: all rules and validations |
+| [UX Guidelines](docs/ux-guidelines.md) | UX-01 to UX-26: one-handed use, thumb zone, micro-interactions |
+| [Roadmap](docs/roadmap.md) | V0 → V1 → V2: features and success criteria |
+| [MVC Architecture](docs/architecture/mvc-overview.md) | Data flow, screen and controller inventory |
+| [Data Model](docs/architecture/data-model.md) | Entities, fields, IndexedDB schema |
+| [Technical Stack](docs/architecture/technical-stack.md) | Chosen technologies and rationale |
 
 ---
 
-## Versões
+## Versions
 
-| Versão | Nome | Status | Objetivo |
+| Version | Name | Status | Goal |
 |--------|------|--------|----------|
-| **V0** | Registrador de Preços | 🟡 Em desenvolvimento | Total em tempo real, 100% offline |
-| **V1** | Scan de Código de Barras | ⬜ Planejado | Histórico de preços, alertas de variação |
-| **V2** | NF-e + Comparativo | ⬜ Planejado | Transparência de preços, economia máxima |
+| **V0** | Price Tracker | 🟡 In development | Real-time total, 100% offline |
+| **V1** | Barcode Scanning | ⬜ Planned | Price history, variation alerts |
+| **V2** | NF-e + Comparison | ⬜ Planned | Price transparency, maximum savings |
 
 ---
 
-## Princípios Não Negociáveis
+## Non-Negotiable Principles
 
-1. **Offline-first**: funciona dentro do mercado, mesmo sem sinal
-2. **Uma mão só**: todas as ações primárias no terço inferior da tela
-3. **Total sempre visível**: footer sticky com o total nunca some
-4. **Zero fricção**: nenhuma tela obrigatória antes de começar a usar
-5. **Economia real**: cada feature deve ajudar o usuário a gastar menos
+1. **Offline-first**: works inside the store, even without a signal
+2. **One hand only**: all primary actions in the lower third of the screen
+3. **Total always visible**: sticky footer with the total never disappears
+4. **Zero friction**: no mandatory screen before you start using it
+5. **Real savings**: every feature must help the user spend less
 
 ---
 
-## Para Desenvolvedores
+## For Developers
 
 ```bash
-# Clonar o repositório
+# Clone the repository
 git clone https://github.com/seu-usuario/supermercado-brasil
 cd supermercado-brasil
 
-# Estrutura planejada do projeto (V0)
+# Planned project structure (V0)
 src/
-  models/        # Entidades + schema Dexie (IndexedDB)
-  controllers/   # Lógica de negócio
-  views/         # Web Components + telas
-  utils/         # Moeda, UUID, validação, háptico
+  models/        # Entities + Dexie schema (IndexedDB)
+  controllers/   # Business logic
+  views/         # Web Components + screens
+  utils/         # Currency, UUID, validation, haptics
   sw/            # Service Worker (Workbox)
-  styles/        # Design tokens + CSS global
+  styles/        # Design tokens + global CSS
   index.html
   manifest.json
 ```
 
-> **Nota**: O código ainda não existe. Este repositório contém apenas a documentação
-> de produto e arquitetura. Consulte o [Roadmap](docs/roadmap.md) para o status atual.
+> **Note**: The code doesn't exist yet. This repository contains only product
+> and architecture documentation. See the [Roadmap](docs/roadmap.md) for the current status.

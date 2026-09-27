@@ -1,195 +1,196 @@
-# Análise de Concorrentes
+# Competitive Analysis
 
 ---
 
-## Mapa Completo de Concorrentes
+## Complete Competitor Map
 
-### Apps Globais
+### Global Apps
 
-| App | Usuários | Força Principal | Fraqueza Crítica | Offline? | Total RT? | Preço BR? |
+| App | Users | Key Strength | Critical Weakness | Offline? | RT Total? | BR Pricing? |
 |-----|----------|----------------|-----------------|----------|-----------|-----------|
-| **Bring!** | > 50M | UI visual, colaborativo, PT-BR disponível | Sem rastreio de preços | Parcial | ❌ | ❌ |
-| **Listonic** | > 20M | Sincronização, categorização automática | Ads durante compra, itens sumindo | ✅ | ❌ | ❌ |
-| **OurGroceries** | > 5M | Sincronização em tempo real, Apple Watch, barcode | Preço solicitado por usuários há 3+ anos, sem resposta | ✅ | ❌ | ❌ |
-| **AnyList** | Pago | Receitas, importação de blogs de culinária | Preço 100% manual, sem automação | ✅ | ❌ | ❌ |
-| **Groceries Tracker** | Nicho | Histórico de preços pagos, IA de recibo | UI complexa, sem mobile nativo | Parcial | ✅ | ❌ |
-| **Basket** | EUA | Comparativo por loja antes da compra | Não funciona durante a compra, dados EUA | ❌ | ❌ | ❌ |
-| **Flipp** | América do Norte | Folhetos digitais, cupons semanais | Só pré-compra, não é lista | ❌ | ❌ | ❌ |
-| **Out of Milk** | Médio | Gestão de estoque doméstico | UI datada, sem preços | ✅ | ❌ | ❌ |
+| **Bring!** | > 50M | Visual UI, collaborative, PT-BR available | No price tracking | Partial | ❌ | ❌ |
+| **Listonic** | > 20M | Sync, automatic categorization | Ads during shopping, disappearing items | ✅ | ❌ | ❌ |
+| **OurGroceries** | > 5M | Fastest real-time sync, Apple Watch, barcode | Price tracking requested by users for 3+ years, no response | ✅ | ❌ | ❌ |
+| **AnyList** | Paid | Recipes, import from cooking blogs | 100% manual pricing, no automation | ✅ | ❌ | ❌ |
+| **Groceries Tracker** | Niche | Paid price history, receipt AI | Complex UI, no native mobile | Partial | ✅ | ❌ |
+| **Basket** | US | Store comparison before shopping | Doesn't work during shopping, US data | ❌ | ❌ | ❌ |
+| **Flipp** | North America | Digital flyers, weekly coupons | Pre-shopping only, not a list | ❌ | ❌ | ❌ |
+| **Out of Milk** | Medium | Household inventory management | Dated UI, no pricing | ✅ | ❌ | ❌ |
 
-### Apps Brasileiros
+### Brazilian Apps
 
-| App | Status | Força Principal | Fraqueza Crítica | Relevância |
+| App | Status | Key Strength | Critical Weakness | Relevance |
 |-----|--------|----------------|-----------------|------------|
-| **BoaLista** | ⚠️ Inativo (~2018) | Barcode + comparativo de preços locais + offline | Sem continuidade, aparentemente descontinuado | Alta (prova de conceito validado no BR) |
-| **iFood** | ✅ Ativo, dominante | 83% do delivery de alimentos no Brasil | Foco em entrega, não acompanha compra física | Baixa (mercado diferente) |
-| **Rappi** | ✅ Ativo | Super app (food + grocery + pharma + fintech) | Foco em entrega, não em loja física | Baixa |
-| **Mercado Livre** | ✅ Ativo | Maior e-commerce da América Latina | Foco em e-commerce, não em loja física | Baixa |
-| **Minhas Economias** | ✅ Ativo (finanças) | Controle financeiro pessoal | Não é específico para supermercado | Baixa |
+| **BoaLista** | ⚠️ Inactive (~2018) | Barcode + local price comparison + offline | No continuity, apparently discontinued | High (validated proof of concept in Brazil) |
+| **iFood** | ✅ Active, dominant | 83% of food delivery in Brazil | Focused on delivery, doesn't track in-store shopping | Low (different market) |
+| **Rappi** | ✅ Active | Super app (food + grocery + pharma + fintech) | Focused on delivery, not physical stores | Low |
+| **Mercado Livre** | ✅ Active | Largest e-commerce in Latin America | Focused on e-commerce, not physical stores | Low |
+| **Minhas Economias** | ✅ Active (finance) | Personal financial management | Not specific to grocery shopping | Low |
 
 ---
 
-## Análise Detalhada dos Principais Concorrentes
+## Detailed Analysis of Key Competitors
 
 ### Bring!
 
-**O que funciona bem:**
-- Interface visual com ícones de produtos — reduz leitura em ambiente barulhento
-- Colaboração em tempo real para listas compartilhadas
-- Disponível em PT-BR com boa localização
-- Design limpo e moderno
+**What works well:**
+- Visual interface with product icons — reduces reading in noisy environments
+- Real-time collaboration for shared lists
+- Available in PT-BR with good localization
+- Clean, modern design
 
-**O que falha:**
-- Preços completamente ausentes — a funcionalidade mais demandada
-- Sem total acumulado durante as compras
-- Modo offline limitado (assets carregam, mas sync falha)
+**What fails:**
+- Prices completely absent — the most demanded feature
+- No running total during shopping
+- Limited offline mode (assets load, but sync fails)
 
-**Lição para o Supermercado Brasil:** A UI visual de ícones de produtos é um padrão que
-funciona bem. Porém, preços e total são o vazio que o Bring! nunca preencheu.
+**Lesson for Supermercado Brasil:** The visual UI with product icons is a pattern that
+works well. However, prices and totals are the gap that Bring! never filled.
 
 ---
 
 ### Listonic
 
-**O que funciona bem:**
-- Base de 20M+ usuários valida a demanda por listas colaborativas
-- Categorização automática por tipo de produto
-- Modo offline funcional para listas locais
+**What works well:**
+- 20M+ user base validates demand for collaborative lists
+- Automatic categorization by product type
+- Functional offline mode for local lists
 
-**O que falha (direto das avaliações de usuários):**
-- Propagandas aparecem durante a sessão de compra (notavelmente: anúncio da Shein no meio de uma lista de mercado)
-- Pop-ups diários de consentimento de privacidade que ignoram respostas anteriores
-- Itens desaparecem das listas sem aviso
-- Itens duplicados aparecem espontaneamente
-- Sem total acumulado visível
+**What fails (straight from user reviews):**
+- Ads appear during the shopping session (notably: a Shein ad in the middle of a grocery list)
+- Daily privacy consent pop-ups that ignore previous responses
+- Items disappear from lists without warning
+- Duplicate items appear spontaneously
+- No visible running total
 
-**Lição para o Supermercado Brasil:** Monetização por ads no contexto de uso (dentro do mercado)
-é um anti-pattern que destrói a confiança. O modelo deve ser diferente desde o início.
+**Lesson for Supermercado Brasil:** Ad monetization within the usage context (inside the
+store) is an anti-pattern that destroys trust. The model must be different from the start.
 
 ---
 
 ### OurGroceries
 
-**O que funciona bem:**
-- Sincronização mais rápida entre dispositivos do mercado
-- Integração com Apple Watch e Alexa
-- Scanner de código de barras (para adição de itens, não comparativo de preços)
-- Organização por corredor customizável
+**What works well:**
+- Fastest cross-device sync on the market
+- Apple Watch and Alexa integration
+- Barcode scanner (for adding items, not price comparison)
+- Customizable aisle organization
 
-**O que falha:**
-- Usuários solicitam rastreio de preços há mais de 3 anos nos fóruns de suporte
-- O desenvolvedor nunca respondeu a esse pedido
-- Sem total acumulado visível durante as compras
+**What fails:**
+- Users have requested price tracking for more than 3 years on support forums
+- The developer has never responded to this request
+- No visible running total during shopping
 
-**Lição para o Supermercado Brasil:** Existe uma demanda reprimida enorme e não atendida
-por rastreio de preços em apps de lista de compras. Esta é literalmente a feature que o
-principal concorrente recusou a construir.
-
----
-
-### BoaLista (Brasil, ~2015–2018)
-
-**História:** Startup do Rio de Janeiro que recebeu investimento anjo de R$ 1 milhão.
-Foi o app mais próximo do que o Supermercado Brasil propõe.
-
-**O que fazia certo:**
-- Scan de código de barras para comparar preços entre lojas locais
-- Modo offline funcional
-- Preços inseridos por usuários (crowd-sourcing)
-- Comparativo online vs. físico
-- Histórico de compras
-
-**Por que falhou (hipótese):**
-- Crowd-sourcing de preços é difícil de escalar — dados ficam desatualizados
-- Sem usar a NF-e para atualização automática de preços (a lei que obriga QR codes só
-  foi plenamente implementada após 2015–2017)
-- Pode ter faltado foco no UX de uso único (dentro da loja, uma mão)
-
-**Lição para o Supermercado Brasil:** O BoaLista prova que há demanda real no Brasil.
-A diferença agora é que a infraestrutura de NF-e está madura, o que resolve o problema
-de dados de preços desatualizados — sem depender de usuários digitando preços manualmente.
+**Lesson for Supermercado Brasil:** There is enormous unmet demand for price tracking
+in shopping list apps. This is literally the feature the leading competitor refused
+to build.
 
 ---
 
-## Principais Reclamações dos Usuários (cross-app)
+### BoaLista (Brazil, ~2015–2018)
 
-Levantadas de reviews nas app stores e fóruns de suporte:
+**History:** Startup from Rio de Janeiro that received R$ 1 million in angel investment.
+It was the closest app to what Supermercado Brasil proposes.
 
-### Bugs Funcionais (mais críticos)
-1. **Itens sumindo** durante a sessão de compra — catastrófico no contexto
-2. **Itens duplicados** aparecendo espontaneamente
-3. **Falha de sync** após updates — listas organizadas cuidadosamente são destruídas
-4. **Não consegue apagar itens marcados em massa** — precisa deletar um a um
+**What it did right:**
+- Barcode scanning to compare prices across local stores
+- Functional offline mode
+- User-submitted prices (crowd-sourcing)
+- Online vs. in-store comparison
+- Purchase history
 
-### Fricção de Monetização
-5. **Propagandas durante a compra** — momento de maior concentração do usuário
-6. **Pop-ups de consentimento diários** ignorando respostas anteriores
-7. **Paywall em funcionalidades básicas** de sync e compartilhamento
+**Why it failed (hypothesis):**
+- Crowd-sourced pricing is hard to scale — data becomes outdated
+- Didn't use NF-e for automatic price updates (the law requiring QR codes was only
+  fully implemented after 2015–2017)
+- May have lacked focus on single-use UX (in-store, one-handed)
 
-### Features Universalmente Solicitadas (não entregues por nenhum)
-8. **Total em tempo real** visível enquanto compra — o pedido mais frequente
-9. **Rastreio de variação de preço** por produto
-10. **Split must-have vs. opcional** dentro da lista
+**Lesson for Supermercado Brasil:** BoaLista proves there is real demand in Brazil.
+The difference now is that the NF-e infrastructure is mature, which solves the problem
+of outdated price data — without relying on users manually typing in prices.
+
+---
+
+## Main User Complaints (cross-app)
+
+Gathered from app store reviews and support forums:
+
+### Functional Bugs (most critical)
+1. **Items disappearing** during the shopping session — catastrophic in this context
+2. **Duplicate items** appearing spontaneously
+3. **Sync failures** after updates — carefully organized lists get destroyed
+4. **Can't bulk-delete checked items** — must delete one at a time
+
+### Monetization Friction
+5. **Ads during shopping** — the moment of peak user concentration
+6. **Daily consent pop-ups** ignoring previous responses
+7. **Paywall on basic features** like sync and sharing
+
+### Universally Requested Features (delivered by none)
+8. **Real-time total** visible while shopping — the most frequent request
+9. **Price variation tracking** per product
+10. **Split must-have vs. optional** within the list
 
 ### UX
-11. **Ações críticas no topo da tela** — inacessíveis com uma mão
-12. **Hierarquia de menus profunda** — dificulta uso em movimento
-13. **Sem modo offline** em apps que dependem de rede
+11. **Critical actions at the top of the screen** — unreachable one-handed
+12. **Deep menu hierarchy** — hinders use while on the move
+13. **No offline mode** in apps that depend on network access
 
 ---
 
-## Mapa de Oportunidades
+## Opportunity Map
 
-### O Que Nenhum App Faz (especificamente no Brasil)
+### What No App Does (specifically in Brazil)
 
 ```
-                    Funciona offline?
+                    Works offline?
                     ┌──────YES──────┬──────NO───────┐
                     │               │               │
-          YES       │  ★ NOSSO     │  Basket       │
-Total em            │    ESPAÇO    │  (só pré-     │
-tempo real?         │               │  compra)      │
+          YES       │  ★ OUR        │  Basket       │
+Real-time           │    SPACE      │  (pre-shop    │
+total?              │               │  only)        │
           ──────────┼───────────────┼───────────────┤
           NO        │  Listonic     │  Bring!       │
                     │  OurGroceries │  iFood        │
                     │  BoaLista†    │  Rappi        │
                     └───────────────┴───────────────┘
-                    † Inativo
+                    † Inactive
 ```
 
-### Cinco Diferenciais Cumulativos
+### Five Cumulative Differentiators
 
-| # | Diferencial | Complexidade | Impacto |
+| # | Differentiator | Complexity | Impact |
 |---|-------------|-------------|---------|
-| 1 | Offline-first garantido | Baixa | Alto |
-| 2 | Total em tempo real (sticky footer) | Baixa | Alto |
-| 3 | UX de uma mão só | Média | Alto |
-| 4 | Scan de código de barras + histórico de preços | Média | Muito Alto |
-| 5 | **NF-e QR code** → importação automática de recibos | Alta | **Exclusivo no mercado** |
+| 1 | Guaranteed offline-first | Low | High |
+| 2 | Real-time total (sticky footer) | Low | High |
+| 3 | One-handed UX | Medium | High |
+| 4 | Barcode scanning + price history | Medium | Very High |
+| 5 | **NF-e QR code** → automatic receipt import | High | **Exclusive in the market** |
 
-### O Diferencial da NF-e (exclusivo Brasil)
+### The NF-e Differentiator (exclusive to Brazil)
 
-Todo supermercado brasileiro é **obrigado por lei** a emitir NFC-e (Nota Fiscal de Consumidor
-Eletrônica) com um QR code no cupom. Esse QR code aponta para um endpoint da SEFAZ (Secretaria
-da Fazenda) que retorna todos os itens comprados, quantidades e preços pagos em formato estruturado.
+Every Brazilian supermarket is **legally required** to issue an NFC-e (Electronic Consumer
+Invoice) with a QR code on the receipt. This QR code points to a SEFAZ (State Treasury
+Department) endpoint that returns all purchased items, quantities, and prices paid in
+structured format.
 
-**Impacto:** O usuário escaneia o QR code do cupom ao sair do mercado → o app importa
-automaticamente toda a compra com preços reais → o histórico de preços por produto por loja
-se constrói sozinho, sem nenhuma digitação.
+**Impact:** The user scans the receipt's QR code when leaving the store → the app
+automatically imports the entire purchase with real prices → the price history per
+product per store builds itself, with no manual entry required.
 
-Nenhum app de lista de compras brasileiro usa essa infraestrutura. É a maior janela de
-oportunidade de diferenciação do projeto.
+No Brazilian shopping list app uses this infrastructure. It is the project's biggest
+window of opportunity for differentiation.
 
 ---
 
-## Conclusão Estratégica
+## Strategic Conclusion
 
-O mercado brasileiro de apps de compras físicas tem um vácuo claro:
-- **BoaLista** era a aposta certa mas parece inativa
-- **Listonic/Bring/OurGroceries** resolvem lista, não preço
-- **iFood/Rappi/Mercado Livre** resolvem delivery, não loja física
+The Brazilian in-store shopping app market has a clear vacuum:
+- **BoaLista** was the right bet but appears inactive
+- **Listonic/Bring/OurGroceries** solve the list, not the price
+- **iFood/Rappi/Mercado Livre** solve delivery, not physical shopping
 
-O Supermercado Brasil entra nesse vácuo com:
-1. Uma proposta direta e relevante para o contexto de inflação
-2. A infraestrutura fiscal do Brasil (NF-e) como diferencial técnico exclusivo
-3. UX construído do zero para uso no corredor do mercado, com uma mão
+Supermercado Brasil enters this vacuum with:
+1. A direct, relevant proposition for the context of inflation
+2. Brazil's fiscal infrastructure (NF-e) as an exclusive technical differentiator
+3. UX built from the ground up for one-handed use in the store aisle

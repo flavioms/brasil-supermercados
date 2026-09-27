@@ -1,150 +1,150 @@
-# Stack Técnica
+# Technical Stack
 
 ---
 
-## Visão Geral
+## Overview
 
-A stack foi escolhida com três critérios em ordem de prioridade:
-1. **Performance em dispositivos mid-range brasileiros** (Android, RAM 2–4GB)
-2. **Offline-first garantido** — zero dependências de rede para o fluxo principal
-3. **Produtividade e qualidade de código** — stack familiar que permite iteração rápida e cobertura de testes consistente
+The stack was chosen using three criteria, in order of priority:
+1. **Performance on mid-range Brazilian devices** (Android, 2–4GB RAM)
+2. **Guaranteed offline-first** — zero network dependencies for the main flow
+3. **Productivity and code quality** — a familiar stack that enables fast iteration and consistent test coverage
 
 ---
 
-## Stack por Camada
+## Stack by Layer
 
 ### Frontend
 
-| Camada | Tecnologia | Versão | Justificativa |
+| Layer | Technology | Version | Justification |
 |--------|-----------|--------|---------------|
-| Framework | **Next.js** (`output: 'export'`) | 15.x | Gera HTML estático puro — sem servidor Node.js; deploy no Cloudflare Pages; App Router com client components para Dexie |
-| Linguagem | **TypeScript** strict | 5.x | Type safety em todo o codebase; `strict: true` elimina classes inteiras de bugs |
-| CSS | **Tailwind CSS** | 4.x | CSS utilitário com design tokens via `@theme`; zero runtime; purge automático minimiza bundle de CSS |
-| Formatação de moeda | `Intl.NumberFormat` | Nativo | `new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })` — zero dependência externa |
+| Framework | **Next.js** (`output: 'export'`) | 15.x | Generates pure static HTML — no Node.js server; deployed on Cloudflare Pages; App Router with client components for Dexie |
+| Language | **TypeScript** strict | 5.x | Type safety across the whole codebase; `strict: true` eliminates entire classes of bugs |
+| CSS | **Tailwind CSS** | 4.x | Utility CSS with design tokens via `@theme`; zero runtime; automatic purge minimizes the CSS bundle |
+| Currency formatting | `Intl.NumberFormat` | Native | `new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })` — zero external dependency |
 
-### Armazenamento
+### Storage
 
-| Tecnologia | Uso | Justificativa |
+| Technology | Use | Justification |
 |-----------|-----|---------------|
-| **Dexie.js** | IndexedDB wrapper | Transações ergonômicas, migrations de schema, `liveQuery` reativo para atualização automática da View; melhor mantido da categoria |
-| **localStorage** | Preferências do usuário (tema, configurações simples) | Apenas para dados pequenos e não críticos |
+| **Dexie.js** | IndexedDB wrapper | Ergonomic transactions, schema migrations, reactive `liveQuery` for automatic View updates; best-maintained in its category |
+| **localStorage** | User preferences (theme, simple settings) | Only for small, non-critical data |
 
 ### Service Worker
 
-| Tecnologia | Uso | Justificativa |
+| Technology | Use | Justification |
 |-----------|-----|---------------|
-| **Workbox** | Estratégias de cache declarativas | Evita os bugs comuns de cache manual; estratégias testadas (StaleWhileRevalidate, CacheFirst, NetworkFirst) |
+| **Workbox** | Declarative caching strategies | Avoids common manual-caching bugs; battle-tested strategies (StaleWhileRevalidate, CacheFirst, NetworkFirst) |
 
 ### Barcode Scan (V1)
 
-| Tecnologia | Uso | Justificativa |
+| Technology | Use | Justification |
 |-----------|-----|---------------|
-| **BarcodeDetector API** | Scan nativo (Android Chrome) | Zero biblioteca externa; hardware-accelerated; disponível no Chrome 83+ |
-| **ZXing.js** (fallback) | Browsers sem BarcodeDetector | Funciona em 100% dos browsers; ~300KB mas loaded lazy |
+| **BarcodeDetector API** | Native scanning (Android Chrome) | Zero external library; hardware-accelerated; available in Chrome 83+ |
+| **ZXing.js** (fallback) | Browsers without BarcodeDetector | Works in 100% of browsers; ~300KB but lazy loaded |
 
-### Catálogo de Produtos (V0 + V1)
+### Product Catalog (V0 + V1)
 
-| Tecnologia | Uso | Justificativa |
+| Technology | Use | Justification |
 |-----------|-----|---------------|
-| **JSON estático embutido** | ~5.000 produtos BR comuns | Zero latência, funciona offline; loaded lazy quando formulário abre |
-| **Open Food Facts API** | Lookup por EAN (online) | Gratuito, 6M+ produtos, inclui produtos brasileiros com dados de nutrição |
-| **IndexedDB** (cache local) | Produtos já vistos | Lookups subsequentes do mesmo EAN não precisam de rede |
+| **Bundled static JSON** | ~5,000 common BR products | Zero latency, works offline; lazy loaded when the form opens |
+| **Open Food Facts API** | EAN lookup (online) | Free, 6M+ products, includes Brazilian products with nutrition data |
+| **IndexedDB** (local cache) | Already-seen products | Subsequent lookups of the same EAN need no network |
 
-### Gráficos / Analytics (V1)
+### Charts / Analytics (V1)
 
-| Tecnologia | Uso | Justificativa |
+| Technology | Use | Justification |
 |-----------|-----|---------------|
-| **SVG inline** | Gráficos simples (barras, linhas) | Zero dependência; V0/V1 têm dados suficientemente simples |
-| **Chart.js** (opcional V2) | Gráficos mais ricos | Lazy-loaded só quando tela de analytics abre; ~200KB aceitável |
+| **Inline SVG** | Simple charts (bars, lines) | Zero dependency; V0/V1 data is simple enough |
+| **Chart.js** (optional V2) | Richer charts | Lazy-loaded only when the analytics screen opens; ~200KB acceptable |
 
 ### Backend (V2)
 
-| Tecnologia | Uso | Justificativa |
+| Technology | Use | Justification |
 |-----------|-----|---------------|
-| **Cloudflare Workers** | Proxy SEFAZ (NF-e) | Stateless, edge computing, zero armazenamento de dados fiscais, LGPD compliance |
-| **Cloudflare Workers** | API de preços crowd-sourced | Escala global, latência baixa para usuários BR |
-| **Cloudflare D1 ou Turso** | Banco de dados de preços compartilhados | SQLite serverless; custo zero para escala inicial |
+| **Cloudflare Workers** | SEFAZ proxy (NF-e) | Stateless, edge computing, zero storage of tax data, LGPD compliance |
+| **Cloudflare Workers** | Crowd-sourced pricing API | Global scale, low latency for BR users |
+| **Cloudflare D1 or Turso** | Shared pricing database | Serverless SQLite; zero cost at initial scale |
 
 ---
 
-## Service Worker — Estratégias de Cache
+## Service Worker — Caching Strategies
 
 ```
-Recurso                          Estratégia              Cache TTL
+Resource                          Strategy                Cache TTL
 ───────────────────────────────────────────────────────────────────
 HTML (index.html)                StaleWhileRevalidate    —
-CSS / JS (app shell)             StaleWhileRevalidate    —
-Imagens / ícones                 CacheFirst              30 dias
-produtos-br.json (catálogo)      CacheFirst              permanente
-Open Food Facts API              NetworkFirst + fallback 24 horas
-SEFAZ proxy                      NetworkFirst (sem cache) —
+CSS / JS (app shell)              StaleWhileRevalidate    —
+Images / icons                    CacheFirst              30 days
+produtos-br.json (catalog)        CacheFirst              permanent
+Open Food Facts API               NetworkFirst + fallback 24 hours
+SEFAZ proxy                       NetworkFirst (no cache) —
 ```
 
-**Atualização silenciosa**: Quando uma nova versão do app está disponível, o SW instala
-em background sem interromper a sessão. Exibe um toast discreto "Atualizar" ao usuário
-no momento de conveniência (ao abrir novo tab ou ao voltar para home).
+**Silent update**: When a new version of the app is available, the SW installs
+in the background without interrupting the session. A discreet "Update" toast is shown
+to the user at a convenient moment (when opening a new tab or returning to the home screen).
 
 ---
 
-## Performance — Metas e Estratégias
+## Performance — Targets and Strategies
 
-### Metas
+### Targets
 
-| Métrica | Meta | Condição |
+| Metric | Target | Condition |
 |---------|------|----------|
-| TTI (Time to Interactive) | < 3s | Android mid-range, 4G |
-| TTI com cache | < 1s | Visitas repetidas |
-| Funcional | < 5s | 3G (signal médio em loja) |
-| Funcional offline | 0ms | IndexedDB always-local |
+| TTI (Time to Interactive) | < 3s | Mid-range Android, 4G |
+| TTI with cache | < 1s | Repeat visits |
+| Functional | < 5s | 3G (average in-store signal) |
+| Functional offline | 0ms | IndexedDB always local |
 
-### Estratégias
+### Strategies
 
-- **`next/dynamic` com `ssr: false`**: Componentes pesados (autocomplete, scanner) carregados lazy
-- **`output: 'export'`**: Sem runtime Next.js no servidor — HTML estático puro servido via CDN
-- **Tailwind CSS com purge automático**: CSS final ~5–15KB (apenas classes usadas no build)
-- **Virtual list**: Para listas com 50+ itens, renderizar apenas itens visíveis (+ buffer via `react-virtual`)
-- **Catálogo `produtos-br.json` via `next/dynamic`**: Carregado apenas quando `AutocompleteInput` monta
-- **`inputmode="decimal"`**: Teclado numérico nativo sem JavaScript extra
-- **`Intl.NumberFormat` instanciado uma vez**: Criar a instância no módulo `currency.ts`, reutilizar
+- **`next/dynamic` with `ssr: false`**: Heavy components (autocomplete, scanner) loaded lazily
+- **`output: 'export'`**: No Next.js server runtime — pure static HTML served via CDN
+- **Tailwind CSS with automatic purge**: Final CSS ~5–15KB (only classes used in the build)
+- **Virtual list**: For lists with 50+ items, render only visible items (+ buffer via `react-virtual`)
+- **`produtos-br.json` catalog via `next/dynamic`**: Loaded only when `AutocompleteInput` mounts
+- **`inputmode="decimal"`**: Native numeric keyboard with no extra JavaScript
+- **`Intl.NumberFormat` instantiated once**: Create the instance in the `currency.ts` module and reuse it
 
 ---
 
-## Dispositivos Alvo
+## Target Devices
 
-### Perfil de Hardware (Brasil mid-range)
+### Hardware Profile (Brazilian mid-range)
 
-| Característica | Alvo | Realidade |
+| Characteristic | Target | Reality |
 |---------------|------|-----------|
-| SO | Android 10+ | 60% do mercado Android brasileiro |
+| OS | Android 10+ | 60% of the Brazilian Android market |
 | RAM | 3–4 GB | Motorola Moto G, Samsung Galaxy A |
 | CPU | Snapdragon 4xx/6xx | Mid-range ARM |
-| Armazenamento disponível | ~1 GB livre | Estimativa conservadora |
-| Browser | Chrome 90+ | ~80% do tráfego mobile BR |
+| Available storage | ~1 GB free | Conservative estimate |
+| Browser | Chrome 90+ | ~80% of BR mobile traffic |
 
 ### Graceful Degradation
 
-| API | Comportamento sem suporte |
+| API | Behavior without support |
 |-----|--------------------------|
-| `BarcodeDetector` | Botão de scan oculto; entrada manual sempre disponível |
-| `navigator.vibrate` | Sem háptico; sem degradação funcional |
-| `navigator.storage.persist()` | Aviso sobre possível perda de dados; funciona normalmente |
-| `Background Sync` | Queue local persiste; drena na próxima abertura do app |
-| CSS Grid | Fallback para Flexbox |
+| `BarcodeDetector` | Scan button hidden; manual entry always available |
+| `navigator.vibrate` | No haptics; no functional degradation |
+| `navigator.storage.persist()` | Warning about possible data loss; works normally |
+| `Background Sync` | Local queue persists; drains on next app open |
+| CSS Grid | Falls back to Flexbox |
 
 ---
 
-## Segurança e LGPD
+## Security and LGPD
 
-### Modelo de Dados Locais
+### Local Data Model
 
-- **V0/V1**: Todos os dados ficam no dispositivo (IndexedDB), sem transmissão
-- **V2**: Compartilhamento de dados de preços é opt-in com consentimento explícito
-- **NF-e**: Dados de nota fiscal **nunca** são transmitidos para servidores externos
+- **V0/V1**: All data stays on the device (IndexedDB), no transmission
+- **V2**: Sharing of pricing data is opt-in with explicit consent
+- **NF-e**: Tax receipt data is **never** transmitted to external servers
 
 ### HTTPS
 
-Obrigatório para Service Workers — sem HTTPS, o PWA não funciona. Toda hospedagem
-deve ter TLS ativo (Cloudflare Pages ou similar fornece automaticamente).
+Required for Service Workers — without HTTPS, the PWA does not work. All hosting
+must have TLS enabled (Cloudflare Pages or similar provides it automatically).
 
 ### Content Security Policy
 
@@ -159,17 +159,17 @@ Content-Security-Policy:
   style-src 'self' 'unsafe-inline';
 ```
 
-### Dados Sensíveis — Checklist
+### Sensitive Data — Checklist
 
-- [ ] Sem PII (CPF, e-mail, nome) em localStorage ou IndexedDB (V0/V1)
-- [ ] Sem tracking de analytics de terceiros
-- [ ] Política de privacidade em PT-BR antes de qualquer coleta
-- [ ] Dados de NF-e em store separado com controle explícito de acesso
-- [ ] Opt-in granular por tipo de dado (preços, loja, localização)
+- [ ] No PII (CPF, e-mail, name) in localStorage or IndexedDB (V0/V1)
+- [ ] No third-party analytics tracking
+- [ ] Privacy policy in PT-BR before any data collection
+- [ ] NF-e data in a separate store with explicit access control
+- [ ] Granular opt-in per data type (prices, store, location)
 
 ---
 
-## Manifest PWA
+## PWA Manifest
 
 ```json
 {
@@ -190,21 +190,21 @@ Content-Security-Policy:
 }
 ```
 
-**`display: standalone`**: Remove a barra de endereço do Chrome quando instalado como PWA —
-dá a experiência de app nativo sem instalar nada.
+**`display: standalone`**: Removes Chrome's address bar when installed as a PWA —
+giving the native-app experience without installing anything.
 
-**`orientation: portrait`**: Bloqueia orientação landscape — o layout de uma mão só é
-projetado para retrato; landscape quebraria o thumb zone.
+**`orientation: portrait`**: Locks out landscape orientation — the one-handed layout is
+designed for portrait; landscape would break the thumb zone.
 
 ---
 
-## Infraestrutura de Deploy (V0)
+## Deployment Infrastructure (V0)
 
-| Componente | Serviço | Custo |
+| Component | Service | Cost |
 |-----------|---------|-------|
-| Hospedagem estática | Cloudflare Pages | Gratuito |
-| CDN + HTTPS | Cloudflare (incluso) | Gratuito |
-| CI/CD | GitHub Actions | Gratuito |
-| Domínio | Cloudflare Registrar | ~R$ 70/ano |
+| Static hosting | Cloudflare Pages | Free |
+| CDN + HTTPS | Cloudflare (included) | Free |
+| CI/CD | GitHub Actions | Free |
+| Domain | Cloudflare Registrar | ~R$ 70/year |
 
-**V0 não precisa de backend**. Todo o custo de infraestrutura inicial é zero.
+**V0 needs no backend**. All initial infrastructure cost is zero.

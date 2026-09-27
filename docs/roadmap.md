@@ -1,175 +1,175 @@
-# Roadmap do Produto
+# Product Roadmap
 
-O produto evolui em 3 versões com critérios claros de "done" antes de avançar para a próxima.
-Cada versão entrega valor independente — o usuário não precisa esperar a V2 para se beneficiar.
+The product evolves across 3 versions with clear "done" criteria before moving to the next.
+Each version delivers independent value — the user doesn't need to wait for V2 to benefit.
 
 ---
 
-## Princípio Norte
+## Guiding Principle
 
-> Cada feature deve responder à pergunta: **"isso ajuda o usuário a economizar?"**
+> Every feature must answer the question: **"does this help the user save money?"**
 >
-> Se a resposta for não, ou incerta, a feature fica fora do escopo.
+> If the answer is no, or uncertain, the feature is out of scope.
 
 ---
 
-## V0 — MVP: Registrador de Preços
+## V0 — MVP: Price Logger
 
-**Objetivo**: Uma pessoa entra no supermercado, registra os itens enquanto coloca no carrinho
-e sabe exatamente quanto vai gastar antes de chegar ao caixa. Zero surpresa. Zero internet obrigatória.
+**Goal**: A person enters the supermarket, logs items as they put them in the cart,
+and knows exactly how much they'll spend before reaching the checkout. Zero surprises. Zero required internet.
 
 ### Features
 
-**Lista de Compras**
-- [ ] Criar e nomear uma lista de compras
-- [ ] Editar o nome e arquivar listas antigas
-- [ ] Definir meta de orçamento (opcional)
-- [ ] Visualizar todas as listas na tela home
+**Shopping List**
+- [ ] Create and name a shopping list
+- [ ] Edit the name and archive old lists
+- [ ] Set a budget goal (optional)
+- [ ] View all lists on the home screen
 
-**Adição de Itens**
-- [ ] Adicionar item: nome, quantidade, unidade (un/kg/g/L/ml/cx/pct), preço unitário
-- [ ] **Autocomplete por histórico local**: ao digitar, sugere itens das listas anteriores do usuário
-- [ ] **Autocomplete por catálogo embutido**: lista offline de ~5.000 produtos mais comuns do mercado brasileiro (nomes e marcas, bundlado com o app), sem depender de internet
-- [ ] Editar item inline (nome, quantidade, preço)
-- [ ] Ajuste rápido de quantidade com stepper (+ / −)
+**Adding Items**
+- [ ] Add item: name, quantity, unit (un/kg/g/L/ml/cx/pct), unit price
+- [ ] **Autocomplete from local history**: as the user types, suggest items from their previous lists
+- [ ] **Autocomplete from built-in catalog**: offline list of ~5,000 of the most common Brazilian grocery products (names and brands, bundled with the app), with no internet dependency
+- [ ] Edit item inline (name, quantity, price)
+- [ ] Quick quantity adjustment with a stepper (+ / −)
 
-**Total em Tempo Real**
-- [ ] **Footer sticky com total geral** — sempre visível, nunca some ← feature inegociável
-- [ ] Subtotal da sessão (apenas itens marcados / "no carrinho")
-- [ ] Animação de pulso ao alterar o total
-- [ ] Barra de progresso de orçamento (verde/âmbar/vermelho)
+**Real-Time Total**
+- [ ] **Sticky footer with overall total** — always visible, never disappears ← non-negotiable feature
+- [ ] Session subtotal (checked items only / "in cart")
+- [ ] Pulse animation when the total changes
+- [ ] Budget progress bar (green/amber/red)
 
-**Comparativo de Embalagens (Calculadora de Melhor Preço)**
-- [ ] Calculadora inline: dado `preço` e `quantidade + unidade`, exibe **preço por unidade de referência** (R$/kg, R$/L, R$/100g, R$/100ml)
-- [ ] Ao adicionar itens da mesma categoria com unidades diferentes, destaca qual é mais barato por unidade de medida
-- [ ] Exemplo: Óleo 900ml por R$ 8,99 vs. Óleo 2L por R$ 18,00 → mostra R$ 9,99/L vs. R$ 9,00/L → destaca que o 2L é mais barato por litro
+**Package Comparison (Best Price Calculator)**
+- [ ] Inline calculator: given `price` and `quantity + unit`, displays **price per reference unit** (R$/kg, R$/L, R$/100g, R$/100ml)
+- [ ] When adding items from the same category with different units, highlights which is cheaper per unit of measure
+- [ ] Example: 900ml oil for R$ 8.99 vs. 2L oil for R$ 18.00 → shows R$ 9.99/L vs. R$ 9.00/L → highlights that the 2L is cheaper per liter
 
-**Marcação e Organização**
-- [ ] Swipe direita para marcar item como "no carrinho"
-- [ ] Swipe esquerda para deletar item
-- [ ] Itens marcados colapsam ao fim da lista (não somem)
+**Checking and Organization**
+- [ ] Swipe right to mark item as "in cart"
+- [ ] Swipe left to delete item
+- [ ] Checked items collapse to the end of the list (not removed)
 
-**PWA e Offline**
-- [ ] 100% funcional offline (IndexedDB + Service Worker)
-- [ ] Instalável via "Adicionar à tela inicial" (manifest.json)
-- [ ] Aviso discreto quando offline
-- [ ] Aviso sobre perda de dados em modo incógnito
+**PWA and Offline**
+- [ ] 100% functional offline (IndexedDB + Service Worker)
+- [ ] Installable via "Add to Home Screen" (manifest.json)
+- [ ] Discreet notice when offline
+- [ ] Warning about data loss in incognito mode
 
-**Critério de sucesso do V0**:
-> Um usuário completa uma compra do início ao fim sem precisar de internet,
-> sabe o total exato antes de chegar ao caixa, e consegue operar o app inteiro com o polegar.
+**V0 success criteria**:
+> A user completes a shopping trip from start to finish without needing internet,
+> knows the exact total before reaching the checkout, and can operate the entire app with their thumb.
 
 ---
 
-## V1 — Scan de Código de Barras + Inteligência de Preços
+## V1 — Barcode Scanning + Price Intelligence
 
-**Objetivo**: Eliminar a digitação manual de nomes de produtos e começar a construir o
-histórico de preços que permite alertar o usuário sobre variações — "esse produto está
-R$ 2,50 mais caro que da última vez".
+**Goal**: Eliminate manual typing of product names and start building the
+price history that enables alerting the user to variations — "this product is
+R$ 2.50 more expensive than last time".
 
 ### Features
 
-**Scan de Código de Barras**
-- [ ] Scanner de câmera com `BarcodeDetector` API nativa (Chrome/Android)
-- [ ] Fallback para ZXing.js em browsers sem suporte nativo
-- [ ] Lookup no cache local (IndexedDB) primeiro — sem internet para produtos já vistos
-- [ ] Fallback para Open Food Facts API para produtos novos
-- [ ] Pré-preenchimento do formulário: nome, marca, unidade padrão, último preço conhecido
-- [ ] Feature detection: botão de scan oculto se API não disponível; manual sempre funciona
+**Barcode Scanning**
+- [ ] Camera scanner using the native `BarcodeDetector` API (Chrome/Android)
+- [ ] Fallback to ZXing.js on browsers without native support
+- [ ] Look up local cache (IndexedDB) first — no internet needed for previously seen products
+- [ ] Fallback to the Open Food Facts API for new products
+- [ ] Pre-fill the form: name, brand, default unit, last known price
+- [ ] Feature detection: scan button hidden if API unavailable; manual entry always works
 
-**Histórico e Alertas de Preço**
-- [ ] Histórico de preços por produto: `{ EAN, preço, unidade, data, nome da lista/loja }`
-- [ ] **Alerta de variação**: "Você comprou esse item por R$ X,XX em [data]. Hoje está R$ Y,YY (+Z%)"
-- [ ] Alerta visual (badge) ao adicionar produto com preço maior que o histórico
-- [ ] Histórico armazenado localmente no V1
+**Price History and Alerts**
+- [ ] Price history per product: `{ EAN, price, unit, date, list/store name }`
+- [ ] **Variation alert**: "You bought this item for R$ X.XX on [date]. Today it's R$ Y.YY (+Z%)"
+- [ ] Visual alert (badge) when adding a product priced higher than its history
+- [ ] History stored locally in V1
 
-**Comparativo de Embalagens — Aprimorado**
-- [ ] Normalização automática via EAN: ao escanear duas embalagens do mesmo produto (tamanhos diferentes), sugere qual é mais barato por unidade de referência
-- [ ] Histórico de comparativos salvo por categoria
+**Package Comparison — Enhanced**
+- [ ] Automatic normalization via EAN: when scanning two packages of the same product (different sizes), suggests which is cheaper per reference unit
+- [ ] Comparison history saved per category
 
-**Categorização**
-- [ ] Categorias automáticas via Open Food Facts (`categoryId` no item)
-- [ ] Categorias: Laticínios, Carnes, Hortifruti, Limpeza, Higiene, Mercearia, Bebidas, Padaria, Frios, Outros
+**Categorization**
+- [ ] Automatic categories via Open Food Facts (`categoryId` on the item)
+- [ ] Categories: Dairy, Meats, Produce, Cleaning, Personal Care, Grocery, Beverages, Bakery, Deli, Other
 
-**Gráficos de Evolução de Gastos**
-- [ ] Gráfico de gastos **semanal**: total por dia da semana nos últimos 7 dias
-- [ ] Gráfico de gastos **mensal**: total por semana no mês atual vs. mês anterior
-- [ ] Gráfico de gastos **anual**: total por mês nos últimos 12 meses
-- [ ] Destaque: "Você gastou X% a mais/menos que no mesmo período anterior"
-- [ ] Breakdown por categoria (quanto foi em carnes, laticínios, limpeza, etc.)
-- [ ] Exportar relatório (JSON ou CSV) para controle financeiro externo
+**Spending Evolution Charts**
+- [ ] **Weekly** spending chart: total per day of the week over the last 7 days
+- [ ] **Monthly** spending chart: total per week in the current month vs. previous month
+- [ ] **Annual** spending chart: total per month over the last 12 months
+- [ ] Highlight: "You spent X% more/less than the same period before"
+- [ ] Breakdown by category (how much on meats, dairy, cleaning, etc.)
+- [ ] Export report (JSON or CSV) for external financial tracking
 
-**Critério de sucesso do V1**:
-> Um usuário é alertado de pelo menos 1 variação de preço durante a compra,
-> e consegue adicionar 10 itens via scan em menos de 2 minutos.
+**V1 success criteria**:
+> A user is alerted to at least 1 price variation during a shopping trip,
+> and can add 10 items via scan in under 2 minutes.
 
 ---
 
-## V2 — NF-e + Comparativo de Preços (Ferramenta de Economia Real)
+## V2 — NF-e + Price Comparison (Real Savings Tool)
 
-**Objetivo**: Transformar o app em uma ferramenta coletiva de defesa do consumidor —
-transparência de preços usando os dados fiscais obrigatórios que os estabelecimentos
-já emitem, mas nenhum app usa.
+**Goal**: Transform the app into a collective consumer advocacy tool —
+price transparency using the mandatory fiscal data that stores already
+issue, but no app uses.
 
 ### Features
 
-**Importação de NF-e (Nota Fiscal Eletrônica)**
-- [ ] Scan do QR code do cupom fiscal (NFC-e/NF-e) — **diferencial exclusivo no mercado BR**
-- [ ] Importação automática: todos os itens da compra com preços reais da nota fiscal
-- [ ] Opção: importar para lista ativa ou criar nova lista a partir da nota
-- [ ] Histórico de notas fiscais (local, nunca sai do dispositivo — LGPD)
-- [ ] Proxy serverless para SEFAZ (one Cloudflare Worker por UF, stateless)
+**NF-e Import (Electronic Fiscal Invoice)**
+- [ ] Scan the fiscal receipt QR code (NFC-e/NF-e) — **exclusive differentiator in the Brazilian market**
+- [ ] Automatic import: all purchase items with real prices from the fiscal invoice
+- [ ] Option: import into the active list or create a new list from the receipt
+- [ ] Fiscal receipt history (local, never leaves the device — LGPD)
+- [ ] Serverless proxy for SEFAZ (one Cloudflare Worker per state, stateless)
 
-**Comparativo de Preços**
-- [ ] **"Qual loja está mais barata para a minha lista?"** — antes de sair de casa
-- [ ] Ranking de lojas por economia estimada para a lista ativa do usuário
-- [ ] **"Esse produto está R$ X,XX mais barato no [Estabelecimento Y] a X km"** — no corredor
-- [ ] Dados crowd-sourced anônimos com opt-in explícito
-- [ ] Comparativo por cidade e estado
+**Price Comparison**
+- [ ] **"Which store is cheapest for my list?"** — before leaving home
+- [ ] Store ranking by estimated savings for the user's active list
+- [ ] **"This product is R$ X.XX cheaper at [Store Y], X km away"** — in the aisle
+- [ ] Anonymous crowd-sourced data with explicit opt-in
+- [ ] Comparison by city and state
 
-**Alertas Proativos**
-- [ ] "Seus 5 produtos mais comprados subiram em média X% este mês"
-- [ ] "O Atacadão está X% mais barato que o Carrefour para a sua lista desta semana"
-- [ ] Alerta de promoção: quando produto historicamente caro está abaixo da média
+**Proactive Alerts**
+- [ ] "Your 5 most-purchased products rose by an average of X% this month"
+- [ ] "Atacadão is X% cheaper than Carrefour for your list this week"
+- [ ] Promotion alert: when a historically expensive product drops below average
 
-**Gráficos — V2 Adições**
-- [ ] Gráfico de inflação pessoal: variação dos seus preços pagos vs. IPCA-alimentação oficial
-- [ ] "Você pagou X% mais caro que a média da sua cidade nesse produto"
-- [ ] Mapa de calor de preços por estabelecimento e produto
+**Charts — V2 Additions**
+- [ ] Personal inflation chart: variation in your paid prices vs. the official IPCA-food index
+- [ ] "You paid X% more than your city's average for this product"
+- [ ] Price heat map by store and product
 
-**Critério de sucesso do V2**:
-> Um usuário identifica, antes de sair de casa, em qual loja vai gastar menos para a sua
-> lista. Um usuário importa uma nota fiscal completa em menos de 30 segundos.
+**V2 success criteria**:
+> A user identifies, before leaving home, which store will cost them the least for their
+> list. A user imports a complete fiscal receipt in under 30 seconds.
 
-**Impacto social esperado**:
-Com dados agregados e anônimos, o app torna-se uma ferramenta pública de transparência
-de preços — coletivizando a informação que hoje só os supermercados possuem.
+**Expected social impact**:
+With aggregated, anonymous data, the app becomes a public price transparency
+tool — collectivizing information that today only supermarkets possess.
 
 ---
 
-## Fora do Escopo (todas as versões)
+## Out of Scope (all versions)
 
-| Feature | Motivo |
+| Feature | Reason |
 |---------|--------|
-| Entrega de produtos | iFood e Rappi já resolvem melhor |
-| Pagamento integrado | Risco regulatório, não é o core value |
-| Gestão de estoque doméstico | Out of Milk resolve; distrai do foco |
-| Receitas e ingredientes | Cookpad resolve; complexidade alta |
-| Compartilhamento social de listas | Risco de LGPD; fora do uso individual |
-| Cupons e promoções de lojas | Requer parcerias comerciais complexas |
-| Loyalty programs (CPF na loja) | Dado sensível; fora do escopo inicial |
+| Product delivery | iFood and Rappi already solve this better |
+| Integrated payment | Regulatory risk, not the core value |
+| Household inventory management | Out of Milk solves this; distracts from focus |
+| Recipes and ingredients | Cookpad solves this; high complexity |
+| Social list sharing | LGPD risk; outside individual use |
+| Store coupons and promotions | Requires complex business partnerships |
+| Loyalty programs (CPF at checkout) | Sensitive data; out of initial scope |
 
 ---
 
-## Dependências Técnicas por Versão
+## Technical Dependencies by Version
 
-| Dependência | V0 | V1 | V2 |
+| Dependency | V0 | V1 | V2 |
 |-------------|-----|-----|-----|
 | IndexedDB + Dexie.js | ✅ | ✅ | ✅ |
 | Service Worker (Workbox) | ✅ | ✅ | ✅ |
-| Catálogo offline (~5k produtos BR) | ✅ | — | — |
+| Offline catalog (~5k BR products) | ✅ | — | — |
 | BarcodeDetector API / ZXing.js | — | ✅ | ✅ |
 | Open Food Facts API | — | ✅ | ✅ |
-| Backend (usuário/sync) | ❌ | Opcional | ✅ |
-| Proxy SEFAZ (Cloudflare Worker) | — | — | ✅ |
-| Infraestrutura crowd-sourcing | — | — | ✅ |
+| Backend (user/sync) | ❌ | Optional | ✅ |
+| SEFAZ Proxy (Cloudflare Worker) | — | — | ✅ |
+| Crowd-sourcing infrastructure | — | — | ✅ |

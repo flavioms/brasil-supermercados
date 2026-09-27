@@ -1,181 +1,181 @@
-# Arquitetura MVC — Visão Geral
+# MVC Architecture — Overview
 
 ---
 
-## Princípios Fundamentais
+## Core Principles
 
-| Camada | Tecnologia | Responsabilidade | Regra de Ouro |
+| Layer | Technology | Responsibility | Golden Rule |
 |--------|-----------|-----------------|---------------|
-| **Model** | Interfaces TS + Dexie.js | Definição de tipos e schema do IndexedDB | Sem lógica de negócio |
-| **View** | Componentes React (Next.js) | Renderização, estados visuais, gestos | Sem acesso direto ao banco |
-| **Controller** | Módulos TS singleton | Mutações, validações | Única fonte de mudanças |
-| **Hook** | Custom hooks (`useLiveQuery`) | Bridge entre Dexie e componentes React | Apenas wrappers de liveQuery |
+| **Model** | TS interfaces + Dexie.js | Type definitions and IndexedDB schema | No business logic |
+| **View** | React components (Next.js) | Rendering, visual states, gestures | No direct database access |
+| **Controller** | Singleton TS modules | Mutations, validations | Single source of changes |
+| **Hook** | Custom hooks (`useLiveQuery`) | Bridge between Dexie and React components | Only liveQuery wrappers |
 
-**Fluxo unidirecional**:
+**Unidirectional flow**:
 ```
-Componente → Controller → IndexedDB (Dexie) → useLiveQuery (hook) → Componente
+Component → Controller → IndexedDB (Dexie) → useLiveQuery (hook) → Component
 ```
 
-O componente nunca escreve diretamente no banco.
-O banco notifica o componente via `useLiveQuery` — o único canal de atualização da View.
-Controllers não conhecem React; hooks não conhecem lógica de negócio.
+The component never writes directly to the database.
+The database notifies the component via `useLiveQuery` — the only update channel for the View.
+Controllers know nothing about React; hooks know nothing about business logic.
 
 ---
 
-## Fluxo Principal — Adicionar um Item
+## Main Flow — Adding an Item
 
 ```
-[Usuário toca FAB]
+[User taps FAB]
         │
         ▼
-[View: item-form-sheet abre]         ← animação de bottom sheet
-[View: foco automático no campo nome]
-[View: suggestions por histórico/catálogo aparecem conforme digita]
+[View: item-form-sheet opens]         ← bottom sheet animation
+[View: auto-focus on the name field]
+[View: suggestions from history/catalog appear as the user types]
         │
-        ▼ (usuário preenche nome, qtd, preço)
-[View: preview do lineTotal atualiza em tempo real]  ← UI otimista
+        ▼ (user fills in name, qty, price)
+[View: lineTotal preview updates in real time]  ← optimistic UI
         │
-        ▼ (toque em "Adicionar")
-[ItemFormSheet chama: ListItemController.addItem(listId, formData)]
-        │
-        ▼
-[Controller: valida inputs]
-[Controller: computa lineTotal = qty × price]
-[Controller: atribui position (gap encoding)]
-[Controller: escreve no IndexedDB via Dexie]
-[Controller: chama ShoppingListController.recomputeTotals(listId)]
+        ▼ (tap on "Add")
+[ItemFormSheet calls: ListItemController.addItem(listId, formData)]
         │
         ▼
-[ShoppingListController: soma todos os lineTotals]
-[ShoppingListController: atualiza totalCost + checkedTotal na lista]
+[Controller: validates inputs]
+[Controller: computes lineTotal = qty × price]
+[Controller: assigns position (gap encoding)]
+[Controller: writes to IndexedDB via Dexie]
+[Controller: calls ShoppingListController.recomputeTotals(listId)]
         │
         ▼
-[Dexie liveQuery detecta mudança em listItems + shoppingList]
+[ShoppingListController: sums all lineTotals]
+[ShoppingListController: updates totalCost + checkedTotal on the list]
         │
         ▼
-[useLiveQuery re-executa → novo snapshot entregue ao componente]
-[React re-renderiza: item aparece com fade-in via classe Tailwind]
-[StickyTotalFooter re-renderiza com animação de pulso]
-[ItemFormSheet: fecha via estado local (useState)]
+[Dexie liveQuery detects change in listItems + shoppingList]
+        │
+        ▼
+[useLiveQuery re-runs → new snapshot delivered to the component]
+[React re-renders: item appears with fade-in via Tailwind class]
+[StickyTotalFooter re-renders with pulse animation]
+[ItemFormSheet: closes via local state (useState)]
 ```
 
-**Por que isso é correto offline**: IndexedDB é sempre local. Não existe nenhum passo
-que depende de rede. A View nunca espera por uma resposta de servidor.
+**Why this is correct offline**: IndexedDB is always local. There is no step
+that depends on the network. The View never waits for a server response.
 
 ---
 
-## Inventário de Telas
+## Screen Inventory
 
-| ID | Rota | Descrição | Frequência de uso |
+| ID | Route | Description | Usage Frequency |
 |----|------|-----------|------------------|
-| `lists-screen` | `/` | Home: todas as listas ativas | Baixa (1x por visita ao app) |
-| `list-detail-screen` | `/lista/:id` | Sessão de compra ativa | **Alta** (uso principal) |
-| `item-form-sheet` | modal bottom sheet | Adicionar / editar item | **Altíssima** (por item comprado) |
-| `budget-setup-sheet` | modal bottom sheet | Definir meta de orçamento | Baixa |
-| `list-settings-sheet` | modal bottom sheet | Renomear, arquivar, deletar | Baixa |
-| `analytics-screen` | `/analytics` (V1) | Gráficos de evolução de gastos | Média |
-| `settings-screen` | `/configuracoes` | Configurações do app | Baixa |
-| `barcode-scan-screen` | `/scanner` (V1) | Câmera + BarcodeDetector | Alta (V1) |
-| `nfe-scan-screen` | `/nfe` (V2) | Scan do QR code do cupom fiscal | Média (V2) |
+| `lists-screen` | `/` | Home: all active lists | Low (1x per app visit) |
+| `list-detail-screen` | `/lista/:id` | Active shopping session | **High** (main use) |
+| `item-form-sheet` | modal bottom sheet | Add / edit item | **Very high** (per item purchased) |
+| `budget-setup-sheet` | modal bottom sheet | Set budget goal | Low |
+| `list-settings-sheet` | modal bottom sheet | Rename, archive, delete | Low |
+| `analytics-screen` | `/analytics` (V1) | Spending evolution charts | Medium |
+| `settings-screen` | `/configuracoes` | App settings | Low |
+| `barcode-scan-screen` | `/scanner` (V1) | Camera + BarcodeDetector | High (V1) |
+| `nfe-scan-screen` | `/nfe` (V2) | QR code scan for the tax receipt | Medium (V2) |
 
-A `list-detail-screen` é onde o usuário passa 90%+ do tempo de uso. Todo investimento
-de design e performance vai prioritariamente para esta tela.
+The `list-detail-screen` is where the user spends 90%+ of their usage time. All design
+and performance investment goes primarily into this screen.
 
 ---
 
-## Hierarquia de Componentes — Tela Principal
+## Component Hierarchy — Main Screen
 
 ```
 <ListDetailScreen>                        ← src/app/lista/[id]/page.tsx
   ├── <ListHeader>
-  │     ├── [botão voltar] [nome da lista] [overflow menu]
-  │     └── <BudgetProgressBar>           ← visível se orçamento definido
+  │     ├── [back button] [list name] [overflow menu]
+  │     └── <BudgetProgressBar>           ← visible if a budget is set
   │
   ├── <ItemList>
   │     ├── <UncheckedSection>
-  │     │     └── <ItemRow> × N           ← ordenado por position ASC
-  │     └── <CheckedSection>              ← colapsada por padrão
+  │     │     └── <ItemRow> × N           ← sorted by position ASC
+  │     └── <CheckedSection>              ← collapsed by default
   │           └── <ItemRow checked> × M
   │
-  ├── <StickyTotalFooter>                 ← SEMPRE visível, fixo na base
-  │     ├── "No carrinho: R$ X,XX"
-  │     ├── "Total: R$ X,XX"
-  │     └── "Falta: R$ X,XX"             ← se orçamento definido
+  ├── <StickyTotalFooter>                 ← ALWAYS visible, fixed at the bottom
+  │     ├── "In cart: R$ X.XX"
+  │     ├── "Total: R$ X.XX"
+  │     └── "Remaining: R$ X.XX"          ← if a budget is set
   │
-  └── <FabAddItem>                        ← abre <ItemFormSheet>
+  └── <FabAddItem>                        ← opens <ItemFormSheet>
 ```
 
 ---
 
-## Componente `<ItemRow>` (mais interativo do app)
+## `<ItemRow>` Component (the most interactive one in the app)
 
 ```
 <ItemRow>
   └── <SwipeContainer>
-        ├── [fundo verde — check]     ← aparece no swipe direita
-        ├── [fundo vermelho — delete] ← aparece no swipe esquerda
+        ├── [green background — check]     ← appears on right swipe
+        ├── [red background — delete]      ← appears on left swipe
         └── <div> (item-content)
-              ├── <button> check-circle  ← min-h/w 48px (zona do polegar)
+              ├── <button> check-circle  ← min-h/w 48px (thumb zone)
               ├── <p> item-name          ← text-base, flex-1
-              ├── <p> item-unit-price    ← preço/unidade, text-sm text-gray-500
+              ├── <p> item-unit-price    ← price/unit, text-sm text-gray-500
               └── <span> item-line-total ← text-base font-medium, text-right
 ```
 
-Ao tocar na área de preço/quantidade: abre overlay de edição inline com stepper.
-Ao tocar no nome: abre o `<ItemFormSheet>` para edição completa.
+Tapping the price/quantity area: opens an inline edit overlay with a stepper.
+Tapping the name: opens `<ItemFormSheet>` for full editing.
 
 ---
 
-## Inventário de Controllers
+## Controller Inventory
 
-| Controller | Responsabilidade | Métodos Principais |
+| Controller | Responsibility | Main Methods |
 |------------|-----------------|-------------------|
-| `ShoppingListController` | CRUD de listas + totais | `createList`, `renameList`, `setBudgetGoal`, `archiveList`, `deleteList`, `recomputeTotals` |
-| `ListItemController` | CRUD de itens + toggleCheck | `addItem`, `updateItem`, `toggleCheck`, `deleteItem`, `updateQuantity` |
-| `AutocompleteController` | Sugestões de nomes de produto | `getSuggestions`, `buildLocalIndex`, `loadBundledCatalog` |
-| `PriceComparisonController` | Calculadora de melhor preço | `calcPricePerUnit`, `comparePrices`, `suggestBestValue` |
-| `OfflineQueueController` | Fila de sync (V0 stub) | `enqueue`, `processQueue`, `clearQueue` |
-| `ProductController` | Lookup EAN + Open Food Facts (V1) | `lookupByBarcode`, `recordPriceObservation` |
-| `AnalyticsController` | Agregação para gráficos (V1) | `getWeeklyTotals`, `getMonthlyTotals`, `getYearlyTotals`, `getCategoryBreakdown` |
-| `NfeController` | Parse + fetch de notas fiscais (V2) | `parseQrCode`, `fetchReceipt`, `importReceiptToList` |
+| `ShoppingListController` | List CRUD + totals | `createList`, `renameList`, `setBudgetGoal`, `archiveList`, `deleteList`, `recomputeTotals` |
+| `ListItemController` | Item CRUD + toggleCheck | `addItem`, `updateItem`, `toggleCheck`, `deleteItem`, `updateQuantity` |
+| `AutocompleteController` | Product name suggestions | `getSuggestions`, `buildLocalIndex`, `loadBundledCatalog` |
+| `PriceComparisonController` | Best-price calculator | `calcPricePerUnit`, `comparePrices`, `suggestBestValue` |
+| `OfflineQueueController` | Sync queue (V0 stub) | `enqueue`, `processQueue`, `clearQueue` |
+| `ProductController` | EAN lookup + Open Food Facts (V1) | `lookupByBarcode`, `recordPriceObservation` |
+| `AnalyticsController` | Aggregation for charts (V1) | `getWeeklyTotals`, `getMonthlyTotals`, `getYearlyTotals`, `getCategoryBreakdown` |
+| `NfeController` | Parsing + fetching of tax receipts (V2) | `parseQrCode`, `fetchReceipt`, `importReceiptToList` |
 
-**Nota**: Não existe `AppController` — o bootstrap do Next.js é feito no `layout.tsx` (registro do Service Worker via `useEffect`) e o roteamento é gerenciado pelo App Router nativamente.
+**Note**: There is no `AppController` — the Next.js bootstrap is done in `layout.tsx` (Service Worker registration via `useEffect`) and routing is natively managed by the App Router.
 
 ---
 
-## Ponto de Extensão V1: Autocomplete
+## V1 Extension Point: Autocomplete
 
-O `AutocompleteController` tem duas fontes de dados, consultadas em cascata:
+The `AutocompleteController` has two data sources, queried in cascade:
 
 ```
-[Usuário digita no campo nome]
+[User types in the name field]
          │
          ▼
-[1. IndexedDB: items das listas anteriores do usuário]
-         │ (mais rápido, offline, personalizado)
+[1. IndexedDB: items from the user's previous lists]
+         │ (fastest, offline, personalized)
          │
-         ▼ (se poucas sugestões)
-[2. Catálogo embutido: lista de ~5.000 produtos BR em memória]
-         │ (zero latência, zero internet, bundlado no app)
+         ▼ (if few suggestions)
+[2. Bundled catalog: list of ~5,000 BR products in memory]
+         │ (zero latency, zero internet, bundled with the app)
          │
-         ▼ (V1: se ainda sem match)
-[3. Open Food Facts API — busca por nome/texto]
-         │ (requer internet, cachea resultado)
+         ▼ (V1: if still no match)
+[3. Open Food Facts API — search by name/text]
+         │ (requires internet, caches result)
 ```
 
-O catálogo embutido é um JSON comprimido (gzip) com os produtos mais comuns do varejo
-brasileiro: arroz, feijão, macarrão, óleos, marcas conhecidas (Boa Vita, Tio João,
-Camil, Sadia, Friboi, etc.). Estimativa: ~5k entradas, ~200KB comprimido.
+The bundled catalog is a gzip-compressed JSON with the most common products in
+Brazilian retail: rice, beans, pasta, oils, well-known brands (Boa Vita, Tio João,
+Camil, Sadia, Friboi, etc.). Estimate: ~5k entries, ~200KB compressed.
 
 ---
 
-## Ponto de Extensão V1: Comparativo de Embalagens
+## V1 Extension Point: Package Comparison
 
-O `PriceComparisonController.calcPricePerUnit()` é chamado sempre que um item tem
-`unitPrice > 0` e `unit != 'un'`:
+`PriceComparisonController.calcPricePerUnit()` is called whenever an item has
+`unitPrice > 0` and `unit != 'un'`:
 
 ```javascript
-// Unidades de referência para normalização
+// Reference units for normalization
 REFERENCIA = {
   kg:  { ref: 'kg',  fator: 1      },
   g:   { ref: 'kg',  fator: 0.001  },  // → R$/kg
@@ -189,66 +189,66 @@ REFERENCIA = {
 pricePerUnit = unitPrice / (quantity × fator)
 ```
 
-A View exibe esse valor como texto secundário abaixo do nome do item:
-`"Óleo Soja 900ml — R$ 9,99 · R$ 11,10/L"`
+The View displays this value as secondary text below the item name:
+`"Soybean Oil 900ml — R$ 9.99 · R$ 11.10/L"`
 
 ---
 
-## Ponto de Extensão V1: Analytics
+## V1 Extension Point: Analytics
 
-O `AnalyticsController` agrega dados do IndexedDB sem nenhuma chamada de rede.
-Todas as listas arquivadas e ativas são a fonte de verdade para os gráficos.
+The `AnalyticsController` aggregates data from IndexedDB with no network calls at all.
+All archived and active lists are the source of truth for the charts.
 
-O `analytics-screen` renderiza os gráficos usando apenas SVG inline (sem biblioteca
-de charts pesada) ou, se necessidade de maior riqueza visual, Chart.js via CDN lazy-loaded
-apenas quando a tela for aberta.
+The `analytics-screen` renders charts using only inline SVG (no heavy charting
+library) or, if greater visual richness is needed, Chart.js via CDN lazy-loaded
+only when the screen is opened.
 
 ---
 
-## Ponto de Extensão V2: NF-e
+## V2 Extension Point: NF-e
 
 ```
-[Usuário abre nfe-scan-screen]
+[User opens nfe-scan-screen]
          │
          ▼
-[BarcodeDetector lê QR code]
+[BarcodeDetector reads QR code]
          │
          ▼
 [NfeController.parseQrCode(qrContent)]
-→ extrai chaveNfe (44 dígitos) da URL do QR
-→ determina UF a partir dos dígitos 3–4 da chave
+→ extracts chaveNfe (44 digits) from the QR URL
+→ determines the state (UF) from digits 3–4 of the key
          │
          ▼
 [NfeController.fetchReceipt(chaveNfe)]
-→ chama proxy: https://nfe.supermercadobrasil.app/sefaz/{uf}/{chave}
-→ proxy repassa para endpoint SEFAZ da UF correta
-→ retorna XML/JSON da nota fiscal
-→ persiste em receipts store (IndexedDB)
+→ calls proxy: https://nfe.supermercadobrasil.app/sefaz/{uf}/{chave}
+→ proxy forwards to the correct state's SEFAZ endpoint
+→ returns the tax receipt's XML/JSON
+→ persists to the receipts store (IndexedDB)
          │
          ▼
 [NfeController.importReceiptToList(receiptId, listId)]
-→ parse dos campos NF-e: xProd (nome), qCom (qtd), vUnCom (preço unitário)
-→ cria ListItems via ListItemController.addItem() em batch
-→ priceSource = 'nfe' em cada item
+→ parses NF-e fields: xProd (name), qCom (qty), vUnCom (unit price)
+→ creates ListItems via ListItemController.addItem() in batch
+→ priceSource = 'nfe' on each item
 ```
 
-O proxy é o único componente que precisa de servidor no V2. Ele é stateless — não armazena
-nada, apenas faz proxy da chamada para a SEFAZ com o cabeçalho CORS correto.
+The proxy is the only component that needs a server in V2. It is stateless — it stores
+nothing, it just proxies the call to SEFAZ with the correct CORS header.
 
 ---
 
-## Estrutura de Arquivos
+## File Structure
 
 ```
 src/
 ├── app/                        ← Next.js App Router
-│   ├── layout.tsx              ← RootLayout: providers, metadata PWA
+│   ├── layout.tsx              ← RootLayout: providers, PWA metadata
 │   ├── page.tsx                ← lists-screen (home)
 │   ├── lista/[id]/page.tsx     ← list-detail-screen
 │   ├── configuracoes/page.tsx  ← settings-screen
 │   └── globals.css             ← Tailwind @import + @theme tokens
 │
-├── components/                 ← Componentes React reutilizáveis
+├── components/                 ← Reusable React components
 │   ├── AppHeader.tsx
 │   ├── BottomNavBar.tsx
 │   ├── ListCard.tsx
@@ -256,22 +256,22 @@ src/
 │   ├── BudgetProgressBar.tsx
 │   ├── StickyTotalFooter.tsx
 │   ├── ItemFormSheet.tsx
-│   ├── BottomSheet.tsx         ← container genérico reutilizável
-│   ├── SwipeContainer.tsx      ← gestos de swipe
-│   ├── AutocompleteInput.tsx   ← input com suggestions
-│   └── PriceComparisonBadge.tsx ← "R$ 11,10/L"
+│   ├── BottomSheet.tsx         ← generic reusable container
+│   ├── SwipeContainer.tsx      ← swipe gestures
+│   ├── AutocompleteInput.tsx   ← input with suggestions
+│   └── PriceComparisonBadge.tsx ← "R$ 11.10/L"
 │
 ├── controllers/
 │   ├── ShoppingListController.ts
 │   ├── ListItemController.ts
-│   ├── AutocompleteController.ts   ← V0 (histórico local + catálogo)
-│   ├── PriceComparisonController.ts ← V0 (cálculo por unidade)
-│   ├── OfflineQueueController.ts   ← stub V0, ativo V1+
+│   ├── AutocompleteController.ts   ← V0 (local history + catalog)
+│   ├── PriceComparisonController.ts ← V0 (per-unit calculation)
+│   ├── OfflineQueueController.ts   ← V0 stub, active in V1+
 │   ├── ProductController.ts        ← V1
 │   ├── AnalyticsController.ts      ← V1
 │   └── NfeController.ts            ← V2
 │
-├── hooks/                      ← Custom hooks (wrappers de useLiveQuery)
+├── hooks/                      ← Custom hooks (useLiveQuery wrappers)
 │   ├── useShoppingLists.ts
 │   ├── useShoppingList.ts
 │   ├── useListItems.ts
@@ -279,49 +279,49 @@ src/
 │   └── useAutocomplete.ts
 │
 ├── models/
-│   ├── db.ts                   ← Dexie schema (versões 1, 2, 3)
+│   ├── db.ts                   ← Dexie schema (versions 1, 2, 3)
 │   ├── ShoppingList.ts         ← interface + factory function
 │   ├── ListItem.ts             ← interface + factory function
-│   ├── Category.ts             ← scaffold para V1
+│   ├── Category.ts             ← scaffold for V1
 │   ├── Product.ts              ← V1
 │   ├── PriceHistory.ts         ← V1
 │   ├── Receipt.ts              ← V2
-│   └── SyncQueueItem.ts        ← scaffold para V1+
+│   └── SyncQueueItem.ts        ← scaffold for V1+
 │
 ├── utils/
 │   ├── currency.ts             ← Intl.NumberFormat pt-BR
 │   ├── uuid.ts                 ← crypto.randomUUID + fallback
-│   ├── validation.ts           ← constantes + funções compartilhadas
+│   ├── validation.ts           ← shared constants + functions
 │   ├── haptics.ts              ← navigator.vibrate wrapper
-│   └── units.ts                ← conversão e normalização de unidades
+│   └── units.ts                ← unit conversion and normalization
 │
 └── data/
-    └── produtos-br.json        ← catálogo offline ~5k produtos BR (V0)
+    └── produtos-br.json        ← offline catalog of ~5k BR products (V0)
 ```
 
-Service Worker gerado automaticamente pelo `@ducanh2912/next-pwa` em `public/sw.js` na build.
-Estratégias de cache configuradas em `next.config.ts` via opções do plugin.
+The Service Worker is automatically generated by `@ducanh2912/next-pwa` at `public/sw.js` during the build.
+Cache strategies are configured in `next.config.ts` via the plugin's options.
 
 ---
 
-## Desafios Técnicos Antecipados
+## Anticipated Technical Challenges
 
-### 1. Bottom sheet + teclado Android
-Quando o teclado numérico abre, o Chrome em modo `resize` move o viewport. Solução:
-usar `interactive-widget=resizes-visual` no `<meta name="viewport">` e escutar
-`visualViewport.resize` para reposicionar o sheet independentemente do layout viewport.
+### 1. Bottom sheet + Android keyboard
+When the numeric keyboard opens, Chrome in `resize` mode shifts the viewport. Solution:
+use `interactive-widget=resizes-visual` in `<meta name="viewport">` and listen for
+`visualViewport.resize` to reposition the sheet independently of the viewport layout.
 
-### 2. Swipe vs. gesto de voltar do Android
-Chrome usa swipe da borda esquerda para navegar. Solução: iniciar detecção de swipe
-somente quando `touchstart.clientX > 20px` da borda esquerda.
+### 2. Swipe vs. Android back gesture
+Chrome uses a swipe from the left edge to navigate. Solution: only start swipe detection
+when `touchstart.clientX > 20px` from the left edge.
 
-### 3. IndexedDB em modo privado
-Quota limitada agressivamente. Solução: detectar com `navigator.storage.persist()` e
-exibir aviso antes do usuário começar a usar o app em modo privado.
+### 3. IndexedDB in private mode
+Quota is aggressively limited. Solution: detect with `navigator.storage.persist()` and
+show a warning before the user starts using the app in private mode.
 
 ### 4. Dexie liveQuery + React
-O hook `useLiveQuery` do pacote `dexie-react-hooks` gerencia o ciclo de vida da subscription automaticamente — cancela no unmount do componente. Não é necessário nenhum gerenciamento manual de subscription.
+The `useLiveQuery` hook from the `dexie-react-hooks` package automatically manages the subscription lifecycle — it cancels on component unmount. No manual subscription management is needed.
 
-### 5. Catálogo de produtos BR embutido
-O JSON de ~5k produtos precisa ser carregado de forma não-bloqueante. Solução: lazy import
-do `AutocompleteController`, carregado apenas quando o usuário abre o formulário de adição.
+### 5. Bundled BR product catalog
+The ~5k product JSON needs to be loaded non-blockingly. Solution: lazy import
+of `AutocompleteController`, loaded only when the user opens the add-item form.

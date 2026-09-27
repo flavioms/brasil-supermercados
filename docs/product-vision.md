@@ -1,149 +1,150 @@
-# Visão do Produto — Supermercado Brasil
+# Product Vision — Supermercado Brasil
 
 ---
 
-## O Problema
+## The Problem
 
-### Contexto Econômico
+### Economic Context
 
-O Brasil atravessa um período de inflação persistente dos alimentos. O IPCA-alimentação
-acumula altas consecutivas, com produtos básicos como arroz, feijão, óleo de soja, ovos
-e carne subindo toda semana. Para a maioria das famílias brasileiras, o supermercado é o
-maior gasto mensal — e a cada visita, o mesmo carrinho custa mais.
+Brazil is going through a period of persistent food inflation. The food IPCA (consumer
+price index) accumulates consecutive increases, with staple products such as rice, beans,
+soybean oil, eggs, and meat rising every week. For most Brazilian families, the
+supermarket is the largest monthly expense — and with every visit, the same cart costs more.
 
-Produtos com maior variação histórica de preço no Brasil:
-- Carne bovina (alcatra, frango, picanha)
-- Hortifruti (tomate, cenoura, batata)
-- Óleos vegetais (soja, canola, girassol)
-- Ovos
-- Café em pó
-- Leite integral
+Products with the greatest historical price variation in Brazil:
+- Beef (rump steak, chicken, picanha)
+- Produce (tomato, carrot, potato)
+- Vegetable oils (soybean, canola, sunflower)
+- Eggs
+- Ground coffee
+- Whole milk
 
-O comprometimento da renda das famílias de baixa e média renda com alimentação é
-desproporcionalmente alto. Para quem ganha até 3 salários mínimos, o supermercado
-representa 30–40% do orçamento mensal.
+The share of income that low- and middle-income families commit to food is
+disproportionately high. For those earning up to 3 minimum wages, the supermarket
+represents 30–40% of the monthly budget.
 
-### A Experiência Atual
+### The Current Experience
 
-- Você entra no supermercado com um orçamento em mente
-- Coloca itens no carrinho sem saber o total acumulado
-- Chega ao caixa e o valor é diferente do esperado — quase sempre acima
-- Às vezes precisa devolver produtos na frente da fila, situação constrangedora
-- Não tem como saber, no corredor, se o produto está mais caro que na semana passada
-- Não sabe se vale a pena ir ao Assaí mais longe em vez do Carrefour próximo
-- Nenhum app resolve esse problema de forma simples, offline e com uma mão só
+- You enter the supermarket with a budget in mind
+- You put items in the cart without knowing the accumulated total
+- You reach the checkout and the amount is different than expected — almost always higher
+- Sometimes you need to put products back in front of the line, an embarrassing situation
+- You have no way of knowing, in the aisle, whether the product is more expensive than last week
+- You don't know whether it's worth going to the farther Assaí instead of the nearby Carrefour
+- No app solves this problem in a simple, offline, one-handed way
 
 ---
 
-## Proposta de Valor
+## Value Proposition
 
-O Supermercado Brasil não é uma lista de compras. É uma **ferramenta de economia pessoal**
-para quem não pode se dar ao luxo de gastar além do planejado.
+Supermercado Brasil is not a shopping list. It is a **personal savings tool**
+for those who cannot afford to spend beyond what they planned.
 
-### O que o app oferece
+### What the app offers
 
-| Quando | O que o app faz |
+| When | What the app does |
 |--------|----------------|
-| Ao adicionar cada item | Mostra o total acumulado em tempo real |
-| Ao marcar item como "no carrinho" | Atualiza o subtotal da sessão |
-| Ao escanear um produto (V1) | Avisa se o preço subiu desde a última compra |
-| Antes de sair de casa (V2) | Indica qual loja está mais barata para a sua lista |
-| No final do mês (V2) | Mostra quanto você gastou e onde economizou |
+| When adding each item | Shows the accumulated total in real time |
+| When marking an item as "in cart" | Updates the session subtotal |
+| When scanning a product (V1) | Warns if the price has gone up since the last purchase |
+| Before leaving home (V2) | Indicates which store is cheapest for your list |
+| At the end of the month (V2) | Shows how much you spent and where you saved |
 
-### Missão
+### Mission
 
-> Colocar o poder da informação de preços na mão de quem mais precisa economizar.
+> Put the power of price information in the hands of those who most need to save.
 
 ---
 
 ## Personas
 
-### Persona Principal — "A Maria"
+### Primary Persona — "Maria"
 
-**Perfil:**
-- 35 anos, mãe de família, três filhos (5, 9 e 13 anos)
-- Renda familiar: R$ 3.500/mês
-- Faz compras semanais, geralmente no Atacadão ou Assaí
-- Orçamento semanal para alimentação: R$ 550–600
-- Dispositivo: Motorola Moto G (Android 12, RAM 4GB)
-- Conectividade dentro do mercado: sinal fraco ou inexistente
+**Profile:**
+- 35 years old, mother of three children (ages 5, 9, and 13)
+- Household income: R$ 3,500/month
+- Shops weekly, usually at Atacadão or Assaí
+- Weekly food budget: R$ 550–600
+- Device: Motorola Moto G (Android 12, 4GB RAM)
+- Connectivity inside the store: weak or nonexistent signal
 
-**Dores:**
-- Preços subiram tanto que não consegue mais comprar tudo o que costumava
-- Precisa fazer substituições no corredor ("levo o arroz ou o macarrão?") mas não sabe o impacto no total
-- Já passou por situação de devolver produtos no caixa — traumatizante
-- Não tem tempo para comparar preços em apps diferentes antes das compras
-- Não quer cadastro, não quer tutorial, não quer internet obrigatória
+**Pain points:**
+- Prices have risen so much she can no longer buy everything she used to
+- Needs to make substitutions in the aisle ("do I take the rice or the pasta?") but doesn't know the impact on the total
+- Has already experienced returning products at the checkout — traumatic
+- Doesn't have time to compare prices across different apps before shopping
+- Doesn't want to sign up, doesn't want a tutorial, doesn't want mandatory internet
 
-**O que ela precisa:**
-- Saber o total antes de chegar ao caixa
-- Uma interface que funcione com o polegar enquanto a outra mão segura produtos
-- Funcionar mesmo quando o sinal some dentro do mercado
-
----
-
-### Persona Secundária — "O João"
-
-**Perfil:**
-- 28 anos, mora sozinho, analista de TI
-- Renda: R$ 4.800/mês
-- Faz compras quinzenais no Carrefour ou Extra
-- Orçamento quinzenal: R$ 400 para alimentação
-- Dispositivo: Samsung Galaxy A54 (Android 13)
-- Mais letrado digitalmente, mas quer simplicidade durante as compras
-
-**Dores:**
-- Percebe que o mesmo carrinho custa mais a cada visita mas não tem dados para confirmar
-- Gostaria de saber se vale a pena ir ao Assaí mais distante em vez do Carrefour perto
-- Quer rastrear seus gastos com alimentação ao longo do tempo
-
-**O que ele precisa:**
-- Histórico de preços por produto para detectar variações
-- Comparativo de estabelecimentos para a sua lista específica
-- Exportar dados para planilha de controle financeiro
+**What she needs:**
+- To know the total before reaching the checkout
+- An interface that works with her thumb while the other hand holds products
+- To work even when the signal disappears inside the store
 
 ---
 
-## Declaração de Posicionamento
+### Secondary Persona — "João"
 
-**Para** famílias brasileiras que precisam economizar no supermercado em um cenário de
-inflação persistente dos alimentos,
+**Profile:**
+- 28 years old, lives alone, IT analyst
+- Income: R$ 4,800/month
+- Shops biweekly at Carrefour or Extra
+- Biweekly budget: R$ 400 for food
+- Device: Samsung Galaxy A54 (Android 13)
+- More digitally literate, but wants simplicity while shopping
 
-**o Supermercado Brasil** é um PWA offline-first
+**Pain points:**
+- Notices that the same cart costs more with every visit but has no data to confirm it
+- Would like to know whether it's worth going to the farther Assaí instead of the nearby Carrefour
+- Wants to track his food spending over time
 
-**que** mostra o total em tempo real, alerta quando um preço subiu e compara qual loja é
-mais barata para os seus produtos —
-
-**ao contrário de** apps como Bring! ou Listonic, que são listas sem preços; iFood e Rappi,
-que resolvem entrega mas ignoram completamente a experiência de quem precisa esticar o
-orçamento dentro da loja física; e BoaLista, que tentou isso mas parece inativo desde 2018.
+**What he needs:**
+- Price history per product to detect variations
+- Store comparison for his specific list
+- Export data to a financial control spreadsheet
 
 ---
 
-## Por que PWA (não app nativo)
+## Positioning Statement
 
-| Critério | PWA | App Nativo |
+**For** Brazilian families who need to save money at the supermarket amid a scenario of
+persistent food inflation,
+
+**Supermercado Brasil** is an offline-first PWA
+
+**that** shows the total in real time, alerts when a price has gone up, and compares which
+store is cheapest for your products —
+
+**unlike** apps such as Bring! or Listonic, which are lists without prices; iFood and Rappi,
+which solve delivery but completely ignore the experience of those who need to stretch
+their budget inside the physical store; and BoaLista, which attempted this but appears
+inactive since 2018.
+
+---
+
+## Why PWA (not a native app)
+
+| Criterion | PWA | Native App |
 |----------|-----|------------|
-| Instalação | Zero fricção — link ou QR code | Download na app store |
-| Atualização | Instantânea, silenciosa | Depende do usuário atualizar |
-| Offline | Service Worker | Requer implementação nativa |
-| Android mid-range | Leve, sem overhead de framework | APK pode ser pesado |
-| Custo de deploy | Hospedagem web simples | Apple Developer ($99/ano), Play Store |
-| Time to first use | Segundos | Minutos (download + instalação) |
+| Installation | Zero friction — link or QR code | Download from the app store |
+| Update | Instant, silent | Depends on the user updating |
+| Offline | Service Worker | Requires native implementation |
+| Mid-range Android | Lightweight, no framework overhead | APK can be heavy |
+| Deploy cost | Simple web hosting | Apple Developer ($99/year), Play Store |
+| Time to first use | Seconds | Minutes (download + installation) |
 
-**Insight de distribuição**: Um QR code na entrada do supermercado ou em panfletos de
-promoção pode gerar adoção imediata no ponto de dor — dentro da loja, na hora da compra.
-Nenhum app nativo consegue essa distribuição frictionless.
+**Distribution insight**: A QR code at the supermarket entrance or on promotional flyers
+can generate immediate adoption at the point of pain — inside the store, at the moment of
+purchase. No native app can achieve this kind of frictionless distribution.
 
 ---
 
-## O que o App NÃO é
+## What the App Is NOT
 
-- **Não é um app de delivery** — iFood e Rappi já resolvem isso
-- **Não é um comparador de preços online** — Buscapé e Google Shopping resolvem
-- **Não é um app de receitas** — Cookpad, TudoGostoso resolvem
-- **Não é gestão de estoque doméstico** — Out of Milk resolve
-- **Não é um app financeiro completo** — Nubank, Mobills resolvem
+- **It is not a delivery app** — iFood and Rappi already solve that
+- **It is not an online price comparator** — Buscapé and Google Shopping solve that
+- **It is not a recipe app** — Cookpad, TudoGostoso solve that
+- **It is not household inventory management** — Out of Milk solves that
+- **It is not a complete financial app** — Nubank, Mobills solve that
 
-O Supermercado Brasil faz uma coisa extremamente bem: **ajuda você a economizar dentro
-do supermercado físico**.
+Supermercado Brasil does one thing extremely well: **it helps you save money inside
+the physical supermarket**.

@@ -1,93 +1,93 @@
-# Regras de Negócio
+# Business Rules
 
-Este documento é a fonte da verdade para todas as regras e validações do sistema.
-Toda implementação deve respeitar estas regras. Mudanças requerem atualização aqui primeiro.
-
----
-
-## V0 — MVP: Registrador de Preços
-
-### Lista de Compras
-
-| ID | Regra |
-|----|-------|
-| **BR-01** | Uma lista tem nome obrigatório (1–60 caracteres, sem espaços apenas) |
-| **BR-02** | Uma lista pode ter meta de orçamento opcional em BRL (valor mínimo: R$ 0,01) |
-| **BR-03** | Uma lista pode estar em dois estados: `ativa` ou `arquivada` |
-| **BR-04** | Múltiplas listas podem coexistir simultaneamente (sem limite no V0) |
-| **BR-05** | Deletar uma lista remove todos os seus itens em cascata (operação irreversível) |
-| **BR-06** | O **total geral** da lista = soma de `(quantidade × preço_unitário)` de **todos** os itens |
-| **BR-07** | O **subtotal da sessão** = soma de `lineTotal` apenas dos itens com `isChecked = true` |
-| **BR-08** | Listas arquivadas não aparecem na tela principal (home), mas são acessíveis via filtro |
-
-### Item da Lista
-
-| ID | Regra |
-|----|-------|
-| **BR-09** | Um item tem nome obrigatório (1–80 caracteres) |
-| **BR-10** | Quantidade mínima: `0,001` \| Quantidade máxima: `9.999` |
-| **BR-11** | Preço unitário mínimo: `R$ 0,00` (item grátis é válido) \| Preço máximo: `R$ 99.999,99` |
-| **BR-12** | Unidades suportadas: `un`, `kg`, `g`, `L`, `ml`, `cx`, `pct` |
-| **BR-13** | Um item pode ser marcado como "no carrinho" (`isChecked = true`) sem ser deletado |
-| **BR-14** | Itens marcados **permanecem visíveis** na lista — colapsam ao fim, mas não somem |
-| **BR-15** | O total da linha (`lineTotal`) = `quantidade × preço_unitário` (armazenado para performance) |
-| **BR-16** | A posição do item na lista é controlada por um inteiro com gap encoding (múltiplos de 1000) |
-
-### Totais e Orçamento
-
-| ID | Regra |
-|----|-------|
-| **BR-17** | `totalCost` e `checkedTotal` na lista são recomputados após **cada mutação** de item |
-| **BR-18** | O progresso do orçamento é calculado sobre o **total geral** (não só os itens marcados) |
-| **BR-19** | Ao ultrapassar 100% do orçamento: indicador visual distinto (vermelho + animação de pulso) |
-| **BR-20** | A exibição do preço por unidade de medida (R$/kg, R$/L) é calculada a partir de `unitPrice` e `unit` |
-
-### Offline e Persistência
-
-| ID | Regra |
-|----|-------|
-| **BR-21** | Toda operação (criar, editar, marcar, deletar) funciona **100% offline** |
-| **BR-22** | Os dados persistem entre sessões do browser via IndexedDB |
-| **BR-23** | Em modo privado/incógnito, o app deve exibir aviso sobre possível perda de dados ao fechar a aba |
-| **BR-24** | O app não bloqueia nenhuma ação por falta de conexão — UI otimista, sync em background |
+This document is the source of truth for all system rules and validations.
+Every implementation must respect these rules. Changes require updating this document first.
 
 ---
 
-## V1 — Scan de Código de Barras + Histórico de Preços
+## V0 — MVP: Price Tracker
 
-| ID | Regra |
+### Shopping List
+
+| ID | Rule |
 |----|-------|
-| **BR-25** | O EAN escaneado busca primeiro no cache local (`products` no IndexedDB), depois na API Open Food Facts |
-| **BR-26** | Se o produto não for encontrado no catálogo, o formulário de adição permanece aberto para entrada manual |
-| **BR-27** | Um scan bem-sucedido pré-preenche nome, unidade padrão e último preço conhecido — o usuário pode editar antes de confirmar |
-| **BR-28** | Cada preço registrado (manual ou por barcode) é salvo no histórico: `{ ean, preço, unidade, data, lista }` |
-| **BR-29** | O histórico de preços fica armazenado apenas localmente no V1 |
-| **BR-30** | Ao adicionar um item já na base local, o app exibe o último preço registrado e a variação em relação ao atual |
-| **BR-31** | A normalização de preço por unidade (R$/kg, R$/100g) é calculada para permitir comparação entre embalagens diferentes |
-| **BR-32** | Se `BarcodeDetector` não estiver disponível no browser, o botão de scan é ocultado; entrada manual permanece disponível |
+| **BR-01** | A list has a required name (1–60 characters, not whitespace only) |
+| **BR-02** | A list can have an optional budget goal in BRL (minimum value: R$ 0.01) |
+| **BR-03** | A list can be in one of two states: `active` or `archived` |
+| **BR-04** | Multiple lists can coexist simultaneously (no limit in V0) |
+| **BR-05** | Deleting a list removes all of its items in cascade (irreversible operation) |
+| **BR-06** | The list's **grand total** = sum of `(quantity × unitPrice)` of **all** items |
+| **BR-07** | The **session subtotal** = sum of `lineTotal` of only the items with `isChecked = true` |
+| **BR-08** | Archived lists do not appear on the main screen (home), but are accessible via filter |
+
+### List Item
+
+| ID | Rule |
+|----|-------|
+| **BR-09** | An item has a required name (1–80 characters) |
+| **BR-10** | Minimum quantity: `0.001` \| Maximum quantity: `9,999` |
+| **BR-11** | Minimum unit price: `R$ 0.00` (a free item is valid) \| Maximum price: `R$ 99,999.99` |
+| **BR-12** | Supported units: `un`, `kg`, `g`, `L`, `ml`, `cx`, `pct` |
+| **BR-13** | An item can be marked as "in cart" (`isChecked = true`) without being deleted |
+| **BR-14** | Checked items **remain visible** in the list — they collapse to the end, but do not disappear |
+| **BR-15** | The line total (`lineTotal`) = `quantity × unitPrice` (stored for performance) |
+| **BR-16** | The item's position in the list is controlled by an integer with gap encoding (multiples of 1000) |
+
+### Totals and Budget
+
+| ID | Rule |
+|----|-------|
+| **BR-17** | `totalCost` and `checkedTotal` on the list are recomputed after **each** item mutation |
+| **BR-18** | Budget progress is calculated based on the **grand total** (not just the checked items) |
+| **BR-19** | When exceeding 100% of the budget: distinct visual indicator (red + pulse animation) |
+| **BR-20** | The display of price per unit of measure (R$/kg, R$/L) is calculated from `unitPrice` and `unit` |
+
+### Offline and Persistence
+
+| ID | Rule |
+|----|-------|
+| **BR-21** | Every operation (create, edit, check, delete) works **100% offline** |
+| **BR-22** | Data persists across browser sessions via IndexedDB |
+| **BR-23** | In private/incognito mode, the app must display a warning about possible data loss when closing the tab |
+| **BR-24** | The app does not block any action due to lack of connection — optimistic UI, background sync |
 
 ---
 
-## V2 — NF-e + Comparativo de Preços
+## V1 — Barcode Scan + Price History
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **BR-33** | O QR code do cupom fiscal contém a chave NF-e de 44 dígitos (ou URL contendo essa chave) |
-| **BR-34** | A chave NF-e é validada: 44 dígitos numéricos, com verificação do dígito verificador |
-| **BR-35** | O fetch da NF-e ocorre via proxy serverless (CORS) — o cliente nunca acessa a SEFAZ diretamente |
-| **BR-36** | A importação de NF-e cria itens pré-preenchidos na lista ativa (ou em nova lista, se o usuário preferir) |
-| **BR-37** | O `priceSource` de cada item importado via NF-e é marcado como `'nfe'` |
-| **BR-38** | **Dados de NF-e NUNCA saem do dispositivo** sem consentimento explícito do usuário (LGPD) — o dado fiscal é sensível pois contém historico vinculado ao CPF do estabelecimento |
-| **BR-39** | O comparativo de preços usa histórico anônimo de múltiplos usuários, exclusivamente opt-in |
-| **BR-40** | Para contribuir com o comparativo crowd-sourced, o usuário deve optar explicitamente (opt-in, não opt-out) |
-| **BR-41** | Dados compartilhados para o comparativo são anonimizados: sem CPF, sem chave NF-e, sem dados pessoais — apenas `{ ean, cnpj_loja, preço, unidade, data }` |
-| **BR-42** | O ranking de lojas mais baratas é calculado sobre os **produtos da lista ativa do usuário** (não uma lista genérica) |
+| **BR-25** | The scanned EAN is looked up first in the local cache (`products` in IndexedDB), then in the Open Food Facts API |
+| **BR-26** | If the product is not found in the catalog, the add form remains open for manual entry |
+| **BR-27** | A successful scan pre-fills the name, default unit, and last known price — the user can edit before confirming |
+| **BR-28** | Each recorded price (manual or via barcode) is saved to history: `{ ean, price, unit, date, list }` |
+| **BR-29** | Price history is stored only locally in V1 |
+| **BR-30** | When adding an item already in the local database, the app displays the last recorded price and the variation relative to the current one |
+| **BR-31** | Price normalization per unit (R$/kg, R$/100g) is calculated to allow comparison between different packages |
+| **BR-32** | If `BarcodeDetector` is not available in the browser, the scan button is hidden; manual entry remains available |
 
 ---
 
-## Validações — Constantes Compartilhadas
+## V2 — NF-e + Price Comparison
 
-Estas constantes são a fonte da verdade para validação em todas as camadas (Model, Controller, View).
+| ID | Rule |
+|----|-------|
+| **BR-33** | The receipt's QR code contains the 44-digit NF-e key (or a URL containing that key) |
+| **BR-34** | The NF-e key is validated: 44 numeric digits, with check digit verification |
+| **BR-35** | The NF-e fetch happens via a serverless proxy (CORS) — the client never accesses SEFAZ directly |
+| **BR-36** | Importing an NF-e creates pre-filled items in the active list (or in a new list, if the user prefers) |
+| **BR-37** | The `priceSource` of each item imported via NF-e is marked as `'nfe'` |
+| **BR-38** | **NF-e data NEVER leaves the device** without the user's explicit consent (LGPD) — fiscal data is sensitive because it contains history linked to the establishment's CNPJ |
+| **BR-39** | The price comparison uses anonymous history from multiple users, exclusively opt-in |
+| **BR-40** | To contribute to the crowd-sourced comparison, the user must explicitly opt in (opt-in, not opt-out) |
+| **BR-41** | Data shared for the comparison is anonymized: no CPF, no NF-e key, no personal data — only `{ ean, cnpj_loja, price, unit, date }` |
+| **BR-42** | The ranking of cheapest stores is calculated over the **items in the user's active list** (not a generic list) |
+
+---
+
+## Validations — Shared Constants
+
+These constants are the source of truth for validation across all layers (Model, Controller, View).
 
 ```
 LISTA_NOME_MIN          = 1
@@ -106,58 +106,58 @@ UNIDADES_VALIDAS        = ['un', 'kg', 'g', 'L', 'ml', 'cx', 'pct']
 
 ---
 
-## Regras de LGPD (Lei Geral de Proteção de Dados)
+## LGPD Rules (Brazilian General Data Protection Law)
 
-O app coleta dados pessoais de forma implícita (listas de compras revelam hábitos de consumo).
-As seguintes regras se aplicam:
+The app implicitly collects personal data (shopping lists reveal consumption habits).
+The following rules apply:
 
-| ID | Regra |
+| ID | Rule |
 |----|-------|
-| **LGPD-01** | Todos os dados ficam no dispositivo do usuário por padrão (V0 e V1) |
-| **LGPD-02** | Qualquer compartilhamento de dados com servidores externos exige opt-in explícito com linguagem clara em PT-BR |
-| **LGPD-03** | O usuário pode exportar todos os seus dados a qualquer momento (direito de portabilidade) |
-| **LGPD-04** | O usuário pode deletar todos os seus dados com uma ação (direito ao esquecimento) |
-| **LGPD-05** | Dados de NF-e (notas fiscais) nunca são compartilhados, mesmo com opt-in geral |
-| **LGPD-06** | A política de privacidade deve estar disponível em PT-BR antes de qualquer coleta de dados |
+| **LGPD-01** | All data stays on the user's device by default (V0 and V1) |
+| **LGPD-02** | Any data sharing with external servers requires explicit opt-in with clear language in PT-BR |
+| **LGPD-03** | The user can export all of their data at any time (right to portability) |
+| **LGPD-04** | The user can delete all of their data with a single action (right to be forgotten) |
+| **LGPD-05** | NF-e data (fiscal receipts) is never shared, even with general opt-in |
+| **LGPD-06** | The privacy policy must be available in PT-BR before any data collection |
 
 ---
 
-## Regras de Estado (State Machine)
+## State Rules (State Machine)
 
-### Lista de Compras
+### Shopping List
 
 ```
-         criar
-[NOVA] ──────────→ [ATIVA]
+         create
+[NEW] ──────────→ [ACTIVE]
                       │
-                      │ arquivar
+                      │ archive
                       ↓
-                  [ARQUIVADA]
+                  [ARCHIVED]
                       │
-                      │ restaurar
+                      │ restore
                       ↑
-                   (volta para ATIVA)
+                   (back to ACTIVE)
                       │
-                      │ deletar
+                      │ delete
                       ↓
-                  [DELETADA] (irreversível, cascata em itens)
+                  [DELETED] (irreversible, cascades to items)
 ```
 
-### Item da Lista
+### List Item
 
 ```
-         adicionar
-[NOVO] ──────────→ [PENDENTE]
-                      │         ← posição na lista = não marcado
+         add
+[NEW] ──────────→ [PENDING]
+                      │         ← position in list = unchecked
                       │ check
                       ↓
-                  [NO CARRINHO]  ← posição na lista = seção colapsada
+                  [IN CART]  ← position in list = collapsed section
                       │
                       │ uncheck
                       ↑
-                   (volta para PENDENTE)
+                   (back to PENDING)
                       │
-                      │ deletar
+                      │ delete
                       ↓
-                  [DELETADO] (hard delete do IndexedDB)
+                  [DELETED] (hard delete from IndexedDB)
 ```

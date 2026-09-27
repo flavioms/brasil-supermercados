@@ -1,38 +1,38 @@
 # Design Tokens
 
-Fonte da verdade extraída de `docs/layout/` (imagens do UXPilot).
-Todo agente DEVE usar estes tokens — nunca valores hardcoded em componentes.
-Os tokens são declarados em `src/app/globals.css` via `@theme` do Tailwind v4.
+Source of truth extracted from `docs/layout/` (UXPilot images).
+Every agent MUST use these tokens — never hardcoded values in components.
+Tokens are declared in `src/app/globals.css` via Tailwind v4's `@theme`.
 
 ---
 
-## Cores
+## Colors
 
-| Token CSS | Valor | Uso semântico |
+| CSS Token | Value | Semantic Use |
 |---|---|---|
-| `--color-primary` | `#2e7d32` | AppBar, FAB, checkmark ativo, aba nav ativa, borda do card ativo |
-| `--color-primary-light` | `#43a047` | Swipe "Marcar" (verde), barra de orçamento 0–79% |
-| `--color-primary-dark` | `#1b5e20` | Estado pressed do FAB (ripple, focus) |
-| `--color-warning` | `#f57c00` | Barra de orçamento 80–99%, badge de preço unitário |
-| `--color-warning-surface` | `#fff3e0` | Fundo do badge de preço unitário (pill laranja claro) |
-| `--color-danger` | `#c62828` | Swipe "Deletar", barra de orçamento ≥100%, texto de excesso |
-| `--color-surface` | `#ffffff` | Fundo de cards, bottom sheet, item rows, inputs |
-| `--color-background` | `#f7f8f6` | Fundo geral da tela (off-white esverdeado leve) |
-| `--color-text-primary` | `#1a1a1a` | Textos principais: nome do item, totais |
-| `--color-text-secondary` | `#595959` | Subtítulos, legendas, ícones de nav inativos |
-| `--color-text-disabled` | `#9e9e9e` | Texto riscado de item marcado (checked) |
-| `--color-border` | `#e0e0e0` | Bordas de input, track da barra de progresso, divisores |
-| `--color-overlay` | `rgba(0,0,0,0.50)` | Fundo escurecido ao abrir bottom sheet |
+| `--color-primary` | `#2e7d32` | AppBar, FAB, active checkmark, active nav tab, active card border |
+| `--color-primary-light` | `#43a047` | "Check" swipe (green), budget bar 0–79% |
+| `--color-primary-dark` | `#1b5e20` | FAB pressed state (ripple, focus) |
+| `--color-warning` | `#f57c00` | Budget bar 80–99%, unit price badge |
+| `--color-warning-surface` | `#fff3e0` | Unit price badge background (light orange pill) |
+| `--color-danger` | `#c62828` | "Delete" swipe, budget bar ≥100%, overage text |
+| `--color-surface` | `#ffffff` | Card, bottom sheet, item row, and input backgrounds |
+| `--color-background` | `#f7f8f6` | Overall screen background (light greenish off-white) |
+| `--color-text-primary` | `#1a1a1a` | Main text: item name, totals |
+| `--color-text-secondary` | `#595959` | Subtitles, captions, inactive nav icons |
+| `--color-text-disabled` | `#9e9e9e` | Strikethrough text of a checked item |
+| `--color-border` | `#e0e0e0` | Input borders, progress bar track, dividers |
+| `--color-overlay` | `rgba(0,0,0,0.50)` | Darkened background when opening the bottom sheet |
 
-### Lógica de cor da barra de orçamento
+### Budget bar color logic
 
 ```
-0% – 79%   → --color-primary-light  (#43a047) verde
-80% – 99%  → --color-warning        (#f57c00) laranja
-≥ 100%     → --color-danger         (#c62828) vermelho + label "orçamento excedido"
+0% – 79%   → --color-primary-light  (#43a047) green
+80% – 99%  → --color-warning        (#f57c00) orange
+≥ 100%     → --color-danger         (#c62828) red + "budget exceeded" label
 ```
 
-Implementar em `src/components/atoms/ProgressBar.tsx` via função auxiliar:
+Implement in `src/components/atoms/ProgressBar.tsx` via a helper function:
 ```typescript
 function barColor(pct: number): string {
   if (pct >= 100) return 'bg-danger';
@@ -43,109 +43,109 @@ function barColor(pct: number): string {
 
 ---
 
-## Tipografia
+## Typography
 
-Fonte: **Inter** (via Google Fonts) — sans-serif, fiel ao visual do design.
+Font: **Inter** (via Google Fonts) — sans-serif, faithful to the design's visual style.
 Fallback: `system-ui, -apple-system, sans-serif`
 
-| Token CSS | Tamanho | Peso | Uso |
+| CSS Token | Size | Weight | Use |
 |---|---|---|---|
 | `--font-size-2xl` | `1.5rem` (24px) | 700 bold | Grand total (`R$ 630,97`) |
 | `--font-size-xl` | `1.25rem` (20px) | 500 medium | Section total (`R$ 150,20`) |
-| `--font-size-lg` | `1.125rem` (18px) | 500 medium | Line total por item (`R$ 22,99`) |
-| `--font-size-base` | `1rem` (16px) | 400 regular | Nome do item, título de lista |
-| `--font-size-sm` | `0.875rem` (14px) | 400 regular | Subtítulo de card, data de atualização |
-| `--font-size-xs` | `0.75rem` (12px) | 400 regular | Legenda, preço unitário (`R$ 9,99/L`), caption |
+| `--font-size-lg` | `1.125rem` (18px) | 500 medium | Per-item line total (`R$ 22,99`) |
+| `--font-size-base` | `1rem` (16px) | 400 regular | Item name, list title |
+| `--font-size-sm` | `0.875rem` (14px) | 400 regular | Card subtitle, last-updated date |
+| `--font-size-xs` | `0.75rem` (12px) | 400 regular | Caption, unit price (`R$ 9,99/L`), label |
 
-Pesos utilizados: `400` (regular), `500` (medium), `700` (bold).
-Usar `font-variant-numeric: tabular-nums` em todo valor monetário (`tabular-nums` no Tailwind).
-
----
-
-## Espaçamento (grid de 4px)
-
-| Token CSS | Valor | Uso típico |
-|---|---|---|
-| `--spacing-1` | `0.25rem` (4px) | Espaço mínimo entre icon e texto no nav |
-| `--spacing-2` | `0.5rem` (8px) | Padding interno de badge, gap entre subtítulos |
-| `--spacing-3` | `0.75rem` (12px) | Padding vertical de item row |
-| `--spacing-4` | `1rem` (16px) | Padding lateral padrão (gutter da tela) |
-| `--spacing-5` | `1.25rem` (20px) | Padding interno de card de lista |
-| `--spacing-6` | `1.5rem` (24px) | Espaço entre seções de lista |
-| `--spacing-8` | `2rem` (32px) | Margem de seção grande |
-
-O gutter lateral padrão (`--spacing-4`, 16px) é aplicado como `px-4` no container principal de cada tela.
+Weights used: `400` (regular), `500` (medium), `700` (bold).
+Use `font-variant-numeric: tabular-nums` on every monetary value (`tabular-nums` in Tailwind).
 
 ---
 
-## Tamanhos Fixos de Componentes
+## Spacing (4px grid)
 
-| Token CSS | Valor | Componente |
+| CSS Token | Value | Typical Use |
 |---|---|---|
-| `--size-touch-min` | `3rem` (48px) | Área mínima de toque (WCAG AA) — todo botão/checkbox |
-| `--size-fab` | `3.5rem` (56px) | Diâmetro do FAB |
-| `--size-app-bar` | `3.5rem` (56px) | Altura do AppBar |
-| `--size-bottom-nav` | `3.5rem` (56px) | Altura da navegação inferior |
-| `--size-sticky-footer` | `5.5rem` (88px) | Altura da barra de rodapé (3 linhas) |
-| `--size-budget-bar` | `0.25rem` (4px) | Espessura da barra de orçamento |
-| `--size-sheet-handle-w` | `2rem` (32px) | Largura do handle do bottom sheet |
-| `--size-sheet-handle-h` | `0.25rem` (4px) | Altura do handle do bottom sheet |
-| `--size-app-max-w` | `30rem` (480px) | Largura máxima do container da aplicação |
+| `--spacing-1` | `0.25rem` (4px) | Minimum space between icon and text in nav |
+| `--spacing-2` | `0.5rem` (8px) | Badge inner padding, gap between subtitles |
+| `--spacing-3` | `0.75rem` (12px) | Vertical padding of item row |
+| `--spacing-4` | `1rem` (16px) | Default lateral padding (screen gutter) |
+| `--spacing-5` | `1.25rem` (20px) | Inner padding of list card |
+| `--spacing-6` | `1.5rem` (24px) | Space between list sections |
+| `--spacing-8` | `2rem` (32px) | Large section margin |
+
+The default lateral gutter (`--spacing-4`, 16px) is applied as `px-4` on the main container of each screen.
+
+---
+
+## Fixed Component Sizes
+
+| CSS Token | Value | Component |
+|---|---|---|
+| `--size-touch-min` | `3rem` (48px) | Minimum touch area (WCAG AA) — every button/checkbox |
+| `--size-fab` | `3.5rem` (56px) | FAB diameter |
+| `--size-app-bar` | `3.5rem` (56px) | AppBar height |
+| `--size-bottom-nav` | `3.5rem` (56px) | Bottom navigation height |
+| `--size-sticky-footer` | `5.5rem` (88px) | Footer bar height (3 lines) |
+| `--size-budget-bar` | `0.25rem` (4px) | Budget bar thickness |
+| `--size-sheet-handle-w` | `2rem` (32px) | Bottom sheet handle width |
+| `--size-sheet-handle-h` | `0.25rem` (4px) | Bottom sheet handle height |
+| `--size-app-max-w` | `30rem` (480px) | Maximum width of the application container |
 
 ---
 
 ## Border Radius
 
-| Token CSS | Valor | Uso |
+| CSS Token | Value | Use |
 |---|---|---|
-| `--radius-sm` | `0.5rem` (8px) | Badge de preço unitário (pill pequeno) |
-| `--radius-md` | `0.75rem` (12px) | Cards de lista, container de item rows |
-| `--radius-lg` | `1rem` (16px) | Bottom sheet (top-left e top-right apenas) |
-| `--radius-full` | `9999px` | FAB, progress bar track e fill |
+| `--radius-sm` | `0.5rem` (8px) | Unit price badge (small pill) |
+| `--radius-md` | `0.75rem` (12px) | List cards, item row container |
+| `--radius-lg` | `1rem` (16px) | Bottom sheet (top-left and top-right only) |
+| `--radius-full` | `9999px` | FAB, progress bar track and fill |
 
 ---
 
-## Sombras
+## Shadows
 
-| Token CSS | Valor CSS | Uso |
+| CSS Token | CSS Value | Use |
 |---|---|---|
-| `--shadow-card` | `0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)` | Cards de lista, container de item rows |
+| `--shadow-card` | `0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)` | List cards, item row container |
 | `--shadow-fab` | `0 4px 12px rgba(0,0,0,0.20)` | FAB |
-| `--shadow-sheet` | `0 -4px 20px rgba(0,0,0,0.12)` | Bottom sheet (sombra para cima) |
+| `--shadow-sheet` | `0 -4px 20px rgba(0,0,0,0.12)` | Bottom sheet (upward shadow) |
 
 ---
 
-## Z-index (camadas)
+## Z-index (layers)
 
-| Token CSS | Valor | Camada |
+| CSS Token | Value | Layer |
 |---|---|---|
-| `--z-content` | `0` | Conteúdo scrollável |
-| `--z-sticky-footer` | `10` | Barra de rodapé sticky |
-| `--z-fab` | `20` | FAB (acima do footer) |
-| `--z-bottom-nav` | `30` | Navegação inferior |
-| `--z-overlay` | `40` | Overlay escuro do bottom sheet |
-| `--z-bottom-sheet` | `50` | Bottom sheet (acima de tudo) |
+| `--z-content` | `0` | Scrollable content |
+| `--z-sticky-footer` | `10` | Sticky footer bar |
+| `--z-fab` | `20` | FAB (above the footer) |
+| `--z-bottom-nav` | `30` | Bottom navigation |
+| `--z-overlay` | `40` | Bottom sheet dark overlay |
+| `--z-bottom-sheet` | `50` | Bottom sheet (topmost) |
 
 ---
 
-## Responsividade
+## Responsiveness
 
-O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém em coluna única centralizada.
+The app is **mobile-first** (375–430px). On larger screens, the layout stays in a centered single column.
 
-| Token CSS | Valor | Contexto |
+| CSS Token | Value | Context |
 |---|---|---|
-| `--breakpoint-sm` | `480px` | Telefones grandes |
+| `--breakpoint-sm` | `480px` | Large phones |
 | `--breakpoint-md` | `768px` | Tablets |
 | `--breakpoint-lg` | `1024px` | Desktop |
 
-**Estratégia de container:**
-- Wrapper root com `max-width: var(--size-app-max-w)` + `margin: 0 auto`
-- `position: relative` no wrapper para conter elementos `absolute`
-- Em mobile: elementos sticky/fixed com `position: sticky` ou `position: absolute` dentro do wrapper
-- Em desktop: nunca usar `position: fixed` puro — o elemento vazaria para fora do container centralizado
+**Container strategy:**
+- Root wrapper with `max-width: var(--size-app-max-w)` + `margin: 0 auto`
+- `position: relative` on the wrapper to contain `absolute` elements
+- On mobile: sticky/fixed elements use `position: sticky` or `position: absolute` inside the wrapper
+- On desktop: never use plain `position: fixed` — the element would leak outside the centered container
 
 ```css
-/* Padrão de container — aplicado em app/layout.tsx */
+/* Container pattern — applied in app/layout.tsx */
 .app-container {
   max-width: var(--size-app-max-w);
   margin-inline: auto;
@@ -156,14 +156,14 @@ O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém e
 
 ---
 
-## Mapeamento para `globals.css`
+## Mapping to `globals.css`
 
 ```css
 /* src/app/globals.css */
 @import "tailwindcss";
 
 @theme {
-  /* --- Tipografia --- */
+  /* --- Typography --- */
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
   --font-size-xs:   0.75rem;
@@ -173,7 +173,7 @@ O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém e
   --font-size-xl:   1.25rem;
   --font-size-2xl:  1.5rem;
 
-  /* --- Cores --- */
+  /* --- Colors --- */
   --color-primary:         #2e7d32;
   --color-primary-light:   #43a047;
   --color-primary-dark:    #1b5e20;
@@ -188,7 +188,7 @@ O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém e
   --color-border:          #e0e0e0;
   --color-overlay:         rgba(0, 0, 0, 0.50);
 
-  /* --- Espaçamento --- */
+  /* --- Spacing --- */
   --spacing-1: 0.25rem;
   --spacing-2: 0.5rem;
   --spacing-3: 0.75rem;
@@ -197,7 +197,7 @@ O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém e
   --spacing-6: 1.5rem;
   --spacing-8: 2rem;
 
-  /* --- Tamanhos fixos --- */
+  /* --- Fixed sizes --- */
   --size-touch-min:    3rem;
   --size-fab:          3.5rem;
   --size-app-bar:      3.5rem;
@@ -212,7 +212,7 @@ O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém e
   --radius-lg:   1rem;
   --radius-full: 9999px;
 
-  /* --- Sombras --- */
+  /* --- Shadows --- */
   --shadow-card:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
   --shadow-fab:   0 4px 12px rgba(0,0,0,0.20);
   --shadow-sheet: 0 -4px 20px rgba(0,0,0,0.12);
@@ -232,7 +232,7 @@ O app é **mobile-first** (375–430px). Em telas maiores, o layout se mantém e
 }
 ```
 
-As classes Tailwind geradas automaticamente incluem:
+Automatically generated Tailwind classes include:
 `bg-primary`, `text-primary`, `border-primary`, `bg-danger`, `text-warning`,
 `bg-background`, `bg-surface`, `text-text-primary`, `text-text-secondary`,
 `min-h-touch-min`, `min-w-touch-min`, `w-fab`, `h-fab`,

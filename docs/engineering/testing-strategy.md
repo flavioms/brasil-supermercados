@@ -1,44 +1,44 @@
-# Estratégia de Testes
+# Testing Strategy
 
 Stack: **Vitest + React Testing Library + Playwright + fake-indexeddb**
 
 ---
 
-## Filosofia
+## Philosophy
 
-- Testes provam que o **comportamento de negócio** está correto, não que o código existe
-- Testar via interface pública: métodos de Controller, exports de utils, interação do usuário nos componentes
-- Um teste falho deve dizer **o que quebrou para o usuário**, não qual linha de código mudou
-- **Nunca mockar o IndexedDB** — usar `fake-indexeddb` que implementa a API real em memória
+- Tests prove that **business behavior** is correct, not that code exists
+- Test via the public interface: Controller methods, utils exports, user interaction on components
+- A failing test should say **what broke for the user**, not which line of code changed
+- **Never mock IndexedDB** — use `fake-indexeddb`, which implements the real API in memory
 
 ---
 
-## Pirâmide de Testes
+## Test Pyramid
 
 ```
          /\
-        /E2E\          ← Playwright (V1+) — fluxos críticos completos no browser
+        /E2E\          ← Playwright (V1+) — complete critical flows in the browser
        /------\
-      / Componente\    ← React Testing Library (V0+) — componentes com DOM real
+      / Component\    ← React Testing Library (V0+) — components with real DOM
      /--------------\
-    /   Unitários    \  ← Vitest (V0+) — Controllers, utils, models, hooks
+    /   Unit Tests   \  ← Vitest (V0+) — Controllers, utils, models, hooks
    /________________\
 ```
 
-**V0**: unitários de controllers/utils/models + componentes críticos são obrigatórios.
+**V0**: unit tests for controllers/utils/models + critical components are mandatory.
 
 ---
 
 ## Setup (`tests/setup.ts`)
 
 ```typescript
-import 'fake-indexeddb/auto';      // injeta IndexedDB em memória no jsdom
+import 'fake-indexeddb/auto';      // injects in-memory IndexedDB into jsdom
 import '@testing-library/jest-dom'; // matchers: toBeInTheDocument, toHaveTextContent, etc.
 ```
 
 ---
 
-## Unitários — Controllers (Vitest)
+## Unit Tests — Controllers (Vitest)
 
 ```typescript
 // tests/unit/controllers/ShoppingListController.test.ts
@@ -55,7 +55,7 @@ describe('ShoppingListController', () => {
   });
 
   describe('createList', () => {
-    it('cria lista com nome e retorna id', async () => {
+    it('creates a list with a name and returns the id', async () => {
       const id = await ShoppingListController.createList('Carrefour 14/09');
       const list = await db.shoppingLists.get(id);
       expect(list?.name).toBe('Carrefour 14/09');
@@ -63,22 +63,22 @@ describe('ShoppingListController', () => {
       expect(list?.totalCost).toBe(0);
     });
 
-    it('faz trim do nome antes de salvar', async () => {
+    it('trims the name before saving', async () => {
       const id = await ShoppingListController.createList('  Compras  ');
       const list = await db.shoppingLists.get(id);
       expect(list?.name).toBe('Compras');
     });
 
-    it('lança erro se nome excede 60 caracteres', async () => {
+    it('throws an error if the name exceeds 60 characters', async () => {
       await expect(ShoppingListController.createList('A'.repeat(61))).rejects.toThrow();
     });
 
-    it('lança erro se nome estiver vazio', async () => {
+    it('throws an error if the name is empty', async () => {
       await expect(ShoppingListController.createList('')).rejects.toThrow();
       await expect(ShoppingListController.createList('   ')).rejects.toThrow();
     });
 
-    it('aceita budgetGoal opcional', async () => {
+    it('accepts an optional budgetGoal', async () => {
       const id = await ShoppingListController.createList('Feira', 300);
       const list = await db.shoppingLists.get(id);
       expect(list?.budgetGoal).toBe(300);
@@ -86,7 +86,7 @@ describe('ShoppingListController', () => {
   });
 
   describe('recomputeTotals', () => {
-    it('recalcula totalCost e checkedTotal corretamente', async () => {
+    it('recalculates totalCost and checkedTotal correctly', async () => {
       const listId = await ShoppingListController.createList('Teste');
       await db.listItems.bulkAdd([
         { ...minimalItem(listId), id: '1', lineTotal: 15.00, isChecked: false },
@@ -113,16 +113,16 @@ function minimalItem(listId: string) {
 
 ---
 
-## Unitários — Utils (Vitest)
+## Unit Tests — Utils (Vitest)
 
 ```typescript
 // tests/unit/utils/currency.test.ts
 import { formatBRL } from '@/utils/currency';
 
 describe('formatBRL', () => {
-  it('formata zero', () => expect(formatBRL(0)).toBe('R$ 0,00'));
-  it('formata milhar com ponto', () => expect(formatBRL(1234.56)).toBe('R$ 1.234,56'));
-  it('arredonda corretamente', () => expect(formatBRL(1.005)).toBe('R$ 1,01'));
+  it('formats zero', () => expect(formatBRL(0)).toBe('R$ 0,00'));
+  it('formats thousands with a dot', () => expect(formatBRL(1234.56)).toBe('R$ 1.234,56'));
+  it('rounds correctly', () => expect(formatBRL(1.005)).toBe('R$ 1,01'));
 });
 ```
 
@@ -131,18 +131,18 @@ describe('formatBRL', () => {
 import { calcPricePerRefUnit } from '@/utils/units';
 
 describe('calcPricePerRefUnit', () => {
-  it('normaliza 900ml para R$/L', () =>
+  it('normalizes 900ml to R$/L', () =>
     expect(calcPricePerRefUnit(8.99, 900, 'ml')).toBeCloseTo(9.99, 1));
-  it('normaliza 250g para R$/kg', () =>
+  it('normalizes 250g to R$/kg', () =>
     expect(calcPricePerRefUnit(2.50, 250, 'g')).toBeCloseTo(10.00, 1));
-  it('retorna null para unidade "un"', () =>
+  it('returns null for the "un" unit', () =>
     expect(calcPricePerRefUnit(5.00, 1, 'un')).toBeNull());
 });
 ```
 
 ---
 
-## Testes de Componente (React Testing Library)
+## Component Tests (React Testing Library)
 
 ```typescript
 // tests/unit/components/StickyTotalFooter.test.tsx
@@ -151,7 +151,7 @@ import { render, screen } from '@testing-library/react';
 import { StickyTotalFooter } from '@/components/StickyTotalFooter';
 
 describe('StickyTotalFooter', () => {
-  it('exibe total geral e subtotal do carrinho', () => {
+  it('displays the overall total and the cart subtotal', () => {
     render(
       <StickyTotalFooter
         totalCost={45.50}
@@ -159,19 +159,19 @@ describe('StickyTotalFooter', () => {
         budgetGoal={null}
       />
     );
-    expect(screen.getByText('R$ 45,50')).toBeInTheDocument();
-    expect(screen.getByText('R$ 30,50')).toBeInTheDocument();
+    expect(screen.getByText('R$ 45,50')).toBeInTheDocument();
+    expect(screen.getByText('R$ 30,50')).toBeInTheDocument();
   });
 
-  it('exibe linha "Falta" quando budgetGoal definido', () => {
+  it('shows the "Remaining" line when budgetGoal is set', () => {
     render(
       <StickyTotalFooter totalCost={45.50} checkedTotal={30.50} budgetGoal={100} />
     );
     expect(screen.getByText(/falta/i)).toBeInTheDocument();
-    expect(screen.getByText('R$ 54,50')).toBeInTheDocument();
+    expect(screen.getByText('R$ 54,50')).toBeInTheDocument();
   });
 
-  it('não exibe linha "Falta" sem budgetGoal', () => {
+  it('does not show the "Remaining" line without a budgetGoal', () => {
     render(
       <StickyTotalFooter totalCost={45.50} checkedTotal={30.50} budgetGoal={null} />
     );
@@ -187,23 +187,23 @@ import { render } from '@testing-library/react';
 import { BudgetProgressBar } from '@/components/BudgetProgressBar';
 
 describe('BudgetProgressBar', () => {
-  it('renderiza nada quando goal é null', () => {
+  it('renders nothing when goal is null', () => {
     const { container } = render(<BudgetProgressBar current={50} goal={null} />);
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('aplica classe danger ao ultrapassar 100%', () => {
+  it('applies the danger class when exceeding 100%', () => {
     const { container } = render(<BudgetProgressBar current={110} goal={100} />);
-    // verificar que a barra tem classe de cor de perigo
+    // check that the bar has the danger color class
     expect(container.querySelector('[data-testid="progress-bar"]'))
       .toHaveClass('bg-danger');
   });
 });
 ```
 
-### Padrão para Componentes com `useLiveQuery`
+### Pattern for Components Using `useLiveQuery`
 
-Componentes que usam hooks de Dexie precisam do banco mockado via `fake-indexeddb`:
+Components that use Dexie hooks need the database mocked via `fake-indexeddb`:
 
 ```typescript
 // tests/unit/components/ItemRow.test.tsx
@@ -216,7 +216,7 @@ import { createListItem } from '@/models/ListItem';
 describe('ItemRow', () => {
   beforeEach(() => db.listItems.clear());
 
-  it('exibe nome e total do item', () => {
+  it('displays the item name and total', () => {
     const item = createListItem({
       listId: 'list-1',
       name: 'Arroz Camil 5kg',
@@ -229,50 +229,50 @@ describe('ItemRow', () => {
     render(<ItemRow item={item} />);
 
     expect(screen.getByText('Arroz Camil 5kg')).toBeInTheDocument();
-    expect(screen.getByText('R$ 22,99')).toBeInTheDocument();
+    expect(screen.getByText('R$ 22,99')).toBeInTheDocument();
   });
 });
 ```
 
 ---
 
-## O Que Testar em Cada Módulo
+## What to Test in Each Module
 
-### Controllers (cobertura obrigatória ≥ 80%)
-- Happy path de cada método público
-- Validações: campos obrigatórios, limites min/max (BR-09 a BR-16)
-- `recomputeTotals` é chamado após add/update/delete/toggle
-- Casos de borda: lista vazia, preço zero, quantidade fracionária
+### Controllers (mandatory coverage ≥ 80%)
+- Happy path for every public method
+- Validations: required fields, min/max limits (BR-09 to BR-16)
+- `recomputeTotals` is called after add/update/delete/toggle
+- Edge cases: empty list, zero price, fractional quantity
 
-### Utils (cobertura ≥ 90%)
-- `formatBRL`: zero, milhar, arredondamento
-- `calcPricePerRefUnit`: todas as unidades + retorno null para 'un'/'cx'/'pct'
-- `validateListName`: vazio, muito curto, muito longo, com trim
-- `generateUUID`: formato UUID v4
+### Utils (coverage ≥ 90%)
+- `formatBRL`: zero, thousands, rounding
+- `calcPricePerRefUnit`: all units + null return for 'un'/'cx'/'pct'
+- `validateListName`: empty, too short, too long, with trim
+- `generateUUID`: UUID v4 format
 
-### Models (cobertura ≥ 85%)
-- Factory cria todos os campos obrigatórios
+### Models (coverage ≥ 85%)
+- Factory creates all required fields
 - `lineTotal` = `quantity * unitPrice`
-- `id` é UUID v4
-- `createdAt` e `updatedAt` são timestamps recentes
+- `id` is UUID v4
+- `createdAt` and `updatedAt` are recent timestamps
 
-### Componentes (críticos do V0)
-- `StickyTotalFooter`: exibe valores corretos, linha "Falta" condicional
-- `BudgetProgressBar`: cores nos thresholds corretos, oculta sem goal
-- `ItemRow`: renderiza nome, preço, linha total; botão de check acessível
-- `ItemFormSheet`: validação inline, preview de lineTotal em tempo real
+### Components (critical for V0)
+- `StickyTotalFooter`: displays correct values, conditional "Remaining" line
+- `BudgetProgressBar`: correct colors at thresholds, hidden without a goal
+- `ItemRow`: renders name, price, line total; accessible check button
+- `ItemFormSheet`: inline validation, real-time lineTotal preview
 
 ---
 
 ## E2E — Playwright (V1+)
 
-### Fluxos Obrigatórios
+### Mandatory Flows
 
 ```typescript
 // tests/e2e/shopping-flow.spec.ts
 import { test, expect } from '@playwright/test';
 
-test('fluxo completo: criar lista → adicionar item → marcar → verificar total', async ({ page }) => {
+test('complete flow: create list → add item → check → verify total', async ({ page }) => {
   await page.goto('/');
 
   await page.getByRole('button', { name: 'Nova lista' }).click();
@@ -288,10 +288,10 @@ test('fluxo completo: criar lista → adicionar item → marcar → verificar to
   await page.getByLabel('Preço').fill('22,99');
   await page.getByRole('button', { name: 'Adicionar' }).click();
 
-  await expect(page.getByText('R$ 22,99')).toBeVisible();  // linha total
+  await expect(page.getByText('R$ 22,99')).toBeVisible();  // line total
   await expect(page.getByText('Total')).toBeVisible();           // footer
 
-  // marcar o item
+  // check the item
   await page.getByRole('button', { name: 'Marcar como no carrinho' }).click();
   await expect(page.getByText('No carrinho')).toBeVisible();
 });
@@ -299,7 +299,7 @@ test('fluxo completo: criar lista → adicionar item → marcar → verificar to
 
 ---
 
-## Estrutura de Diretórios
+## Directory Structure
 
 ```
 tests/
@@ -328,34 +328,34 @@ tests/
 
 ---
 
-## Regras de Teste
+## Testing Rules
 
-1. **Nunca mockar IndexedDB** — usar `fake-indexeddb`
-2. **Nunca mockar Controllers nos testes de componente** — testar a integração real
-3. **`beforeEach` limpa o banco** — cada teste começa do zero
-4. Nomear em PT-BR: `it('cria lista com nome e retorna id')`
-5. Um assert de comportamento por `it` (múltiplos valores do mesmo comportamento são ok)
-6. Não testar implementação interna — se precisar acessar estado interno para testar, o design está errado
+1. **Never mock IndexedDB** — use `fake-indexeddb`
+2. **Never mock Controllers in component tests** — test the real integration
+3. **`beforeEach` clears the database** — each test starts from scratch
+4. Name tests in PT-BR: `it('cria lista com nome e retorna id')`
+5. One behavior assertion per `it` (multiple values from the same behavior are fine)
+6. Do not test internal implementation — if you need to access internal state to test, the design is wrong
 
 ---
 
-## Cobertura Mínima Obrigatória
+## Mandatory Minimum Coverage
 
-| Camada | Linhas | Funções | Branches |
+| Layer | Lines | Functions | Branches |
 |--------|--------|---------|----------|
 | `src/controllers/` | 80% | 80% | 70% |
 | `src/utils/` | 90% | 90% | 85% |
 | `src/models/` | 85% | 85% | 75% |
 | `src/hooks/` | 70% | 70% | — |
-| `src/components/` | — | — | — (não medido no V0) |
+| `src/components/` | — | — | — (not measured in V0) |
 
 ---
 
-## Comandos
+## Commands
 
 ```bash
-npm test                # todos os unitários
-npm run test:coverage   # com relatório de cobertura
-npm run test:watch      # modo watch durante desenvolvimento
-npm run test:e2e        # E2E com Playwright (V1+)
+npm test                # all unit tests
+npm run test:coverage   # with coverage report
+npm run test:watch      # watch mode during development
+npm run test:e2e        # E2E with Playwright (V1+)
 ```

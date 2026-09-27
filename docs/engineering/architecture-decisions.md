@@ -1,170 +1,170 @@
 # Architecture Decision Records (ADR)
 
-Registro das decisões técnicas significativas e suas justificativas.
-Consultar antes de propor mudanças de stack ou padrões.
+Record of significant technical decisions and their justifications.
+Consult before proposing changes to stack or standards.
 
 ---
 
-## ADR-001: Next.js com `output: 'export'` (sem SSR)
+## ADR-001: Next.js with `output: 'export'` (no SSR)
 
-**Status**: Aceito  
-**Data**: 2026-09
+**Status**: Accepted  
+**Date**: 2026-09
 
-**Contexto**: App PWA mobile-first para Android mid-range. Todo o valor do produto no V0/V1 é offline-first — não há servidor para renderizar nada. O desenvolvedor tem domínio profundo de Next.js, o que acelera a entrega e a qualidade.
+**Context**: Mobile-first PWA app for mid-range Android. All product value in V0/V1 is offline-first — there is no server to render anything. The developer has deep expertise in Next.js, which accelerates delivery and quality.
 
-**Decisão**: Next.js 15 com `output: 'export'` — gera HTML estático puro.
+**Decision**: Next.js 15 with `output: 'export'` — generates pure static HTML.
 
-**Justificativa**:
-- `output: 'export'` elimina a necessidade de um servidor Node.js — o output é HTML/CSS/JS estático deployável no Cloudflare Pages gratuitamente.
-- App Router com Client Components é o padrão correto para componentes que usam Dexie `useLiveQuery` (client-only).
-- A familiaridade do desenvolvedor com Next.js resulta em código mais seguro, testado e idiomático do que uma alternativa desconhecida.
-- TypeScript strict previne classes inteiras de bugs que JavaScript puro deixaria passar.
+**Rationale**:
+- `output: 'export'` eliminates the need for a Node.js server — the output is static HTML/CSS/JS deployable on Cloudflare Pages for free.
+- App Router with Client Components is the correct pattern for components that use Dexie `useLiveQuery` (client-only).
+- The developer's familiarity with Next.js results in code that is safer, better tested, and more idiomatic than an unfamiliar alternative would be.
+- TypeScript strict prevents entire classes of bugs that plain JavaScript would let through.
 
-**Consequências**:
-- `generateStaticParams()` vazia em rotas dinâmicas (`/lista/[id]`) — o ID é lido no cliente via `useParams()`.
-- Sem Server Components com `fetch` externo — todo acesso a dados é client-side via Dexie.
-- Sem API Routes no V0/V1 — sem backend necessário.
-- Bundle inicial ~180–220KB (React + Next runtime) vs. ~30–50KB de Vanilla JS — mitigado por code splitting, lazy loading e cache de Service Worker.
-
----
-
-## ADR-002: TypeScript strict (sem JavaScript puro)
-
-**Status**: Aceito  
-**Data**: 2026-09
-
-**Contexto**: Escolha entre TypeScript strict e JavaScript puro.
-
-**Decisão**: TypeScript 5 com `strict: true` + `noUncheckedIndexedAccess`.
-
-**Justificativa**:
-- `strict: true` captura em tempo de build: `undefined` não verificado, `null` não tratado, tipos incompatíveis em chamadas de Controller.
-- `noUncheckedIndexedAccess` força o tratamento de `undefined` ao acessar arrays — crítico ao trabalhar com resultados de queries Dexie.
-- As interfaces TypeScript dos models são a fonte de verdade mais confiável que JSDoc — sempre sincronizadas com o código.
-- Next.js já configura TypeScript out-of-the-box — custo de setup é mínimo.
+**Consequences**:
+- Empty `generateStaticParams()` on dynamic routes (`/lista/[id]`) — the ID is read on the client via `useParams()`.
+- No Server Components with external `fetch` — all data access is client-side via Dexie.
+- No API Routes in V0/V1 — no backend needed.
+- Initial bundle ~180–220KB (React + Next runtime) vs. ~30–50KB for Vanilla JS — mitigated by code splitting, lazy loading, and Service Worker caching.
 
 ---
 
-## ADR-003: Tailwind CSS v4 (sem CSS Custom Properties manual)
+## ADR-002: TypeScript strict (no plain JavaScript)
 
-**Status**: Aceito  
-**Data**: 2026-09
+**Status**: Accepted  
+**Date**: 2026-09
 
-**Contexto**: Escolha de estratégia de CSS.
+**Context**: Choice between TypeScript strict and plain JavaScript.
 
-**Decisão**: Tailwind CSS 4 com design tokens via `@theme` no `globals.css`.
+**Decision**: TypeScript 5 with `strict: true` + `noUncheckedIndexedAccess`.
 
-**Justificativa**:
-- Tailwind com purge automático gera CSS final de ~5–15KB — menor que CSS custom properties global sem purge.
-- `@theme` do Tailwind v4 usa CSS Custom Properties nativas por baixo, preservando o benefício de tokens sem precisar gerenciá-los manualmente.
-- Classes utilitárias eliminam a necessidade de inventar nomes de classes BEM para componentes pontuais.
-- `prettier-plugin-tailwindcss` mantém a ordem das classes consistente automaticamente — elimina diff noise em PRs.
+**Rationale**:
+- `strict: true` catches at build time: unchecked `undefined`, unhandled `null`, incompatible types in Controller calls.
+- `noUncheckedIndexedAccess` forces handling of `undefined` when accessing arrays — critical when working with Dexie query results.
+- TypeScript interfaces on the models are a more reliable source of truth than JSDoc — always in sync with the code.
+- Next.js already configures TypeScript out-of-the-box — setup cost is minimal.
 
-**Consequências**:
-- Classes no JSX podem ser verbosas para componentes complexos — usar `cn()` utility (clsx + tailwind-merge) para condicionais.
-- Sem encapsulamento de escopo por componente — disciplina nos seletores continua necessária.
+---
+
+## ADR-003: Tailwind CSS v4 (no manual CSS Custom Properties)
+
+**Status**: Accepted  
+**Date**: 2026-09
+
+**Context**: Choice of CSS strategy.
+
+**Decision**: Tailwind CSS 4 with design tokens via `@theme` in `globals.css`.
+
+**Rationale**:
+- Tailwind with automatic purging produces a final CSS of ~5–15KB — smaller than global CSS custom properties without purging.
+- Tailwind v4's `@theme` uses native CSS Custom Properties under the hood, preserving the benefit of tokens without having to manage them manually.
+- Utility classes eliminate the need to invent BEM class names for one-off components.
+- `prettier-plugin-tailwindcss` automatically keeps class order consistent — eliminates diff noise in PRs.
+
+**Consequences**:
+- Classes in JSX can be verbose for complex components — use the `cn()` utility (clsx + tailwind-merge) for conditionals.
+- No scoping/encapsulation per component — discipline in selectors is still required.
 
 ---
 
 ## ADR-004: Dexie.js + `dexie-react-hooks` (`useLiveQuery`)
 
-**Status**: Aceito  
-**Data**: 2026-09
+**Status**: Accepted  
+**Date**: 2026-09
 
-**Contexto**: Estratégia de persistência offline e reatividade com React.
+**Context**: Offline persistence strategy and reactivity with React.
 
-**Decisão**: Dexie.js v4 + `dexie-react-hooks` para integração com React.
+**Decision**: Dexie.js v4 + `dexie-react-hooks` for React integration.
 
-**Justificativa**:
-- `useLiveQuery` é um hook React que re-renderiza o componente automaticamente quando os dados no IndexedDB mudam — exatamente o comportamento necessário para o footer de totais e a lista de itens.
-- Gerencia o ciclo de vida da subscription automaticamente (cancela no unmount) — sem risco de memory leak.
-- A combinação Dexie + React é a integração mais testada e documentada para IndexedDB em 2025.
-- Sem `useEffect` manual para sincronizar estado local com o banco — o `useLiveQuery` substitui esse padrão.
+**Rationale**:
+- `useLiveQuery` is a React hook that automatically re-renders the component when data in IndexedDB changes — exactly the behavior needed for the totals footer and the item list.
+- Manages the subscription lifecycle automatically (cancels on unmount) — no risk of memory leaks.
+- The Dexie + React combination is the most tested and documented integration for IndexedDB in 2025.
+- No manual `useEffect` to sync local state with the database — `useLiveQuery` replaces that pattern.
 
-**Padrão resultante**:
+**Resulting pattern**:
 ```
-useLiveQuery (hook) → dado fresco do banco → componente re-renderiza
-Controller → mutação → Dexie propaga → useLiveQuery re-executa
+useLiveQuery (hook) → fresh data from the database → component re-renders
+Controller → mutation → Dexie propagates → useLiveQuery re-runs
 ```
 
-Nenhum `useState` para dados que vêm do banco. Estado local (`useState`) apenas para estado de UI (modal aberto, campo de formulário).
+No `useState` for data that comes from the database. Local state (`useState`) only for UI state (modal open, form field).
 
 ---
 
 ## ADR-005: Workbox via `@ducanh2912/next-pwa`
 
-**Status**: Aceito  
-**Data**: 2026-09
+**Status**: Accepted  
+**Date**: 2026-09
 
-**Contexto**: Integração de Service Worker com Next.js.
+**Context**: Service Worker integration with Next.js.
 
-**Decisão**: Plugin `@ducanh2912/next-pwa` que configura Workbox automaticamente no build do Next.js.
+**Decision**: `@ducanh2912/next-pwa` plugin, which configures Workbox automatically during the Next.js build.
 
-**Justificativa**:
-- `next-pwa` é o wrapper mais ativamente mantido de Workbox para Next.js em 2025 (o `next-pwa` original foi abandonado).
-- Configura precaching do app shell (JS/CSS gerado pelo Next.js) automaticamente — zero configuração manual.
-- Estratégias de cache (StaleWhileRevalidate, CacheFirst) configuradas via opções do plugin no `next.config.ts`.
-- O SW é gerado em `public/sw.js` no `npm run build` — não precisa de `sw.js` manual.
-
----
-
-## ADR-006: Cloudflare Pages para hospedagem
-
-**Status**: Aceito  
-**Data**: 2026-09
-
-**Contexto**: Hospedagem do app estático com custo zero no V0.
-
-**Decisão**: Cloudflare Pages.
-
-**Justificativa**:
-- Gratuito para projetos pessoais (builds ilimitadas no plano atual, bandwidth ilimitado).
-- Subdomínio gratuito: `supermercado-brasil.pages.dev` — funciona com HTTPS (necessário para Service Workers) sem configuração adicional.
-- Preview URLs automáticas por PR via GitHub Actions.
-- CDN global — entrega rápida para usuários brasileiros.
-- Expansão natural para Cloudflare Workers no V2 (mesmo provider, sem migration de infra).
-
-**Deploy**: `npm run build` gera o diretório `out/` (HTML estático) que é deployado pelo GitHub Actions.
+**Rationale**:
+- `next-pwa` is the most actively maintained Workbox wrapper for Next.js in 2025 (the original `next-pwa` was abandoned).
+- Configures app-shell precaching (JS/CSS generated by Next.js) automatically — zero manual configuration.
+- Cache strategies (StaleWhileRevalidate, CacheFirst) configured via plugin options in `next.config.ts`.
+- The SW is generated at `public/sw.js` during `npm run build` — no manual `sw.js` needed.
 
 ---
 
-## ADR-007: App Router do Next.js (sem Pages Router)
+## ADR-006: Cloudflare Pages for hosting
 
-**Status**: Aceito  
-**Data**: 2026-09
+**Status**: Accepted  
+**Date**: 2026-09
 
-**Contexto**: Escolha entre App Router e Pages Router.
+**Context**: Hosting the static app at zero cost in V0.
 
-**Decisão**: App Router (padrão do Next.js 15).
+**Decision**: Cloudflare Pages.
 
-**Justificativa**:
-- App Router é o presente e o futuro do Next.js — Pages Router está em modo de manutenção.
-- Com `output: 'export'`, os Server Components do App Router são pré-renderizados em HTML estático na build — não há execução de servidor em runtime.
-- Componentes que usam Dexie recebem `'use client'` — são hidratados no browser, que é exatamente o comportamento correto para IndexedDB.
-- Layout compartilhado (`layout.tsx`) é mais idiomático no App Router do que em `_app.tsx` do Pages Router.
+**Rationale**:
+- Free for personal projects (unlimited builds on the current plan, unlimited bandwidth).
+- Free subdomain: `supermercado-brasil.pages.dev` — works with HTTPS (required for Service Workers) with no additional configuration.
+- Automatic preview URLs per PR via GitHub Actions.
+- Global CDN — fast delivery for Brazilian users.
+- Natural expansion to Cloudflare Workers in V2 (same provider, no infra migration).
 
----
-
-## ADR-008: Sem backend no V0/V1
-
-**Status**: Aceito  
-**Data**: 2026-09
-
-**Contexto**: Todo o valor do V0 e V1 é offline-first. Backend adicionaria latência, custo e superfície de ataque.
-
-**Decisão**: Zero backend até o V2.
-
-**Implicações**:
-- Sem autenticação (sem usuário cadastrado no V0/V1)
-- Conformidade LGPD simplificada — nenhum dado pessoal transmitido
-- Backup dos dados é responsabilidade do usuário (exportação manual de JSON)
-- Backend entra no V2 apenas para proxy SEFAZ e crowd-sourcing de preços, ambos opt-in
+**Deploy**: `npm run build` generates the `out/` directory (static HTML), which is deployed by GitHub Actions.
 
 ---
 
-## O Que Não Está Decidido (V1/V2)
+## ADR-007: Next.js App Router (no Pages Router)
 
-- Autenticação: magic link vs. OAuth vs. anônimo com device ID
-- Banco de dados do backend: Cloudflare D1 vs. Turso vs. PlanetScale
-- Estratégia de sync: CRDT vs. last-write-wins vs. event sourcing
-- Internacionalização (i18n): atualmente hardcoded em PT-BR
+**Status**: Accepted  
+**Date**: 2026-09
+
+**Context**: Choice between App Router and Pages Router.
+
+**Decision**: App Router (Next.js 15 default).
+
+**Rationale**:
+- App Router is the present and future of Next.js — Pages Router is in maintenance mode.
+- With `output: 'export'`, App Router's Server Components are pre-rendered to static HTML at build time — there is no server execution at runtime.
+- Components that use Dexie receive `'use client'` — they are hydrated in the browser, which is exactly the correct behavior for IndexedDB.
+- Shared layout (`layout.tsx`) is more idiomatic in App Router than in Pages Router's `_app.tsx`.
+
+---
+
+## ADR-008: No backend in V0/V1
+
+**Status**: Accepted  
+**Date**: 2026-09
+
+**Context**: All value in V0 and V1 is offline-first. A backend would add latency, cost, and attack surface.
+
+**Decision**: Zero backend until V2.
+
+**Implications**:
+- No authentication (no registered user in V0/V1)
+- Simplified LGPD compliance — no personal data transmitted
+- Data backup is the user's responsibility (manual JSON export)
+- Backend arrives in V2 only for the SEFAZ proxy and price crowd-sourcing, both opt-in
+
+---
+
+## What Is Not Yet Decided (V1/V2)
+
+- Authentication: magic link vs. OAuth vs. anonymous with device ID
+- Backend database: Cloudflare D1 vs. Turso vs. PlanetScale
+- Sync strategy: CRDT vs. last-write-wins vs. event sourcing
+- Internationalization (i18n): currently hardcoded in PT-BR
