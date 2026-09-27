@@ -16,6 +16,8 @@ In a country where food prices rise every week, the app puts the power of
 information in the hands of those who need to save the most — no sign-up, no
 mandatory internet connection, nothing to install.
 
+https://github.com/user-attachments/assets/e8637c91-8dbd-4f43-901f-1cdbeaeff686
+
 ---
 
 ## The problem it solves
