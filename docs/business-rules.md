@@ -16,7 +16,7 @@ Every implementation must respect these rules. Changes require updating this doc
 | **BR-03** | A list can be in one of two states: `active` or `archived` |
 | **BR-04** | Multiple lists can coexist simultaneously (no limit in V0) |
 | **BR-05** | Deleting a list removes all of its items in cascade (irreversible operation) |
-| **BR-06** | The list's **grand total** = sum of `(quantity × unitPrice)` of **all** items |
+| **BR-06** | The list's **grand total** = sum of `lineTotal` of **all** items |
 | **BR-07** | The **session subtotal** = sum of `lineTotal` of only the items with `isChecked = true` |
 | **BR-08** | Archived lists do not appear on the main screen (home), but are accessible via filter |
 
@@ -30,8 +30,9 @@ Every implementation must respect these rules. Changes require updating this doc
 | **BR-12** | Supported units: `un`, `kg`, `g`, `L`, `ml`, `cx`, `pct` |
 | **BR-13** | An item can be marked as "in cart" (`isChecked = true`) without being deleted |
 | **BR-14** | Checked items **remain visible** in the list — they collapse to the end, but do not disappear |
-| **BR-15** | The line total (`lineTotal`) = `quantity × unitPrice` (stored for performance) |
+| **BR-15** | The line total (`lineTotal`) = `quantity × unitPrice` for count-based units (`un`, `cx`, `pct`). For weight/volume units (`kg`, `g`, `L`, `ml`), `unitPrice` is the total shelf price of **one package**, `quantity` is that package's size, and `packageCount` is how many identical packages were bought — so `lineTotal` = `packageCount × unitPrice` (stored for performance) |
 | **BR-16** | The item's position in the list is controlled by an integer with gap encoding (multiples of 1000) |
+| **BR-16b** | For weight/volume units, `packageCount` is an integer between `1` and `999`, defaulting to `1`. It does not affect `pricePerRefUnit`, which is always derived from a single package's `quantity` and `unitPrice` |
 
 ### Totals and Budget
 
@@ -100,6 +101,8 @@ ITEM_QUANTIDADE_MIN     = 0.001
 ITEM_QUANTIDADE_MAX     = 9999
 ITEM_PRECO_UNITARIO_MIN = 0.00
 ITEM_PRECO_UNITARIO_MAX = 99999.99
+ITEM_PACOTES_MIN        = 1
+ITEM_PACOTES_MAX        = 999
 
 UNIDADES_VALIDAS        = ['un', 'kg', 'g', 'L', 'ml', 'cx', 'pct']
 ```

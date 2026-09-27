@@ -1,9 +1,9 @@
 import { db } from '@/models/db';
-import { createListItem } from '@/models/ListItem';
+import { createListItem, calcLineTotal } from '@/models/ListItem';
 import type { ItemUnit } from '@/models/ListItem';
 import { ShoppingListController } from './ShoppingListController';
 import { validateItemFields } from '@/utils/validation';
-import { calcPricePerRefUnit, WEIGHT_VOLUME_UNITS } from '@/utils/units';
+import { calcPricePerRefUnit } from '@/utils/units';
 import { analytics } from '@/lib/analytics';
 
 export interface AddItemInput {
@@ -12,16 +12,19 @@ export interface AddItemInput {
   quantity: number;
   unit: ItemUnit;
   unitPrice: number;
+  packageCount?: number;
   categoryId?: string | null;
 }
 
 export const ListItemController = {
   async addItem(input: AddItemInput): Promise<string> {
+    const packageCount = input.packageCount ?? 1;
     const validation = validateItemFields({
       name: input.name,
       quantity: input.quantity,
       unit: input.unit,
       unitPrice: input.unitPrice,
+      packageCount,
     });
     if (!validation.valid) {
       throw new Error(validation.error ?? 'Dados inválidos');
@@ -35,11 +38,6 @@ export const ListItemController = {
       .then((items) => items[0]);
 
     const position = lastItem ? lastItem.position + 1000 : 1000;
-    const pricePerRefUnit = calcPricePerRefUnit(input.unitPrice, input.quantity, input.unit);
-    // For weight/volume packages, unitPrice = total package price (shown on shelf label)
-    const lineTotal = WEIGHT_VOLUME_UNITS.includes(input.unit)
-      ? input.unitPrice
-      : input.quantity * input.unitPrice;
 
     const item = createListItem({
       listId: input.listId,
@@ -47,12 +45,10 @@ export const ListItemController = {
       quantity: input.quantity,
       unit: input.unit,
       unitPrice: input.unitPrice,
+      packageCount,
       position,
       categoryId: input.categoryId ?? null,
     });
-
-    item.pricePerRefUnit = pricePerRefUnit;
-    item.lineTotal = lineTotal;
 
     await db.listItems.add(item);
     await ShoppingListController.recomputeTotals(input.listId);
@@ -66,7 +62,9 @@ export const ListItemController = {
 
   async updateItem(
     itemId: string,
-    changes: Partial<Pick<AddItemInput, 'name' | 'quantity' | 'unit' | 'unitPrice' | 'categoryId'>>
+    changes: Partial<
+      Pick<AddItemInput, 'name' | 'quantity' | 'unit' | 'unitPrice' | 'packageCount' | 'categoryId'>
+    >
   ): Promise<void> {
     const existing = await db.listItems.get(itemId);
     if (!existing) throw new Error('Item não encontrado');
@@ -80,22 +78,27 @@ export const ListItemController = {
     if (
       changes.name !== undefined ||
       changes.quantity !== undefined ||
-      changes.unitPrice !== undefined
+      changes.unitPrice !== undefined ||
+      changes.packageCount !== undefined
     ) {
       const validation = validateItemFields({
         name: updated.name,
         quantity: updated.quantity,
         unit: updated.unit,
         unitPrice: updated.unitPrice,
+        packageCount: updated.packageCount,
       });
       if (!validation.valid) {
         throw new Error(validation.error ?? 'Dados inválidos');
       }
     }
 
-    const lineTotal = WEIGHT_VOLUME_UNITS.includes(updated.unit)
-      ? updated.unitPrice
-      : updated.quantity * updated.unitPrice;
+    const lineTotal = calcLineTotal(
+      updated.quantity,
+      updated.unit,
+      updated.unitPrice,
+      updated.packageCount
+    );
     const pricePerRefUnit = calcPricePerRefUnit(updated.unitPrice, updated.quantity, updated.unit);
 
     await db.listItems.update(itemId, {

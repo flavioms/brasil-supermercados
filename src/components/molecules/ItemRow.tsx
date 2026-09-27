@@ -70,7 +70,7 @@ export function ItemRow({ item, onEditRequest }: ItemRowProps) {
           </div>
           <div className="text-caption text-on-surface-muted mt-0.5">
             {WEIGHT_VOLUME_UNITS.includes(item.unit)
-              ? `${item.quantity} ${item.unit} por ${formatBRL(item.lineTotal)}`
+              ? `${item.packageCount}× ${item.quantity}${item.unit} (${formatBRL(item.unitPrice)}/pacote)`
               : `${item.quantity} ${item.unit} × ${formatBRL(item.unitPrice)}`}
             {item.pricePerRefUnit !== null && refUnit && (
               <span className="text-on-surface-muted/60">

@@ -12,6 +12,9 @@ export const ITEM_QUANTIDADE_MAX = 9999;
 export const ITEM_PRECO_MIN = 0;
 export const ITEM_PRECO_MAX = 99999.99;
 
+export const ITEM_PACOTES_MIN = 1;
+export const ITEM_PACOTES_MAX = 999;
+
 export const UNIDADES_VALIDAS: ItemUnit[] = ['un', 'kg', 'g', 'L', 'ml', 'cx', 'pct'];
 
 export interface ValidationResult {
@@ -35,6 +38,7 @@ export interface ItemFields {
   quantity: number;
   unit: ItemUnit;
   unitPrice: number;
+  packageCount?: number;
 }
 
 export function validateItemFields(fields: ItemFields): ValidationResult {
@@ -58,6 +62,17 @@ export function validateItemFields(fields: ItemFields): ValidationResult {
     return {
       valid: false,
       error: `Preço deve estar entre R$ ${ITEM_PRECO_MIN} e R$ ${ITEM_PRECO_MAX}`,
+    };
+  }
+  const packageCount = fields.packageCount ?? 1;
+  if (
+    !Number.isInteger(packageCount) ||
+    packageCount < ITEM_PACOTES_MIN ||
+    packageCount > ITEM_PACOTES_MAX
+  ) {
+    return {
+      valid: false,
+      error: `Quantidade de pacotes deve estar entre ${ITEM_PACOTES_MIN} e ${ITEM_PACOTES_MAX}`,
     };
   }
   return { valid: true, error: null };

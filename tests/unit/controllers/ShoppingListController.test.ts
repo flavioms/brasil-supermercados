@@ -88,8 +88,8 @@ describe('ShoppingListController', () => {
     it('computes totalCost and checkedTotal from items', async () => {
       const id = await ShoppingListController.createList('Recompute Test');
 
-      const item1 = createListItem({ listId: id, name: 'Arroz', quantity: 2, unit: 'kg', unitPrice: 7.5 });
-      const item2 = createListItem({ listId: id, name: 'Feijão', quantity: 1, unit: 'kg', unitPrice: 10 });
+      const item1 = createListItem({ listId: id, name: 'Arroz', quantity: 2, unit: 'un', unitPrice: 7.5 });
+      const item2 = createListItem({ listId: id, name: 'Feijão', quantity: 1, unit: 'un', unitPrice: 10 });
       item2.isChecked = true;
 
       await db.listItems.bulkAdd([item1, item2]);

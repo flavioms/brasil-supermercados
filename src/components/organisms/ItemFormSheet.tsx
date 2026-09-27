@@ -28,6 +28,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState<ItemUnit>('un');
   const [unitPrice, setUnitPrice] = useState('');
+  const [packageCount, setPackageCount] = useState('1');
   const [error, setError] = useState<string | null>(null);
   const [listPeers, setListPeers] = useState<ListItem[]>([]);
 
@@ -49,6 +50,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
           setQuantity(String(item.quantity));
           setUnit(item.unit);
           setUnitPrice(String(item.unitPrice));
+          setPackageCount(String(item.packageCount));
         }
       });
     } else {
@@ -56,15 +58,18 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
       setQuantity('1');
       setUnit('un');
       setUnitPrice('');
+      setPackageCount('1');
       setError(null);
     }
   }, [isOpen, itemId]);
 
   const qty = parseFloat(quantity) || 0;
   const price = parseFloat(unitPrice) || 0;
+  const packages = parseInt(packageCount, 10) || 0;
   const isWeightVolume = WEIGHT_VOLUME_UNITS.includes(unit);
-  // For weight/volume: price IS the total (e.g. R$30 for a 2kg package)
-  const lineTotal = isWeightVolume ? price : qty * price;
+  // For weight/volume: price is the total for ONE package (e.g. R$30 for a 2kg
+  // bag), so the line total must still multiply by how many packages were bought.
+  const lineTotal = isWeightVolume ? packages * price : qty * price;
   const pricePerUnit = PriceComparisonController.calcPricePerUnit(price, qty, unit);
 
   const handleSuggestionSelect = (s: Suggestion) => {
@@ -82,9 +87,17 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
           quantity: qty,
           unit,
           unitPrice: price,
+          packageCount: isWeightVolume ? packages : 1,
         });
       } else {
-        await ListItemController.addItem({ listId, name, quantity: qty, unit, unitPrice: price });
+        await ListItemController.addItem({
+          listId,
+          name,
+          quantity: qty,
+          unit,
+          unitPrice: price,
+          packageCount: isWeightVolume ? packages : 1,
+        });
       }
       onClose();
     } catch (e) {
@@ -116,8 +129,14 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-caption text-on-surface-muted mb-1 block">Quantidade</label>
+              <label
+                htmlFor="item-quantity"
+                className="text-caption text-on-surface-muted mb-1 block"
+              >
+                {isWeightVolume ? 'Tamanho da embalagem' : 'Quantidade'}
+              </label>
               <input
+                id="item-quantity"
                 type="number"
                 inputMode={INTEGER_UNITS.includes(unit) ? 'numeric' : 'decimal'}
                 min={INTEGER_UNITS.includes(unit) ? '1' : '0.01'}
@@ -139,8 +158,14 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
             </div>
 
             <div>
-              <label className="text-caption text-on-surface-muted mb-1 block">Unidade</label>
+              <label
+                htmlFor="item-unit"
+                className="text-caption text-on-surface-muted mb-1 block"
+              >
+                Unidade
+              </label>
               <select
+                id="item-unit"
                 value={unit}
                 onChange={(e) => {
                   const newUnit = e.target.value as ItemUnit;
@@ -160,6 +185,31 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
               </select>
             </div>
           </div>
+
+          {isWeightVolume && (
+            <div>
+              <label
+                htmlFor="item-package-count"
+                className="text-caption text-on-surface-muted mb-1 block"
+              >
+                Quantos pacotes você comprou?
+              </label>
+              <input
+                id="item-package-count"
+                type="number"
+                inputMode="numeric"
+                min="1"
+                step="1"
+                value={packageCount}
+                onChange={(e) => setPackageCount(e.target.value)}
+                onBlur={(e) => {
+                  const num = parseInt(e.target.value, 10);
+                  setPackageCount(String(isNaN(num) || num < 1 ? 1 : num));
+                }}
+                className="text-body focus:border-primary focus:ring-primary/20 w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:outline-none"
+              />
+            </div>
+          )}
 
           <div>
             <label
@@ -251,7 +301,7 @@ export function ItemFormSheet({ isOpen, onClose, listId, itemId }: ItemFormSheet
 
         <button
           onClick={handleConfirm}
-          disabled={!name.trim() || qty <= 0}
+          disabled={!name.trim() || qty <= 0 || (isWeightVolume && packages <= 0)}
           className="bg-primary text-body mt-4 w-full rounded-xl py-3 font-semibold text-white disabled:opacity-50"
         >
           {isEditMode ? 'Salvar alterações' : 'Adicionar à lista'}

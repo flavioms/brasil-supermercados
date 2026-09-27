@@ -38,6 +38,25 @@ describe('ListItemController', () => {
       expect(item?.lineTotal).toBe(12); // 3 × R$4
     });
 
+    it('multiplies by packageCount when buying several weight/volume packages', async () => {
+      const listId = await ShoppingListController.createList('Test');
+      // 4 packages of 1kg flour at R$4.50 each = R$18 total, but still R$4.50/kg
+      const itemId = await ListItemController.addItem({
+        listId,
+        name: 'Farinha de Trigo 1kg',
+        quantity: 1,
+        unit: 'kg',
+        unitPrice: 4.5,
+        packageCount: 4,
+      });
+      const item = await db.listItems.get(itemId);
+      expect(item?.lineTotal).toBe(18);
+      expect(item?.pricePerRefUnit).toBeCloseTo(4.5);
+
+      const list = await db.shoppingLists.get(listId);
+      expect(list?.totalCost).toBe(18);
+    });
+
     it('sets pricePerRefUnit for kg items', async () => {
       const listId = await ShoppingListController.createList('Test');
       const itemId = await ListItemController.addItem({
@@ -98,6 +117,17 @@ describe('ListItemController', () => {
       await ListItemController.updateItem(itemId, { unitPrice: 10 });
       const item = await db.listItems.get(itemId);
       expect(item?.lineTotal).toBe(10);
+    });
+
+    it('recalculates lineTotal when packageCount changes', async () => {
+      const listId = await ShoppingListController.createList('Test');
+      const itemId = await ListItemController.addItem({
+        listId, name: 'Feijão 5kg', quantity: 5, unit: 'kg', unitPrice: 25,
+      });
+      await ListItemController.updateItem(itemId, { packageCount: 2 });
+      const item = await db.listItems.get(itemId);
+      expect(item?.lineTotal).toBe(50); // 2 packages of 5kg at R$25 each
+      expect(item?.pricePerRefUnit).toBeCloseTo(5); // still R$5/kg
     });
   });
 
